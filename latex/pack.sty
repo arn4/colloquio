@@ -1,0 +1,53 @@
+
+%%%%%%%%%%%%%%%%%%%
+% DEAULT PACKAGES %
+%%%%%%%%%%%%%%%%%%%
+\RequirePackage[english]{babel}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{caption, subcaption}
+\RequirePackage{tikz}
+
+% Math
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{amssymb}
+\RequirePackage{bm}
+\renewcommand{\vec}[1]{\bm{#1}}
+
+% Physics
+\RequirePackage[separate-uncertainty = true]{siunitx}
+
+%% Fun
+\RequirePackage{bearwear}
+\RequirePackage{duckuments}
+%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{dsfont} % for the P of the probability and the E of the expected value
+
+\RequirePackage{biblatex}
+\addbibresource{bibliography.bib}
+
+
+% META-PARAMETERS
+\newcommand{\colloquioTitle}{Unsupervised Learning with Restricted Boltzmann Machines}
+\newcommand{\myFullName}{Luca Arnaboldi}
+\newcommand{\advisorFullName}{Daniele Tantari}
+\newcommand{\myIstitution}{Scuola Normale Superiore}
+\newcommand{\advisorIstitution}{Università di Bologna}
+
+% MATH SHORTCUT
+\newcommand{\sigmoid}[1]{\sigma{\left(#1\right)}}
+
+\newcommand{\ParDer}[2]{\frac{\partial#1}{\partial#2}}
+
+\newcommand{\Prob}[1]{\mathds{P}{\left( #1\right)}}
+\newcommand{\CondProb}[2]{\Prob{#1\middle|#2}}
+
+\newcommand{\prob}[1]{p{\left( #1\right)}}
+\newcommand{\condprob}[2]{\prob{#1\middle|#2}}
+
+\newcommand{\ExpVal}[2]{\mathds{E}_{#1}{\left[#2\right]}}
+
+\newcommand{\likelihood}[2]{\mathcal{L}{\left(#1\middle|#2\right)}}

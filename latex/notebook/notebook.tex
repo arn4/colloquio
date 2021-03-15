@@ -1,0 +1,200 @@
+% !TeX spellcheck = en_US 
+\documentclass[]{article}
+\usepackage[paper=a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage[section]{placeins}
+\usepackage[indent=0cm]{parskip}
+\usepackage[colorlinks, linkcolor=blue, urlcolor=magenta, citecolor=teal, bookmarks]{hyperref}
+
+\usepackage{pack}
+
+\title{
+  {\Huge Notebook on the \textit{Colloquio}} \\
+  \colloquioTitle
+}
+
+\author{
+  \myFullName \\
+  {\small Advisor: \advisorFullName}
+}
+
+\begin{document}
+  \maketitle
+  \begin{abstract}
+    I'm writing this document for my personal use. It's a collection of notions,
+    definitions, reflections, and more, produced as I worked on the \textit{colloquio}.
+    I hope that this will help me during the preparation of the talk!
+  \end{abstract}
+  \tableofcontents
+  \clearpage
+  
+  
+  \section{Restricted Boltzmann Machines: the model}
+  Restricted Boltzmann Machines are a model used mainly for unsupervised learning. We collect
+  data from an unknown distribution and then use it to set the parameters of the RBM to match
+  the starting distribution as closely as possible.
+  
+  \subsection{General RBM}
+  Consider a fully connected bipartite undirected graph as shown in Figure~\ref{fig:generalRBM}.
+  It consists in a \emph{visible} layer with $m$ nodes labeled by \(V_1, \dots, V_m\) and an
+  \emph{hidden} layer whose \(n\) nodes are labeled by \(H_1, \dots, H_n\). We call \(\mathcal{V}\)
+  the set of visible nodes, and \(\mathcal{H}\) the set of hidden nodes.
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{example-image-duck}
+    \caption{An RBM graph with \(n\) hidden and \(m\) visible nodes.}
+    \label{fig:generalRBM}
+  \end{figure}
+  Let us consider a random variable \(X_U\) associated a node \(U\) (either visible or hidden)
+  that take values in \(\Lambda_U\). We say that our  satisfy the \emph{Markov
+  property} if 
+  \begin{align*}
+    \CondProb{X_v}{\{X_{v'}\}_{v'\in (\mathcal{V} \setminus \{v\})}, \{X_h\}_{h\in \mathcal{H}}} =
+    \CondProb{X_v}{\{X_h\}_{h\in \mathcal{H}}}, \\
+    \CondProb{X_h}{\{X_v\}_{v\in \mathcal{V}}, \{X_{h'}\}_{h'\in (\mathcal{H} \setminus \{h\})}} =
+    \CondProb{X_h}{\{X_v\}_{v\in \mathcal{V}}}.
+  \end{align*}
+  or saying it simpler: a visible node is independent from all others visible nodes,
+  and the same for hidden ones. The graph structure is telling us the dependencies between
+  the random variables: if 2 nodes are not connected their associated variables are independent.
+  We will assume that \(\Lambda_v = \Lambda_{v'} \,\, \forall v,v' \in \mathcal{V}\) and analogue
+  for the hidden variables. For simplicity we use the notation
+  \[\prob{\vec{v}, \vec{h}} = \Prob{X_{V_i} = v_i, X_{H_j} = h_j
+                                    \quad\forall i \in \{1,\dots,m\}, \forall j \in \{1,\dots,n\}}.\]
+  
+  
+  It follows from \emph{Hammersley-Clifford Theorem}\cite{fischer2012introduction} that 
+  \begin{equation} \label{eq:hammersley-clifford-thm}
+    \prob{\vec{v}, \vec{h}} = \frac{1}{Z} \prod_{i=1,j=1}^{m,n} \psi_{i,j}(v_i, h_j),
+  \end{equation}
+  where
+  \[Z = \sum_{\vec{v}, \vec{h}}\prod_{i=1,j=1}^{m,n} \psi_{i,j}(v_i, h_j)\]
+  is called \emph{partition function} and \(\psi_{i,j}\) are called \emph{potential functions}.
+  The equation~\eqref{eq:hammersley-clifford-thm} can be written in a more convenient way as
+  \begin{equation} \label{eq:RBMdistribution}
+    \prob{\vec{v}, \vec{h}} 
+      = \frac{1}{Z} \exp\left(\sum_{i=1,j=1}^{m,n}\log\left(\psi_{i,j}(v_i, h_j)\right)\right)
+      = \frac{1}{Z} \exp\left(-E(\vec{v}, \vec{h})\right)
+  \end{equation}
+  where \(E(\vec{v}, \vec{h})=-\sum_{i=1,j=1}^{m,n}\log\left(\psi_{i,j}(v_i, h_j)\right)\) is called
+  \emph{energy function}. It should be clear the link with statistical mechanics since equation~\eqref{eq:RBMdistribution}
+  is a \emph{Boltzmann distribution} where \(\beta\) (inverse of the temperature) is set to 1. 
+  We can go further with the physical interpretation observing that there could be ``interaction''
+  only between nodes of different layers, so only when nodes are directly connected: the graph
+  structure is again useful to understand RBMs.
+  
+  The division in visible and hidden nodes is used because only the visible one represent the
+  features of the goal distribution; the hidden nodes can be thought as hidden features that
+  the model learn during training. Given this context, it's particularly important the marginal
+  distribution
+  \[\prob{\vec{v}} = \sum_{\vec{h}} \prob{\vec{v},\vec{h}}.\]
+  The Markov property above easily imply this relations on conditional probabilities
+  \[
+    \condprob{\vec{h}}{\vec{v}} = \prod_{j=1}^n \condprob{h_j}{\vec{v}} \quad\text{and}\quad
+    \condprob{\vec{v}}{\vec{h}} = \prod_{i=1}^m \condprob{v_i}{\vec{h}}.
+  \]
+  
+  We empathize the fact that the energy function must be sum of function of at most 2 nodes;
+  the most general energy for an RBM is
+  \begin{equation} \label{eq:energyRBM}
+    E(\vec{v}, \vec{h}) = \sum_{i}^m f_i{(v_i)} + \sum_{j}^n g_j{(h_j)} +
+                          \sum_{i=1,j=1}^{m,n} I_{i,j}{(v_i,h_j)}
+  \end{equation}
+  
+  \subsubsection{Maximum Likelihood}
+  We suppose that the energy depends on a set of parameters \(\vec{\theta}\), so it is the function
+  \(E(\vec{v}, \vec{h};\vec{\theta})\); obviously also all the other objects of the RBM depends on these parameters. The standard way of estimating parameters in a statistical
+  model is maximizing the likelihood. Suppose that our \emph{training set} is 
+  \(S = \left\{\vec{\bar{v}}_k\right\}_{k \in \{1,\dots,\ell\}}\) so that the likelihood
+  \begin{align*}
+    \log\likelihood{\vec{\theta}}{S}
+      &= \sum_{k=1}^\ell \log\left(\prob{\vec{\bar{v}}_k;\vec{\theta}}\right)
+       = \sum_{k=1}^\ell \log\left(\sum_{\vec{h}} 
+                                      \exp\left[-E(\vec{\bar{v}}_k,\vec{h};\vec{\theta})\right]\right)
+         -\ell \log{Z(\vec{\theta})} \\
+      &= \sum_{k=1}^\ell \log\left(\sum_{\vec{h}} 
+                                      \exp\left[-E(\vec{\bar{v}}_k,\vec{h};\vec{\theta})\right]\right)
+         -\ell \log\left(\sum_{\vec{v},\vec{h}} 
+                                 \exp\left[-E(\vec{v},\vec{h};\vec{\theta})\right]\right)
+   \end{align*}
+   where we used the \(\log\) since it's a monotonic function and does not change the maximum position.
+  Let's compute the gradient (we drop the sum on \(S\) since the likelihood it's linear, and the dependence from \(\vec{\theta}\))
+  \begin{align*} \displaystyle
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}}
+      &= -\frac{1}{\sum_{\vec{h}}\exp\left[-E(\vec{\bar{v}},\vec{h})\right]}
+          \sum_{\vec{h}}\exp\left[-E(\vec{\bar{v}},\vec{h})\right]
+          \ParDer{E(\vec{\bar{v}},\vec{h})}{\vec{\theta}}+ \\
+      &\quad +\frac{1}{\sum_{\vec{v},\vec{h}}\exp\left[-E(\vec{v},\vec{h})\right]}
+          \sum_{\vec{v},\vec{h}}\exp\left[-E(\vec{v},\vec{h})\right]
+          \ParDer{E(\vec{v},\vec{h})}{\vec{\theta}} \\
+      &= -\sum_{\vec{h}}\condprob{\vec{h}}{\vec{\bar{v}}}
+        \ParDer{E(\vec{\bar{v}},\vec{h})}{\vec{\theta}} +
+        \sum_{\vec{v},\vec{h}}\prob{\vec{v},\vec{h}}
+        \ParDer{E(\vec{v},\vec{h})}{\vec{\theta}} =\\
+      &= -\ExpVal{\condprob{\vec{h}}{\vec{\bar{v}}}}{\ParDer{E(\vec{\bar{v}},\vec{h})}{\vec{\theta}}}
+         +\ExpVal{\prob{\vec{v},\vec{h}}}{\ParDer{E(\vec{v},\vec{h})}{\vec{\theta}}}
+  \end{align*}
+  
+  Until now we haven't used the fact that the RBM is a bipartite graph and what we said on likelihood
+  hold also for general graph topologies\footnote{See \cite{fischer2012introduction} for \emph{Markov
+  Random Fields}}.
+  We recall that for RBMs the energy must have the form \eqref{eq:energyRBM} and the parameters \(\vec{\theta}\) are the union for parameters on single functions \(f_i\), \(g_j\) and \(I_{i,j}\).
+  Using these facts, and calling \(\vec{\theta}_{i,j}\) the parameters of the function \(I_{i,j}\)
+  \[
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}_{i,j}} 
+      = -\ExpVal{\condprob{h_j}{\vec{\bar{v}}}}{\ParDer{I_{i,j}(\bar{v}_i,h_j)}{\vec{\theta}_{i,j}}}
+        +\ExpVal{\prob{v_i,h_j}}{\ParDer{I_{i,j}(v_i,h_j)}{\vec{\theta}_{i,j}}}.
+  \]
+  Analogously if \(\vec{\theta}_i\) and \(\vec{\theta}_j\) are the parameters of the functions
+  \(f_i\) and \(g_j\) respectively
+  \begin{align*}
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}_i} 
+    &= -\ParDer{f_i(\bar{v}_i)}{\vec{\theta}_i}
+       +\ExpVal{\prob{v_i}}{\ParDer{f_i(v_i)}{\vec{\theta}_i}}, \\
+    %
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}_j} 
+    &= -\ExpVal{\condprob{h_j}{\vec{\bar{v}}}}{\ParDer{g_j(h_j)}{\vec{\theta}_i}}
+       +\ExpVal{\prob{h_j}}{\ParDer{g_j(h_j)}{\vec{\theta}_j}}.
+  \end{align*}
+  Despite the gradient formulas seem simple, calculating the expected values is computationally
+  untreatable and some approximation are needed. Training algorithms for RBM are just clever way
+  of computing an approximation of these gradients.
+  
+  \subsection{Binary RBM}
+  Binary RBM are the simpler form of RBM, but still they are quite powerful.
+  They are obtained by choosing
+  \[\Lambda_V = \Lambda_H = \{0,1\},\]
+  \[
+    f_i(x) = -b_ix, \quad g_j(y) = -c_jy  \quad\text{and}\quad I_{i,j}(x,y)=-w_{i,j}xy.
+  \]
+  It's not difficult to prove these relations\footnote{The proof can be found on
+  \cite{fischer2012introduction}, at pages 24-25.}
+  \begin{align*}
+    \condprob{h_j=1}{\vec{v}} &= \sigmoid{\sum_{i=1}^m w_{i,j}v_i+c_j},\\
+    \condprob{v_i=1}{\vec{v}} &= \sigmoid{\sum_{j=1}^n w_{i,j}h_j+b_i}.\\
+  \end{align*}
+  Observing that for binary variables \(\ExpVal{\prob{v}}{v} = \prob{v=1}\), the gradient of
+  the likelihood takes the nice form
+  \begin{align*}
+    % gradient of w_{i,j}
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{w_{i,j}}
+      &= \bar{v}_i\ExpVal{\condprob{h_j}{\vec{\bar{v}}}}{h_j} 
+         -\ExpVal{\prob{\vec{v}}}{\ExpVal{\condprob{h_j}{\vec{v}}}{v_ih_j}} \\
+      &= \bar{v}_i \sigmoid{\sum_{i'=1}^m w_{i',j}\bar{v}_{i'}+c_j}
+         -\ExpVal{p(\vec{v})}{v_i \sigmoid{\sum_{i=1}^m w_{i',j}v_{i'}+c_j}} \\
+    % gradient of b_i
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{b_i}
+      &= \bar{v}_i -\ExpVal{p(\vec{v})}{v_i} \\
+    % gradient of c_j
+    \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{c_j}
+      &= \sigmoid{\sum_{i=1}^m w_{i',j}\bar{v}_{i'}+c_j}
+         -\ExpVal{p(\vec{v})}{\sigmoid{\sum_{i=1}^m w_{i',j}v_{i'}+c_j}}
+  \end{align*}
+  
+  
+   
+  
+  
+  
+  \clearpage
+  \printbibliography
+\end{document}
