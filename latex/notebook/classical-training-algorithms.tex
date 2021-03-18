@@ -1,0 +1,258 @@
+\section{Classical Training Algorithms}
+  All classic training algorithms for RBM are based on the likelihood maximization,
+  using a recurrent gradient ascent, based on formulas from Section \ref{subsec:binary-classic-RBM}.
+  As already noted the formulas contain some expected values calculation over the
+  entire Boltzmann distribution of the visible layer, the is untreatable exactly,
+  and requires some approximations.
+  Before going through the methods, we first present the general learning formula for 
+  following gradient,  that includes some extra terms that improve the algorithm.
+  
+  \subsection{General update rule for gradient ascent}
+  Let \(\vec{\theta}^{(t)}\) the parameters of the model after \(t\) step of the update.
+  The update formula for a single training data \(\vec{\bar{v}}\) is given by
+  \[
+    \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)}
+                           \underbrace{
+                             + \eta \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}}
+                             - \lambda \vec{\theta}^{(t)}
+                             + \nu \Delta\vec{\theta}^{(t-1)}
+                           }_{\coloneqq \Delta\vec{\theta}^{(t)}}
+  \]
+  where \(\eta,\lambda,\nu \in \mathbb{R}^+\) are respectively the \emph{learing rate},
+  the \emph{weight decay parameter} and \emph{momentum parameter}.
+  All of them are meta-parameters of the algorithm and doesn't not to be constant all
+  over the learning.
+  
+  We now see a brief explanation on what this parameters are. For a much more detailed one
+  see \cite{hinton2012practical}, where is explained  also how to tune them.
+  \subsubsection{Learing rate}
+  It is ``how much the model is influenced by the data''. It should be larger the beginning to
+  explore a wider region of space, and decrease over time.
+  \subsubsection{Weight decay}
+  A physical explanation of this term, that makes ``little''parameters preferred, is that
+  bigger values in the energy could also be interpreted as system in low temperature
+  \footnote{In Boltzmann distribution if all the energy take a factor is the same as
+  the temperature reduced by the same factor.}. The system in low temperature means that
+  essentially only low energy states are possible and, in the language of ML, there's overfitting,
+  since the algorithm train the system to have energy minimum in the training set.
+  
+  The weight decay can be interpreted as adding the term \(-\lambda\frac{\left|\vec{\theta}\right|^2}{2}\)
+  to the likelihood and only after this take the gradient to follow.
+  \subsubsection{Momentum}
+  This is a term to eliminate the effect of the outliers. When following the gradient,
+  the moving gain some pace that can is used to move through some annoying points that
+  behaves differently from the average on their neighborhood. Another way to say it is
+  ``the momentum makes the manifold of the gradient smoother''.
+  
+  \subsubsection{Batches}
+  The training data contains many value \(\vec{\bar{v}}_k\). Update the parameters of a model
+  after every computation of the gradient given a single training data is too slow but
+  especially subject to large fluctuations caused by outliers. On the other hand, change
+  parameters after updates for every point are computed will be not good as well.
+  
+  The solution to this problem are the \emph{batches}. The data is partitioned in small sets
+  and only after that the gradients of all the data in the batch were computed, the parameters
+  are updated. The size of the batches is a meta-parameter of the training algorithm, in 
+  the reference \cite{hinton2012practical} there are many insights on how use batches smoothly.
+  
+  
+  \subsection{Naive Gibbs Sampling}
+  The idea is simple: to estimate the expected values we set up a
+  Markov Chain with invariant distribution equal to \(\prob{\vec{v}}\).
+  If we wait enough steps, the Markov chain is sampling from the 
+  invariant distribution and we can use these sample to extimate the
+  expected values.
+  
+  Note that not all Markov chains have an invariant distribution, and even if they do,
+  it is not certain that they will converge on it. In \cite{fischer2012introduction} there's 
+  a great discussion on Markov chains and their properties.
+  
+  This algorithm belong to the class named \emph{Markov Chain MonteCarlo algorithms}.
+  
+  \subsubsection{Gibbs Sampling in general}
+  We first describe the general idea of Gibbs sampling, without the proofs of correctness.
+  Let's suppose to have a multivariate distribution \(\pi{(\vec{x})}\), with \(\vec{x}\) a
+  generic vector of random variables, and we would like to sample it.
+  We say that \(\dim{\vec{x}} = n\) and we will use \(\vec{x}_{-i}\) to indicate the vector
+  \(\vec{x}\) with the entry \(x_i\) removed.
+  We setup a Markov chain where states are all possible values of \(\vec{x}\), and transition
+  probability is given by
+  \[
+    \prob{\vec{x} \to \vec{y}} = 
+      \begin{cases}
+        q{(i)} \pi{(y_i|\vec{x}_{-i})} &
+          \text{if } \exists i \in \{1,\dots,n\} \text{ so that: } j\neq i \implies x_j = y_j\\
+        0 &\text{otherwise}
+      \end{cases}.
+  \]
+  Here \(q{(i)}\) is a distribution over \(\{1,\dots,n\}\), that chooses which component is
+  updated. In most of the cases there is no reason to pick \(q\) different from the uniform
+  distribution. Note that there are many ways (\(n\), to be precise) to realize \(\vec{x} = \vec{y}\),
+  so in practice we have 
+  \[
+    \prob{\vec{x} \to \vec{x}} = \sum_{i=1}^{n} q{(i)} \pi{(x_i|\vec{x}_{-i})}.
+  \]
+  
+  The transition matrix above is equivalent to use the Algorithm~\ref{alg:gibbs-sampling-general}.
+  
+  \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    
+    \Input{goal distribution \(\pi{(\vec{x})}\), Markov Chain current state \(\vec{x}\),
+           distribution \(q{(i)}\)}
+    \Output{Markov Chain next state \(\vec{y}\)}
+    
+    init \(a\), \(\vec{y}\), \(i\)\;
+    \(i \leftarrow \text{ sample } q{(\cdot)}\)\;
+    \( y_i \leftarrow \pi{(\cdot|\vec{x}_{-i})}\)\;
+    \For{\(j\in \{1,\dots,n\},\, j\neq i\)}{
+      \(y_j \leftarrow x_j\)\;
+    }
+    
+    \caption{update of the Markov Chain in Gibbs sampling.}
+    \label{alg:gibbs-sampling-general}
+  \end{algorithm}
+  \ExplainBox{Why does this algorithm work good?}{
+    A key hypothesis need to make this algorithm functional is knowing how to sample from
+    \(\pi{(y_i|\vec{x}_{-i})}\) in an efficient way. If the conditional probability can't be
+    computed without knowing how to sample from \(\pi{(\vec{x})}\) the algorithm is useless.
+    
+    \begin{example}
+      If \(\pi{(\vec{x})} \propto \prod_{i=1}^n \exp{[-x_i^2]}\), then \(\pi{(y_i|\vec{x}_{-i})}\)
+      is simply a 1D Gaussian with an appropriate variance, easy to sample.
+    \end{example}
+  }
+  There are many different variants of Gibbs Sampling. The most common is \emph{period Gibbs sampling}
+  where the variable to be updated is not chosen at random based on a distribution \(q\) but
+  subsequently in fixed predefined order. 
+  
+  
+  \subsubsection{Gibbs Sampling on Binary Classic RBM}
+  The first thing to say is that we are interested in \(\prob{\vec{v}}\), but it's easier to work
+  with \(\prob{\vec{v},\vec{h}}\) and then restrict the sample only on the visible layer.
+  
+  As second point we remind that
+  \[
+    \condprob{v_i}{\vec{v}_{-i},\vec{h}} = \condprob{v_i}{\vec{h}},
+  \]
+  and we already know that this is a binomial distribution with probability given by \eqref{eq:prob-one-visible-given-hidden}, so it's really easy to sample.
+  Analogously for the hidden layer
+  \[
+    \condprob{h_j}{\vec{v},\vec{h}_{-j}} = \condprob{h_j}{\vec{v}},
+  \]
+  and again is a binomial distribution using equation~\eqref{eq:prob-one-hidden-given-visible}.
+  
+  The third thing to note is that variable on the same layer are independent, so we can update
+  one layer at the time instead of a single variable. This result in a faster algorithm.
+  
+  All the considerations above lead to the Algorithm~\ref{alg:gibbs-sampling-RBM}. Since
+  we don't care of the \(\vec{h}\) states, we make steps on \(\vec{v}\); if one is interested
+  in knowing the values of \(\vec{h}\) can simply look in the appropriate variable.
+  
+  \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+    
+    \Input{\(\text{RBM}(V_1,\dots,V_m,H_1,\dots,H_n)\), Markov Chain current state \(\vec{v}^{(k)}\)}
+    \Output{Markov Chain next state \(\vec{v}^{(k+1)}\)}
+    
+    init \(x\), \(\vec{v}^{(k+1)}\), \(\vec{h}^{(k+1)}\)\;
+    \tcc{update hidden layer}
+    \For{\(j \in \{1,\dots,n\}\)}{
+      \( x = \text{ sample from } \text{Uniform}{[0,1]}\)\;
+      \eIf{\(x < \sigmoid{\sum_{i=1}^m w_{i,j}v_i+c_j}\)}{
+        \(h^{(k+1)}_j \leftarrow 1\)\;
+      }{
+        \(h^{(k+1)}_j \leftarrow 0\)\;
+      }
+    }
+    \tcc{update visible layer}
+    \For{\(i \in \{1,\dots,m\}\)}{
+      \( x = \text{ sample from } \text{Uniform}{[0,1]}\)\;
+      \eIf{\(x < \sigmoid{\sum_{j=1}^n w_{i,j}v_j+b_i}\)}{
+        \(v^{(k+1)}_i \leftarrow 1\)\;
+      }{
+        \(v^{(k+1)}_i \leftarrow 0\)\;
+      }
+    }
+  
+    \caption{update of the Markov Chain in Gibbs sampling for binary classic RBMs.}
+    \label{alg:gibbs-sampling-RBM}
+  \end{algorithm}
+
+  The starting point \(\vec{v}^{(0)}\) can be chosen randomly, while \(\vec{h}^{(0)}\)
+  is not used in the algorithm so it is not initialized.
+
+  Unfortunately this algorithm is still to slow for an efficient training of RBM.
+  We need a lot of steps before the chain reach the invariant regime and this not
+  scale well when we need a lot of samples as in RBM training algorithm. On
+  \cite{fischer2012introduction} there's a good discussion on the speed of convergence.
+  Although not directly useful, this algorithm is the starting point of developing
+  some faster ones. 
+   
+  \subsection{Contrastive Divergence}
+  Since running a chain until stationary distribution is too slow, we introduce the
+  \emph{contrastive divergence} algorithm, often  abbreviated as \emph{CD-\(k\)}.
+  The idea is really simple:
+  take the training data \(\vec{\bar{v}}\) and setup a chain as the Gibbs sampling with
+  \(\vec{v}^{(0)} = \vec{\bar{v}}\); then run the Algorithm~\ref{alg:gibbs-sampling-RBM}
+  for \(k\) times, to get \(\vec{v}^{(k)}\). This will be the only sample used to estimate
+  the expected value in gradients formulas.
+  
+  In example the expected value in Equation~\eqref{eq:logL-gradient-w-RBM} is computed as
+  \[
+    \ExpVal{\prob{\vec{v}}}{v_i \sigmoid{\sum_{i=1}^m w_{i',j}v_{i'}+c_j}} \approx
+      \vec{v}^{(k)}_i \sigmoid{\sum_{i=1}^m w_{i',j}\vec{v}^{(k)}_{i'}+c_j}
+  \]
+  The name of the algorithm comes from a function whose gradient is much more well approximated
+  by this method. A detailed theoretical discussion on the argument can be found in
+  \cite{fischer2012introduction}.
+  
+  The algorithm is usually run with \(k=1\). This works well in practice, although is far to be
+  the best algorithm in many situations.
+  
+  \subsubsection*{Stochastic binaries vs probabilities}
+  In Algorithm~\ref{alg:gibbs-sampling-RBM} we assign the value of a node based on its probability.
+  This is the correct way to update the Marvok chain,  but in some situation it isn't the best
+  choice for learning. Sometime it is useful to use nodes as if they had a continuous value
+  instead of a binary value: we keep \(\vec{v}^{(k)}\) and \(\vec{h}^{(k)}\) as vectors of
+  probabilities and use the continuous to do all the computations in the algorithm.
+  
+  Using probabilities pays in most of the case because it reduce the noise and makes the learning
+  faster, but it can't be used in all the phase of CD-\(k\). In \cite{hinton2012practical} there's
+  a nice description on when it worths using probabilities.
+  
+  
+  \subsection{Persistent Contrastive Divergence}
+  The \emph{persistent contrastive divergence} consist in using \(c\) Markov chains as above,
+  instead than a single one. The chains are randomly initialized before the training begin,
+  and than never reinitialized. For each training batch we run the Algorithm~\ref{alg:gibbs-sampling-RBM}
+  \(k\) times on all the \(c\) chains. The learning signal (a.k.a. weights update) \emph{on a batch}
+  is given by the average on the batch of the term that depends on the training data,
+  while the expected vale is estimated using using the \(c\) last states of the chains.
+  
+  As an example, let \(B = \left\{\vec{\bar{v}}^k\right\}_{k = 1, \dots, s}\) a training batch, and let
+  \(\vec{v}^r\) the state of the chain \(r\) after the \(k\) updates. 
+  PCD estimate  Equation~\eqref{eq:logL-gradient-w-RBM} as
+  \[
+    \ParDer{\log\likelihood{\vec{\theta}}{B}}{w_{i,j}} \approx
+      \frac{1}{s}\sum_{k=1}^s{\bar{v}^k_i} \sigmoid{\sum_{i'=1}^m w_{i',j}{\bar{v}^k_{i'}}+c_j}
+      -\frac{1}{c}\sum_{r=1}^c v^r_i \sigmoid{\sum_{i=1}^m w_{i',j}v^r_{i'}+c_j}.
+  \]
+  The algorithm works better than simple CD because when the chains get to invariant distribution
+  they never go away, so after an initial transient phase we have a better estimation of
+  the log-likelihood gradient. The number of chains \(c\) is usually set at the batch size.
+  
+  \subsubsection{FPCD}
+  FPCD stands for \emph{fast persistent contrastive divergence} and is variant of PCD the tries
+  to reduce the initial transient phase with the introduction of new learned parameters.
+  On \cite{fischer2012introduction} is explained how  it works.
+  
+  \subsection{Parallel tempering}
+  \emph{Parallel tempering} is an algorithm similar to PCD, but the chains
+  considered have different temperature. In other words the energy of a
+  chain is reduced by a factor (the temperature) so that higher temperature
+  means smoother distribution. The states of all the chains are then considered altogether to
+  produce a single estimation of the \(\prob{\vec{v}}\) distribution, as in standard CD.
+  The details on how it works can be found in \cite{fischer2012introduction}.

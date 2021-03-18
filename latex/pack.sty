@@ -13,22 +13,28 @@
 \RequirePackage{amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{amssymb}
+\RequirePackage{mathtools}
 \RequirePackage{bm}
 \renewcommand{\vec}[1]{\bm{#1}}
+\RequirePackage{dsfont}
 
 % Physics
 \RequirePackage[separate-uncertainty = true]{siunitx}
 
+% Computer Science
+\RequirePackage[linesnumbered,lined,ruled,vlined,commentsnumbered]{algorithm2e}
+
+% Box
+\RequirePackage{tcolorbox}
+
 %% Fun
 \RequirePackage{bearwear}
 \RequirePackage{duckuments}
-%%%%%%%%%%%%%%%%%%%
 
-\RequirePackage{dsfont} % for the P of the probability and the E of the expected value
-
-\RequirePackage{biblatex}
+%% Bibliography
+\RequirePackage[backend=bibtex]{biblatex}
 \addbibresource{bibliography.bib}
-
+%%%%%%%%%%%%%%%%%%%
 
 % META-PARAMETERS
 \newcommand{\colloquioTitle}{Unsupervised Learning with Restricted Boltzmann Machines}
@@ -51,3 +57,30 @@
 \newcommand{\ExpVal}[2]{\mathds{E}_{#1}{\left[#2\right]}}
 
 \newcommand{\likelihood}[2]{\mathcal{L}{\left(#1\middle|#2\right)}}
+
+% BOXES
+\newcommand{\ExplainBox}[2] {
+  \begin{tcolorbox}[
+      fonttitle=\sffamily\bfseries,
+      title=#1,
+      colback = teal!5!white,
+      colframe = teal!85!black
+    ]
+    #2
+  \end{tcolorbox}
+}
+
+\definecolor{idea-yellow}{RGB}{255,255,0}
+\newcommand{\MyIdeaBox}[2] {
+  \begin{tcolorbox}[
+    fonttitle=\sffamily\bfseries,
+    title=#1,
+    colback = idea-yellow!5!white,
+    colframe = idea-yellow!85!black
+    ]
+    #2
+  \end{tcolorbox}
+}
+
+% THM ENVIROMEMENTS
+\newtheorem{example}{Example}
