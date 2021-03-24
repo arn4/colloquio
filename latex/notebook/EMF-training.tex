@@ -1,2 +1,514 @@
 
 \section{Extended Mean Field Training}
+All classical training algorithms are clever way of estimating expected values
+over the distribution of the RBM. The algorithms are intrinsically stochastic
+because random samples generation is used in all of them. We analyze now a completely
+different approach by Gabriè~\cite{gabrie18training}, inspired by mean-field
+theory of the  Ising model in Statistical Mechanics. The key idea is notice that the
+log-likelihood contains a term that is the free energy of the model. Moreover the
+algorithm is deterministic, since no random sample is needed.
+
+We present a pure mathematical derivation, highlighting the physics that inspired the
+steps in {\bf \color{physics-blue}blue~boxes}. We deal only with classical binary RBMs,
+but the method can be generalized. We introduce also a few more notation in
+{\bf \color{pink-notation}pink~boxes}.
+
+% There are many symbols often used in the calculations.
+% To amke typing faster I define few more shorcuts
+\newcommand{\FEn}[2]{F{\left[#1;#2\right]}}
+\newcommand{\Gam}[2]{\Gamma{\left[#1;#2\right]}}
+\newcommand{\DistributionMean}[4]{\left\langle#1\right\rangle_{#4{\left[#2;#3\right]}}}
+\newcommand{\Fmean}[3]{\DistributionMean{#1}{#2}{#3}{f}}
+\newcommand{\Gmean}[3]{\DistributionMean{#1}{#2}{#3}{\gamma}}
+\newcommand{\qhat}[1]{\vec{\hat{q}}{(#1)}}
+\newcommand{\Lambd}[2]{\vec{\lambda}{\left[#1;#2\right]}}
+
+% Really short shortcuts
+% I know that it's orrible what I'm doing, but I need to not die texxing all the calculations
+\newcommand{\lgt}[2]{\lambda_t{\left[#1;#2\right]}}
+\newcommand{\lvi}[2]{\lambda_i^v{\left[#1;#2\right]}}
+\newcommand{\lhj}[2]{\lambda_j^h{\left[#1;#2\right]}}
+\newcommand{\lgtz}[1]{\lgt{#1}{0}}
+\newcommand{\lviz}[1]{\lvi{#1}{0}}
+\newcommand{\lhjz}[1]{\lhj{#1}{0}}
+\newcommand{\lgtm}[1]{\lgt{\vec{m}}{#1}}
+\newcommand{\lvim}[1]{\lvi{\vec{m}}{#1}}
+\newcommand{\lhjm}[1]{\lhj{\vec{m}}{#1}}
+\newcommand{\lgtmz}{\lgt{\vec{m}}{0}}
+\newcommand{\lvimz}{\lvi{i\vec{m}}{0}}
+\newcommand{\lhjmz}{\lhj{\vec{m}}{0}}
+
+\newcommand{\mgt}{m_t}
+\newcommand{\mvi}{m_i^v}
+\newcommand{\mhj}{m_j^h}
+\newcommand{\mvisq}{{\left(m_i^v\right)}^2}
+\newcommand{\mhjsq}{{\left(m_j^h\right)}^2}
+
+\newcommand{\hmgt}{\hat{m}_t}
+\newcommand{\hmvi}{\hat{m}_i^v}
+\newcommand{\hmhj}{\hat{m}_j^h}
+\newcommand{\hmvisq}{{\left(\hat{m}_i^v\right)}^2}
+\newcommand{\hmhjsq}{{\left(\hat{m}_j^h\right)}^2}
+
+\newcommand{\sumt}{\sum_{t=1}^{m+n}}
+\newcommand{\prodt}{\prod_{t=1}^{m+n}}
+
+\newcommand{\sums}{\sum_{\vec{s}}}
+\newcommand{\sumst}{\sum_{s_t \in \{0,1\}}}
+
+\newcommand{\GammaExp}[1]{\exp{\left(-\beta E(\vec{s#1}) +    
+                                                \Lambd{\vec{m}}{\beta}\cdot(\vec{s#1}-\vec{m})\right)}}
+
+
+\subsection[Introducing F]{Introducing \(F\)}
+\NotationBox{\vec{s}}{
+  During the derivation we use the more concise notation
+  \[
+    \vec{s} \coloneqq (\vec{v},\vec{h}),
+  \]
+  since many calculations we do hold both for hidden and visible layer.
+  We use the index \(t\) for sums over \(\vec{s}\) components. In example
+  \[
+    \left|\vec{s}\right|^2 = \left|\vec{v}\right|^2 + \left|\vec{h}\right|^2
+                           = \sum_{i=1}^{m} v_i^2 + \sum_{j=1}^{n} h_j^2
+                           = \sumt s_t^2.
+  \]
+  We can also define vector indexed as \(\vec{s}\). In example a fictitious vector \(\vec{z}\)
+  \[
+    \vec{z} \coloneqq (\vec{z}^v,\vec{z}^h) \qquad
+    \vec{s}\cdot\vec{z} = \vec{v}\cdot\vec{z}^v + \vec{h}\cdot\vec{z}^h
+                        = \sum_{i=1}^{m} v_i z^v_i + \sum_{j=1}^{n} h_j z^h_j
+                        = \sumt s_t z_t,
+  \]
+  and now should be completely clear how this notation works.
+}
+
+We recall from previous section that the log-likelihood for an RBM is given by
+\begin{equation} \label{eq:log-like-begiing-EMF}
+  \log\likelihood{\vec{\theta}}{\vec{\bar{v}}}
+    = \log\left(\sum_{\vec{h}} \exp\left[-E(\vec{\bar{v}},\vec{h})\right]\right)
+      - \log\left(\sums \exp\left[-E(\vec{s})\right]\right)
+\end{equation}
+Once took the gradient the first term of this expression can be computed analytically,
+as we already seen. The second term leads to the expected values instead, so let's
+focus on on it. Let's define
+\begin{equation} \label{eq:def-F}
+  \FEn{\vec{q}}{\beta} \coloneqq - \frac{1}{\beta}
+                           \log{\left[\sums \exp{\left(-\beta E(\vec{s}) + \beta \vec{q}\cdot\vec{s}\right)}\right]},
+\end{equation}
+so that the second term in equation~\eqref{eq:log-like-begiing-EMF} is exactly
+\(\FEn{\vec{0}}{1}\).
+Using these considerations the gradient of log-likelihood can be expressed in function of
+\(F\). In example equation~\eqref{eq:logL-gradient-w-RBM} becomes
+\[
+  \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{w_{i,j}} =
+    \bar{v}_i \sigmoid{\sum_{i'=1}^m w_{i',j}\bar{v}_{i'}+c_j}
+    -\ParDer{\left(\FEn{\vec{0}}{1}\right)}{w_{i,j}}.
+\]
+For now we've only lay the foundation of the computation.
+
+\PhysicsBox{What are \(F\) and \(\vec{q}\) in  physics?}{
+  \(F\) is the Helmholtz free energy; \(\vec{q}\) the external magnetic field.
+  %TODO: explain much more. Why are not b and c the external fields?
+}
+
+\subsection[Computing F: \textGamma and A]{Computinng \(F\): \(\Gamma\) and \(A\)}
+It's clear looking at equation~\eqref{eq:def-F} that \(F\) is at least \(C^\infty\)
+in \(\vec{q}\). Moreover it's a concave function, so \(-F\) is a convex and can be
+defined its Legendre~Transformation\footnote{The definition of Legendre Trasformation
+  used here it's more general than the one usually taught during courses. The best
+  source I found at the moment is Wikipedia.}
+\begin{equation}
+  \Gam{\vec{m}}{\beta} \coloneqq \sup_{\vec{q}}{\left\{\vec{q}\cdot\vec{m}
+                            - \left(-\FEn{\vec{q}}{\beta}\right)\right\}}
+                       = \sup_{\vec{q}}{\left\{\vec{q}\cdot\vec{m}
+                            + \FEn{\vec{q}}{\beta}\right\}}
+                       = \qhat{\vec{m}}\cdot\vec{m} + \FEn{\qhat{\vec{m}}}{\beta}
+\end{equation}
+where
+\[
+  \qhat{\vec{m}} \coloneqq
+  \argsup_{\vec{q}}{\left\{\vec{q}\cdot\vec{m} + \FEn{\vec{q}}{\beta}\right\}}.
+\]
+Since Legendre Transformation is involutive we have
+\[
+  -\FEn{\vec{q}}{\beta} = \sup_{\vec{m}}{\left\{\vec{q}\cdot\vec{m} - \Gam{\vec{m}}{\beta}\right\}},
+\]
+from which it's easy to see
+\begin{equation*}
+  -\beta \FEn{\vec{0}}{\beta} = -\beta \sup_{\vec{m}}{\left\{\vec{0}\cdot\vec{m} -
+                                                             \Gam{\vec{m}}{\beta}\right\}}
+                              = -\beta \sup_{\vec{m}}{\left\{-\Gam{\vec{m}}{\beta}\right\}}
+                              = -\beta \inf_{\vec{m}}{\left\{\Gam{\vec{m}}{\beta}\right\}}
+                              = -\beta \Gam{\vec{\hat{m}}}{\beta},
+\end{equation*}
+where 
+\[
+  \vec{\hat{m}} \coloneqq
+  \arginf_{\vec{m}}{\left\{\Gam{\vec{m}}{\beta}\right\}}.
+\]
+Note in particular that the definitions of \(\qhat{\vec{m}}\) and \(\vec{\hat{m}}\) are quite
+different. Our attention now shifts to \(\Gamma\) since if we compute and minimize it we
+can get easily \(\FEn{\vec{0}}{1}\).
+
+We prefer deal with a different quantity rather than \(\Gamma\), so we define
+\[
+  A{\left[\vec{m};\beta\right]} \coloneqq -\beta \Gam{\vec{m}}{\beta}.
+\]
+
+\PhysicsBox{What are \(\Gamma\) and \(\vec{m}\) in  physics?}{
+  \(\Gamma\) is the Gibbs free energy; \(\vec{m}\) is the magnetization.
+  %TODO: explain much more.
+}
+
+\subsection{Computing A}
+\NotationBox{\Fmean{\cdot}{\vec{q}}{\beta}}{
+  If we call
+  \[
+    f{\left[\vec{q};\beta\right](\vec{s})} \coloneqq \exp{\left(-\beta E(\vec{s}) 
+                                            + \beta \vec{q}\cdot\vec{s}\right)},
+  \]
+  we can write \(F\) as 
+  \[
+    \FEn{\vec{q}}{\beta} = -\frac{1}{\beta} \log{\left[\sums       
+                                          f{\left[\vec{q};\beta\right](\vec{s})}\right]}.
+  \]
+  
+  Given a generic operator \(O{(\vec{s})}\) it's well defined
+  \[
+    \Fmean{O}{\vec{q}}{\beta} =
+      \frac{\sums O{(\vec{s})}f{\left[\vec{q};\beta\right](\vec{s})}}
+           {\sum_{\vec{s'}}f{\left[\vec{q};\beta\right](\vec{s'})}}.
+  \]
+  \PhysicsBox{What is this in physical term?}{
+    It's just the mean value  over the ensemble of the operator \(O\), written as
+    function of independent variables \(\vec{q}\). 
+  }
+}
+We would like to find a nicer expression for
+\begin{equation} \label{eq:expression-for-A}
+   A{\left[\vec{m};\beta\right]} =
+    -\beta \left(\qhat{\vec{m}}\cdot\vec{m} + \FEn{\qhat{\vec{m}}}{\beta}\right).
+\end{equation}
+We can do the following observations on the expression 
+\(-\beta \left(\vec{q}\cdot\vec{m} + \FEn{\vec{q}}{\beta}\right)\):
+\begin{enumerate}[i]
+  \item \(F\) is a smooth function of \(\vec{q}\), so the expression is smooth too and its
+    extremes points are stationary;
+  \item \(F\) is concave, so also the expression it is, since the term \(\qhat{\vec{m}}\cdot\vec{m}\)
+    doesn't affect the convexity;
+  \item given the previous two observation we can say that the expression has at most 1 stationary
+    point and if it exist it must be a maximum.
+\end{enumerate}
+We can now write an equation for \(\qhat{\vec{m}}\)
+\begin{align*}
+  \vec{\nabla}_{\vec{q}} \Big(\vec{q}\cdot\vec{m} + \FEn{\vec{q}}{\beta}\Big)
+    \bigg|_{\vec{q}=\qhat{\vec{m}}}&=0 \\
+  \vec{m} + \left.\ParDer{F}{\vec{q}}\right|_{\vec{q}=\qhat{\vec{m}}}&=0 \\
+  \vec{m} - \Fmean{\vec{s}}{\qhat{\vec{m}}}{\beta} = 0.
+\end{align*}
+In other words we can say that the function \(\qhat{\vec{m}}\) is the inverse of
+magnetization function
+\begin{equation}
+  \label{eq:mean-magnetization}
+  \vec{\bar{m}}{[\vec{q}]} \coloneqq \Fmean{\vec{s}}{\vec{q}}{\beta}.
+\end{equation}
+Starting from equation~\eqref{eq:expression-for-A} we can write
+\begin{align}
+  \nonumber
+   A{\left[\vec{m};\beta\right]} &=
+    \log{\left[\exp{\left(-\beta \vec{m}\cdot\qhat{\vec{m}}\right)}\right]}
+      + \log{\left[\sums \exp{\left(-\beta E(\vec{s}) +  
+                                        \beta\qhat{\vec{m}}\cdot\vec{s}\right)}\right]} \\
+   \nonumber
+   &= \log{\left[\exp{\left(-\beta \vec{m}\cdot\qhat{\vec{m}}\right)} \sums    
+     \exp{\left(-\beta E(\vec{s}) + \beta\qhat{\vec{m}}\cdot\vec{s}\right)}\right]} \\
+   \nonumber
+   &= \log{\left[\sums\exp{\left(-\beta E(\vec{s}) +     
+      \beta\qhat{\vec{m}}\cdot(\vec{s}-\vec{m})\right)}\right]} \\
+   \label{eq:A-nicer-form}
+   &= \log{\left[\sums\exp{\left(-\beta E(\vec{s}) +     
+       \Lambd{\vec{m}}{\beta}\cdot(\vec{s}-\vec{m})\right)}\right]}
+\end{align}
+where we have defined the
+\[
+  \Lambd{\vec{m}}{\beta} \coloneqq \beta \qhat{\vec{m}}.
+\]
+\ExplainBox{The limit \(\beta \to 0\) for \(\vec{\lambda}\)}{
+  Looking at its the definition one could naively think that \(\Lambd{\vec{m}}{0}=0\).
+  This is not true because by expanding \eqref{eq:mean-magnetization} one can see that\footnote{
+    I'm bluffing; I've never done the calculation, but I'm confident  that what I'm saying it's true.}
+ \[
+  \left|\lim_{\beta\to0} \qhat{\vec{m}}\right| \to+\infty,
+ \]
+ so \(\vec{\lambda}\) can take finite values at \(\beta = 0\):
+ \[\Lambd{\vec{m}}{0}\neq0.\]
+ \PhysicsBox{Why this makes sense physically}{
+   The function \(\qhat{\vec{m}}\) is answering the question ``what must be the field for the magnetization to be equal to \(\vec{m}\)?''. The limit of \(\beta\to0\) correspond to high temperatures, so the system it's much more disordered by thermal fluctuations. If we want
+   to keep the magnetization fixed (so impose some kind of order) we have to use a  strong field
+   in order to overcome the effect of temperature. It's natural that the field diverges.
+ }
+}
+\NotationBox{\Gmean{\cdot}{\vec{q}}{\beta}}{
+  In analogy of the mean over \(F\):
+  \[
+  \gamma{\left[\vec{m};\beta\right](\vec{s})} \coloneqq \exp{\left(-\beta E(\vec{s}) +     
+    \Lambd{\vec{m}}{\beta}\cdot(\vec{s}-\vec{m})\right)},
+  \]
+  and 
+  \[
+  \Gmean{O}{\vec{m}}{\beta} =
+  \frac{\sums O{(\vec{s})}\gamma{\left[\vec{m};\beta\right](\vec{s})}}
+  {\sum_{\vec{s'}}\gamma{\left[\vec{m};\beta\right](\vec{s'})}}.
+  \]
+  \PhysicsBox{What is this in physical term?}{
+    It's just the mean value over the ensemble of the operator \(O\), written as
+    function of independent variables \(\vec{m}\).
+  }
+}
+\subsection[Expansion of A around \textbeta=0]{Expansion of \(A\) around \(\beta=0\)}
+Deal with the exact form of \(A\) given by equation~\eqref{eq:A-nicer-form} is hard,
+so we expand around \(\beta = 0\) and use the truncated series for further steps.
+Of course since in the end we need the result for \(\beta=1\) more terms we keep, better
+it works. In our derivation we use terms up to the third order.
+\(A\) can be written as
+\[
+  A{\left[\vec{m};\beta\right]} \approx
+    A{\left[\vec{m};0\right]} + 
+    \beta \left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0} +
+    \frac{\beta^2}{2}
+      \left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}+
+    \frac{\beta^3}{6} 
+      \left.\frac{\partial^3A{\left[\vec{m};\beta\right]}}{\partial\beta^3}\right|_{\beta=0}    
+\]
+Before going through the computation of the derivatives, we prove 3 useful lemmas.
+\begin{lemma} \label{lem:lambda-t-zero}
+  \(\Lambd{\vec{m}}{\beta}\) at \(\beta = 0\) is
+  \[
+    \lgtmz = \log{\left(m_t\right)} - \log{\left(1-m_t\right)}.
+  \]
+  \proof 
+\end{lemma}
+\begin{lemma} \label{lem:first-derivative-lambda}
+  The derivative of \(\Lambd{\vec{m}}{\beta}\) at \(\beta = 0\) is
+  \begin{align*}
+    \left.\ParDer{\lvim{\beta}}{\beta}\right|_{\beta=0} &= -\sum_{j=1}^n w_{i,j}m^h_j-b_i\\
+    \left.\ParDer{\lhjm{\beta}}{\beta}\right|_{\beta=0} &= -\sum_{i=1}^m w_{i,j}m^v_i-c_j
+  \end{align*}
+  \proof
+\end{lemma}
+\begin{lemma} \label{lem:operator-mean-gamma}
+  Let \(O{(\vec{s})}\) an operator of the spins that can be written as a polynomial in the \(s_t\)
+  variables, and \textbf{has at most degree 1 in each \(s_t\)}. Then
+  \[
+    \Gmean{O}{\vec{m}}{0} = O{(\vec{m})}.
+  \]
+  \ExplainBox{Why the hypotesis on the degree}{
+    The key fact is that in our definition of RBM the nodes take values in \(\{0,1\}\), and both of these
+    value has the property \(s_t^k = s_t \quad \forall k\in\mathbb{N}\), so when you write any power of
+    a node value it's the same as writing the value itself. In example we 
+    \[
+      O{(\vec{s})} = 3s_1^2s_2 + 4s_1^3 + 5s_2^7 - 2 s_1 s_2^4 \equiv 4s_1+5s_2+s_1 s_2
+    \]
+    The energy instead is a proper operator on which apply the Lemma.
+  }
+  \proof
+\end{lemma}
+\subsubsection{Order 0}
+The computation is easy
+\begin{align*}
+  A{\left[\vec{m};0\right]}
+  &= \log{\left[\sums\exp{\left(\Lambd{\vec{m}}{0}\cdot(\vec{s}-\vec{m})\right)}\right]}
+   = \log{\left[\sums\exp{\left(\sumt\lgtmz(s_t-m_t)\right)}\right]}\\
+  &= \log{\left[\sums\prodt\exp{\left(\lgtmz(s_t-m_t)\right)}\right]}
+   = \log{\left[\prodt\sumst\exp{\left(\lgtmz(s_t-m_t)\right)}\right]}\\
+  &= \sumt\log{\left[e^{-\lgtmz m_t}(1+e^{\lgtmz})\right]}
+   = \sumt\left[-\lgtmz m_t + \log{\left(1+e^{\lgtmz}\right)}\right]
+\end{align*}
+Now we can use the Lemma~\ref{lem:lambda-t-zero} and substitute \(\lgtmz\)
+\begin{align*}
+  A{\left[\vec{m};0\right]}
+  &= \sumt\left[-\left(\log{\left(m_t\right)} - \log{\left(1-m_t\right)}\right) m_t
+                + \log{\left(1+\frac{m_t}{1-m_t}\right)}\right] \\
+  &= \sumt\left[-\log{\left(m_t\right)}m_t + \log{\left(1-m_t\right)}m_t
+                - \log{\left(1-m_t\right)}\right] \\
+  &= -\sumt\left[\log{\left(m_t\right)}m_t + \log{\left(1-m_t\right)}(1-m_t)\right] \\
+  &= \sumt S_2{(m_t)}
+\end{align*}
+where \(S_2{(\cdot)}\) is the entropy of a binary distribution.
+\PhysicsBox{Order 0 in physics}{
+  The order 0 is the total entropy of the system when spins are not correlated.
+}
+
+\subsubsection{Order 1}
+We compute the derivative starting from equation~\eqref{eq:A-nicer-form}
+\begin{align*}
+  \left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}
+  &= \left.
+    \frac{
+      \sums\left(-E{(\vec{s})}+\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\cdot(\vec{s}-\vec{m})\right)\GammaExp{}
+    }{
+      \sum_{\vec{s'}}\GammaExp{'}
+    }\right|_{\beta=0}\\
+  &= \Gmean{-E{(\vec{s})}}{\vec{m}}{0} +
+     \left.\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\right|_{\beta=0}\cdot\Gmean{\vec{s}-\vec{m}}{\vec{m}}{0}\\
+  &= -E{(\vec{m})}
+\end{align*}
+In the last equality we have used the Lemma~\ref{lem:operator-mean-gamma}.
+\PhysicsBox{Order 1 in physics}{
+  The order 1 is the total energy of the system (multiplied by \(\beta\) where spins are setted equal
+  to the mean magnetization.
+}
+
+\subsubsection{Order 2}
+Starting again from equation~\eqref{eq:A-nicer-form} after little calculations we get
+\begin{align*}
+  \left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}
+  &= \Gmean{
+       \left.\frac{\partial^2\vec{\lambda}{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}
+         \cdot (\vec{s}-\vec{m})
+       +\left(-E{(\vec{s})} +   
+          \left.\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\right|_{\beta=0}\cdot(\vec{s}-\vec{m})\right)^2
+     }{\vec{m}}{0}+\\
+  &\quad+ \Gmean{
+          -E{(\vec{s})}+\left.\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\right|_{\beta=0}\cdot(\vec{s}-\vec{m})
+       }{\vec{m}}{0}^2 \\
+  &= \Gmean{
+       \left(-E{(\vec{s})} +   
+        \left.\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\right|_{\beta=0}\cdot(\vec{s}-\vec{m})\right)^2
+     }{\vec{m}}{0} - \left[E{(\vec{m})}\right]^2
+\end{align*}
+Let's focus on the term inside the bracket: we can use Lemma~\ref{lem:first-derivative-lambda}
+to evaluate the derivative of \(\vec{\lambda}\) (only in these few passage we use Einstein notation
+for summed indexes)
+\begin{align*}
+  -E{(\vec{s})} + \left.\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\right|_{\beta=0}\cdot(\vec{s}-\vec{m})
+  &= v_iw_{i,j}h_j +b_iv_i+c_jh_j - (v_i-\mvi)(w_{i,j}\mhj +b_i) - (\mvi w_{i,j}+c_j)(h_j-\mhj) \\
+  &= v_iw_{i,j}h_j - v_i w_{i,j} \mhj - \mvi w_{i,j} h_j + \mvi w_{i,j} \mhj - E{(\vec{m})}\\
+  &= w_{i,j} (v_i-\mvi)(h_j-\mhj) - E{(\vec{m})}
+\end{align*}
+We can substitute this result in the expression above
+\begin{align*}
+  &\left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}=\\
+  &\qquad= \Gmean{
+      \sum_{i,j=1}^{m,n}\sum_{p,q=1}^{m,n} w_{i,j} w_{p,q}(v_i-\mvi)(h_j-\mhj)(v_p-m_p^v)(h_q-m_q^h)
+      +2E{(\vec{m})}\sum_{i,j=1}^{m,n}w_{i,j}(v_i-\mvi)(h_j-\mhj)
+    }{\vec{m}}{0}
+\end{align*}
+As direct consequence of Lemma~\ref{lem:operator-mean-gamma} if a term is proportional to \(s_t-m_t\)
+it cancels out when averaged on \(\gamma\). This fact makes the second term of the expression go away,
+and in the first only the ones with \(i=p\) and \(j=q\) survive
+\begin{align*}
+  \left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}
+    &=\Gmean{\sum_{i,j=1}^{m,n} w_{i,j}^2\left(v_i-\mvi\right)^2\left(h_j-\mhj\right)^2}{\vec{m}}{0} \\
+    &=\Gmean{\sum_{i,j=1}^{m,n} w_{i,j}^2\left(v_i^2 -2v_i\mvi+\mvisq\right)\left(h_j^2-2h_j\mhj +\mhjsq\right)}{\vec{m}}{0}\\
+    &\equiv\Gmean{\sum_{i,j=1}^{m,n} w_{i,j}^2\left(v_i-2v_i\mvi+\mvisq\right)\left(h_j-2h_j\mhj +\mhjsq\right)}{\vec{m}}{0}\\
+    &=\sum_{i,j=1}^{m,n} w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)
+\end{align*}
+where we used the equivalence \(s_t^2 \equiv s_t\), and the Lemma~\ref{lem:operator-mean-gamma}
+for computing the average.
+
+\subsubsection{Order 3}
+The calculation of the third order is not too different from the second order, it only need more
+steps and an expression for the second derivative of \(\vec{\lambda}\) that can be derived easily.
+We don't report the full calculation, but only the result taken from \cite{gabrie18training}
+\[
+  \left.\frac{\partial^3A{\left[\vec{m};\beta\right]}}{\partial\beta^3}\right|_{\beta=0}
+  = 4 \sum_{i,j=1}^{m,n} w_{i,j}^3\left(\mvi-\mvisq\right) \left(\frac{1}{2}-\mvi\right)
+                                  \left(\frac{1}{2}-\mhj\right) \left(\mhj-\mhjsq\right).
+\]
+Alternatively this result (and also higher and lower orders) can be computed using the formalism
+developed in \cite{georges1991expand} which makes the calculations much more easier.
+\ExplainBox{Why don't we use order higher than 3}{
+  The reason is because computing higher order is so computationally expensive that it is
+  not worth it. The \(k\)-th order can be thought as the sum over the \emph{fully connected
+  sub-graph} of the RBM, with \emph{\(k\) arcs} and where edges can be considered multiple
+  times\footnote{
+    This picture does not gives coefficients (that still require a full calculation to be computed),
+     but it only help to double-check the calculations.
+  }.
+  In this picture the order we have computed are
+  \begin{itemize}
+    \item order 0 are all the single nodes;
+    \item order 1 are all the pairs directly connected, with the corresponding edge;
+    \item order 2 are again all the pairs directly connected, but with the corresponding edge
+      considered 2 times;
+    \item order 3 can have 2 different topologies \emph{a priori}:
+      \begin{itemize}
+        \item pairs directly connected with the corresponding edge considered 3 times;
+        \item triangles;
+      \end{itemize}
+      But triangles are not allowed by the RBM's topology, since there aren't edges between
+      nodes in the same layer.
+  \end{itemize}
+  So to compute the first 3 orders we have to sum only on the edges, that it is still reasonable.
+  The fourth order instead (and also orders above) has a \emph{quadrilateral} topology that does not
+  go away, so it requires a sum on all possible pair of edges, that is too much.
+  
+  In \cite{georges1991expand} there are some drawings that can help in understanding the picture
+  we have described.
+}
+
+\subsubsection{Put all the pieces together}
+Now we have computed all the orders that we need we can write
+\begin{align*}
+A{\left[\vec{m}^v, \vec{m}^h;\beta\right]} &\approx
+  -\sum_{i=1}^{m}\left[\log{\left(\mvi\right)}\mvi + \log{\left(1-\mvi\right)}(1-\mvi)\right]
+  -\sum_{j=1}^{n}\left[\log{\left(\mhj\right)}\mhj + \log{\left(1-\mhj\right)}(1-\mhj)\right]\\
+  &\quad-\beta \sum_{i,j=1}^{m,n}\mvi w_{i,j} \mhj -\beta\sum_{i=1}^{m} b_i\mvi -\beta\sum_{j=1}^{m} c_j\mhj\\
+  &\quad+\frac{\beta^2}{2}
+  \sum_{i,j=1}^{m,n} w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)\\
+  &\quad+\frac{2}{3}\beta^3 
+    \sum_{i,j=1}^{m,n} w_{i,j}^3\left(\mvi-\mvisq\right) \left(\frac{1}{2}-\mvi\right)
+    \left(\frac{1}{2}-\mhj\right) \left(\mhj-\mhjsq\right),
+\end{align*}
+that is the approximated formula we will use to do our further calculations.
+
+\subsection{Estimation of the log-likelihood gradient}
+The quantity we are interested is \(\FEn{\vec{0}}{1}\) that can be calculated by minimizing \(\Gam{\vec{m}}{1}\).
+First of all we set \(\beta=1\) since as in the RBM distributions, and using the approximation
+on \(A\) we write
+\begin{align*}
+  \Gam{\vec{m}^v, \vec{m}^h}{1} &\approx
+    \quad\sum_{i=1}^{m}\left[\log{\left(\mvi\right)}\mvi + \log{\left(1-\mvi\right)}(1-\mvi)-b_i\mvi\right]\\
+    &\quad+\sum_{j=1}^{n}\left[\log{\left(\mhj\right)}\mhj+\log{\left(1-\mhj\right)}(1-\mhj)-c_j\mhj\right]\\
+    &\quad+\sum_{i,j=1}^{m,n}\Bigg[
+      -\mvi w_{i,j}\mhj
+      +\frac{1}{2}w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)+\\
+      &\qquad\qquad\quad+\frac{2}{3}w_{i,j}^3\left(\mvi-\mvisq\right)\left(\frac{1}{2}-\mvi\right)\left(\frac{1}{2}-\mhj\right)
+        \left(\mhj-\mhjsq\right)
+    \Bigg]
+\end{align*}
+We use this equation both for finding the minimum \(\vec{\hat{m}}\), and the to compute the gradient.
+
+\subsubsection{Equation for the minimum of \(\Gamma\)}
+Since \(\Gamma\) is convex and smooth we have an easy equation for \(\vec{\hat{m}}\)
+\[
+  \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}=0.
+\]
+Let's compute the gradient respect to \(\mvi\), the case \(\mhj\) is  the same.
+\begin{align*}
+  \hspace*{-1.2cm}
+  \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}
+    &= \log\left(\hmvi\right) + 1 - \log\left(1-\hmvi\right) - 1 - b_i \\
+    &\quad-\sum_{j=1}^n\left[w_{i,j}\hmhj
+      +\frac{1}{2}w_{i,j}\left(1-2\hmvi\right)\left(\hmhj-\hmhjsq\right)
+      +\frac{2}{3}w_{i,j}^3\left(3\hmvisq-3\hmvi+\frac{1}{2}\right)\left(\frac{1}{2}-\hmhj\right)
+      \left(\hmhj-\hmhjsq\right)\right].
+\end{align*}
+Now we notice that
+\[
+  \log{\left(\frac{y}{1-y}\right)} = x \quad \implies \quad y = \sigmoid{x},
+\]
+and  applying to the equation above we get the \emph{consistency relations} for the magnetization
+\begin{align}
+  \hmvi&=\sigmoid{b_i + \sum_{j=1}^n\left[w_{i,j}\hmhj+
+           \left(\hmhj-\hmhjsq\right)\left(w_{i,j}\left(\frac{1}{2}-\hmvi\right)
+           +w_{i,j}^3\left(2\hmvisq-2\hmvi+\frac{1}{3}\right)\left(\frac{1}{2}-\hmhj\right)
+           \right)\right]}\\
+  \hmhj&=\sigmoid{c_j + \sum_{i=1}^m\left[w_{i,j}\hmvi+
+           \left(\hmvi-\hmvisq\right)\left(w_{i,j}\left(\frac{1}{2}-\hmhj\right)
+           +w_{i,j}^3\left(2\hmhjsq-2\hmhj+\frac{1}{3}\right)\left(\frac{1}{2}-\hmvi\right)
+           \right)\right]}
+\end{align}
+Solving these equations give us \(\vec{\hat{m}}\) to be used when evaluating the gradient.  
