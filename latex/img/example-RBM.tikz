@@ -1,0 +1,30 @@
+\begin{tikzpicture}%[node distance={15mm}, thick, main/.style = {draw, circle}] 
+  \node[draw, circle] (h1) at (1.5,1)   {$h_1$}; 
+  \node[draw, circle] (h2) at (3,1)   {$h_2$};
+  \node[draw, circle] (h3) at (4.5,1)   {$h_3$};
+  \node            (hdots) at (6.5,1) {$\cdots$};
+  \node[draw, circle] (hn) at (8.5,1)   {$h_n$};
+  
+  \node[draw, circle] (v1) at (2.25,-1)   {$v_1$}; 
+  \node[draw, circle] (v2) at (3.75,-1)   {$v_2$};
+  \node[draw, circle] (v3) at (5.25,-1)   {$v_3$};
+  \node            (vdots) at (6.5,-1) {$\cdots$};
+  \node[draw, circle] (vm) at (7.75,-1)   {$v_n$};
+  
+  \draw (v1)--(h1)
+        (v1)--(h2)
+        (v1)--(h3)
+        (v1)--(hn)
+        (v2)--(h1)
+        (v2)--(h2)
+        (v2)--(h3)
+        (v2)--(hn)
+        (v3)--(h1)
+        (v3)--(h2)
+        (v3)--(h3)
+        (v3)--(hn)
+        (vm)--(h1)
+        (vm)--(h2)
+        (vm)--(h3)
+        (vm)--(hn);
+\end{tikzpicture} 

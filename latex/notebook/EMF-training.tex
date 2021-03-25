@@ -1,21 +1,21 @@
 
 \section{Extended Mean Field Training}
-All classical training algorithms are clever way of estimating expected values
+All classical training algorithms are a clever way of estimating expected values
 over the distribution of the RBM. The algorithms are intrinsically stochastic
-because random samples generation is used in all of them. We analyze now a completely
-different approach by Gabriè~\cite{gabrie18training}, inspired by mean-field
-theory of the  Ising model in Statistical Mechanics. The key idea is notice that the
-log-likelihood contains a term that is the free energy of the model. Moreover the
+because random sample generation is used in all of them. We analyze now a completely
+different approach by Gabriè~\cite{gabrie18training}, inspired by the mean-field
+theory of the Ising model in Statistical Mechanics. The key idea is to notice that the
+log-likelihood contains a term that is the free energy of the model. Moreover, the
 algorithm is deterministic, since no random sample is needed.
 
 The algorithm is essentially a different approach for computing the gradient. All other
-consideration we have done in Section~\ref{subsec:general-gradient-rules} apply the same
+considerations we have done in Section~\ref{subsec:general-gradient-rules} apply the same
 also here.
 
 We present a pure mathematical derivation, highlighting the physics that inspired the
-steps in {\bf \color{physics-blue}blue~boxes}, although is not necessary read them for
+steps in {\bf \color{physics-blue}blue~boxes}, although it's not necessary to read them for
 understating the procedure. We deal only with classical binary RBMs,
-but the method can be generalized. We introduce also a few more notation in
+but the method can be generalized. We introduce also a few more notations in
 {\bf \color{pink-notation}pink~boxes}.
 
 % There are many symbols often used in the calculations.
@@ -69,9 +69,9 @@ but the method can be generalized. We introduce also a few more notation in
                                                 \Lambd{\vec{m}}{\beta}\cdot(\vec{s#1}-\vec{m})\right)}}
 
 
-\subsection[Introducing F]{Introducing \(F\)}
+\subsection{Introducing \(F\)}
 \NotationBox{\vec{s}}{
-  During the derivation we use the more concise notation
+  During the derivation, we use the more concise notation for vectors
   \[
     \vec{s} \coloneqq (\vec{v},\vec{h}),
   \]
@@ -82,7 +82,7 @@ but the method can be generalized. We introduce also a few more notation in
                            = \sum_{i=1}^{m} v_i^2 + \sum_{j=1}^{n} h_j^2
                            = \sumt s_t^2.
   \]
-  We can also define vector indexed as \(\vec{s}\). In example a fictitious vector \(\vec{z}\)
+  We can also define vector indexed as \(\vec{s}\). For example a fictitious vector \(\vec{z}\)
   \[
     \vec{z} \coloneqq (\vec{z}^v,\vec{z}^h) \qquad
     \vec{s}\cdot\vec{z} = \vec{v}\cdot\vec{z}^v + \vec{h}\cdot\vec{z}^h
@@ -92,15 +92,15 @@ but the method can be generalized. We introduce also a few more notation in
   and now should be completely clear how this notation works.
 }
 
-We recall from previous section that the log-likelihood for an RBM is given by
+We recall from the previous section that the log-likelihood for an RBM is given by
 \begin{equation} \label{eq:log-like-begiing-EMF}
   \log\likelihood{\vec{\theta}}{\vec{\bar{v}}}
     = \log\left(\sum_{\vec{h}} \exp\left[-E(\vec{\bar{v}},\vec{h})\right]\right)
       - \log\left(\sums \exp\left[-E(\vec{s})\right]\right)
 \end{equation}
 Once took the gradient the first term of this expression can be computed analytically,
-as we already seen. The second term leads to the expected values instead, so let's
-focus on on it. Let's define
+as we have already seen. The second term leads to the expected values instead, so let's
+focus on it. Let's define
 \begin{equation} \label{eq:def-F}
   \FEn{\vec{q}}{\beta} \coloneqq - \frac{1}{\beta}
                            \log{\left[\sums \exp{\left(-\beta E(\vec{s}) + \beta \vec{q}\cdot\vec{s}\right)}\right]},
@@ -108,13 +108,13 @@ focus on on it. Let's define
 so that the second term in equation~\eqref{eq:log-like-begiing-EMF} is exactly
 \(\FEn{\vec{0}}{1}\).
 Using these considerations the gradient of log-likelihood can be expressed in function of
-\(F\). In example equation~\eqref{eq:logL-gradient-w-RBM} becomes
+\(F\). For example equation~\eqref{eq:logL-gradient-w-RBM} becomes
 \[
   \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{w_{i,j}} =
     \bar{v}_i \sigmoid{\sum_{i'=1}^m w_{i',j}\bar{v}_{i'}+c_j}
     +\ParDer{\left(\FEn{\vec{0}}{1}\right)}{w_{i,j}}.
 \]
-For now we've only lay the foundation of the computation.
+For now, we've only laid the foundation of the computation.
 
 \PhysicsBox{What are \(F\) and \(\vec{q}\) in  physics?}{
   \(F\) is the Helmholtz free energy; \(\vec{q}\) the external magnetic field.
@@ -122,17 +122,17 @@ For now we've only lay the foundation of the computation.
   One may ask now how can be \(\vec{q}\) the external fields if there are already \(b\)
   and \(c\) parameters in the energy \(E\) that do this role. The answer is that \(E\)
   is the microscopic Hamiltonian of the system, and of course \(b\) and \(c\) behave
-  like a local parameter, but since the are a microscopic property they haven't a 
-  macroscopic thermodynamic quantity associated. Instead since \(\vec{q}\) is controlled
-  from the extern of the system can be treated as thermodynamic variable.
+  like a local parameter, but since they are a microscopic property, they haven't a 
+  macroscopic thermodynamic quantity associated. Instead, since \(\vec{q}\) is controlled
+  from the extern of the system, it can be treated as a thermodynamic variable.
   However, this does not mean that without \(\vec{q}\) the magnetization is null. The
   system can have ferromagnetic behavior, as we will see next sections.   
 }
 
-\subsection[Computing F: \textGamma and A]{Computinng \(F\): \(\Gamma\) and \(A\)}
+\subsection{Computing \(F\): \(\Gamma\) and \(A\)}
 It's clear looking at equation~\eqref{eq:def-F} that \(F\) is at least \(C^\infty\)
-in \(\vec{q}\). Moreover it's a concave function, so \(-F\) is a convex and can be
-defined its Legendre~Transformation\footnote{The definition of Legendre Trasformation
+in \(\vec{q}\). Moreover, it's a concave function, so \(-F\) is convex and so it's well
+defined its Legendre~Transformation\footnote{The definition of Legendre Transformation
   used here it's more general than the one usually taught during courses. The best
   source I found at the moment is Wikipedia.}
 \begin{equation}
@@ -168,7 +168,7 @@ Note in particular that the definitions of \(\qhat{\vec{m}}\) and \(\vec{\hat{m}
 different. Our attention now shifts to \(\Gamma\) since if we compute and minimize it we
 can get easily \(\FEn{\vec{0}}{1}\).
 
-We prefer deal with a different quantity rather than \(\Gamma\), so we define
+We prefer dealing with a different quantity rather than \(\Gamma\), so we define
 \[
   A{\left[\vec{m};\beta\right]} \coloneqq -\beta \Gam{\vec{m}}{\beta}.
 \]
@@ -178,7 +178,7 @@ We prefer deal with a different quantity rather than \(\Gamma\), so we define
   %TODO: explain much more.
 }
 
-\subsection{Computing A}
+\subsection{Computing \(A\)}
 \NotationBox{\Fmean{\cdot}{\vec{q}}{\beta}}{
   If we call
   \[
@@ -214,8 +214,8 @@ We can do the following observations on the expression
     extremes points are stationary;
   \item \(F\) is concave, so also the expression it is, since the term \(\qhat{\vec{m}}\cdot\vec{m}\)
     doesn't affect the convexity;
-  \item given the previous two observation we can say that the expression has at most 1 stationary
-    point and if it exist it must be a maximum.
+  \item given the previous two observations we can say that the expression has at most 1 stationary
+    point and, if it exist, it must be a maximum.
 \end{enumerate}
 We can now write an equation for \(\qhat{\vec{m}}\)
 \begin{align}
@@ -227,7 +227,7 @@ We can now write an equation for \(\qhat{\vec{m}}\)
   \label{eq:m-s-mean}
   \vec{m} - \Fmean{\vec{s}}{\qhat{\vec{m}}}{\beta} = 0.
 \end{align}
-In other words we can say that the function \(\qhat{\vec{m}}\) is the inverse of
+In other words, we can say that the function \(\qhat{\vec{m}}\) is the inverse of
 magnetization function
 \begin{equation}
   \label{eq:mean-magnetization}
@@ -255,7 +255,7 @@ where we have defined the
   \Lambd{\vec{m}}{\beta} \coloneqq \beta \qhat{\vec{m}}.
 \]
 \ExplainBox{The limit \(\beta \to 0\) for \(\vec{\lambda}\)}{
-  Looking at its the definition one could naively think that \(\Lambd{\vec{m}}{0}=0\).
+  Looking at its definition one could naively think that \(\Lambd{\vec{m}}{0}=0\).
   This is not true because by expanding \eqref{eq:mean-magnetization} one can see that\footnote{
     I'm bluffing; I've never done the calculation, but I'm confident  that what I'm saying it's true.}
  \[
@@ -266,14 +266,14 @@ where we have defined the
  \PhysicsBox{Why this makes sense physically}{
    The function \(\qhat{\vec{m}}\) is answering the question ``what must be the field
    for having the magnetization equal to \(\vec{m}\)?''. The limit of \(\beta\to0\)
-   correspond to high temperatures, so the system it's much more disordered by thermal
+   corresponds to high temperatures, so the system it's much more disordered by thermal
    fluctuations. If we want to keep the magnetization fixed (so impose some kind of order)
-   we have to use a  strong field in order to overcome the effect of temperature.
+   we have to use a  strong field to overcome the effect of temperature.
    It's natural that the field diverges.
  }
 }
 \NotationBox{\Gmean{\cdot}{\vec{q}}{\beta}}{
-  In analogy of the mean over \(F\):
+  In the analogy of the mean over \(F\):
   \[
   \gamma{\left[\vec{m};\beta\right](\vec{s})} \coloneqq \exp{\left(-\beta E(\vec{s}) +     
     \Lambd{\vec{m}}{\beta}\cdot(\vec{s}-\vec{m})\right)},
@@ -286,14 +286,14 @@ where we have defined the
   \]
   \PhysicsBox{What is this in physical term?}{
     It's just the mean value over the ensemble of the operator \(O\), written as
-    function of independent variables \(\vec{m}\).
+    a function of independent variables \(\vec{m}\).
   }
 }
 \subsection[Expansion of A around \textbeta=0]{Expansion of \(A\) around \(\beta=0\)}
 Deal with the exact form of \(A\) given by equation~\eqref{eq:A-nicer-form} is hard,
 so we expand around \(\beta = 0\) and use the truncated series for further steps.
-Of course since in the end we need the result for \(\beta=1\) more terms we keep, better
-it works. In our derivation we use terms up to the third order.
+Of course since in the end we need the result for \(\beta=1\) the more terms we keep, the better
+it works. In our derivation, we use terms up to the third order.
 \(A\) can be written as
 \[
   A{\left[\vec{m};\beta\right]} \approx
@@ -411,7 +411,7 @@ We compute the derivative starting from equation~\eqref{eq:A-nicer-form}
 \end{align*}
 In the last equality we have used the Lemma~\ref{lem:operator-mean-gamma}.
 \PhysicsBox{Order 1 in physics}{
-  The order 1 is the total energy of the system (multiplied by \(\beta\) where spins are setted equal
+  First order is the total energy of the system (multiplied by \(\beta\) where spins are set equal
   to the mean magnetization.
 }
 
@@ -432,7 +432,7 @@ Let's begin with a lemma that we use later in the calculation.
       = -\left.\ParDer{\Lambd{\vec{m}}{\beta}}{\beta}\right|_{\beta=0}
     \end{align*}
     where we were able to exchange derivative because \(A\) is smooth.
-    We can compute the same quantity explicitly using the result obtained in the
+    We can compute the same quantity explicitly using the result obtained in
     section~\ref{subsec:order-1-A}
     \[
       \ParDer{}{\vec{m}}\left(\left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}\right)
@@ -463,7 +463,7 @@ Going back to the main calculation, we can start again from equation~\eqref{eq:A
      }{\vec{m}}{0} - \left[E{(\vec{m})}\right]^2
 \end{align*}
 Let's focus on the term inside the bracket: we can use Lemma~\ref{lem:first-derivative-lambda}
-to evaluate the derivative of \(\vec{\lambda}\) (only in these few passage we use Einstein notation
+to evaluate the derivative of \(\vec{\lambda}\) (only in these few passages we use Einstein notation
 for summed indexes)
 \begin{align*}
   -E{(\vec{s})} + \left.\ParDer{\Lambd{\beta}{\vec{m}}}{\beta}\right|_{\beta=0}\cdot(\vec{s}-\vec{m})
@@ -479,7 +479,7 @@ We can substitute this result in the expression above
       +2E{(\vec{m})}\sum_{i,j=1}^{m,n}w_{i,j}(v_i-\mvi)(h_j-\mhj)
     }{\vec{m}}{0}
 \end{align*}
-As direct consequence of Lemma~\ref{lem:operator-mean-gamma} if a term is proportional to \(s_t-m_t\)
+As a direct consequence of Lemma~\ref{lem:operator-mean-gamma} if a term is proportional to \(s_t-m_t\)
 it cancels out when averaged on \(\gamma\). This fact makes the second term of the expression go away,
 and in the first only the ones with \(i=p\) and \(j=q\) survive
 \begin{align*}
@@ -493,25 +493,25 @@ where we used the equivalence \(s_t^2 \equiv s_t\), and the Lemma~\ref{lem:opera
 for computing the average.
 
 \subsubsection{Order 3}
-The calculation of the third order is not too different from the second order, it only need more
+The calculation of the third order is not too different from the second order, it only needs more
 steps and an expression for the second derivative of \(\vec{\lambda}\) that can be derived easily.
-We don't report the full calculation, but only the result taken from \cite{gabrie18training}
+We don't report the full calculation, but only the result, taken from \cite{gabrie18training}
 \[
   \left.\frac{\partial^3A{\left[\vec{m};\beta\right]}}{\partial\beta^3}\right|_{\beta=0}
   = 4 \sum_{i,j=1}^{m,n} w_{i,j}^3\left(\mvi-\mvisq\right) \left(\frac{1}{2}-\mvi\right)
                                   \left(\frac{1}{2}-\mhj\right) \left(\mhj-\mhjsq\right).
 \]
-Alternatively this result (and also higher and lower orders) can be computed using the formalism
-developed in \cite{georges1991expand} which makes the calculations much more easier.
+Alternatively, this result (and also higher and lower orders) can be computed using the formalism
+developed in \cite{georges1991expand}, which makes the calculations much easier.
 \ExplainBox{Why don't we use order higher than 3}{
-  The reason is because computing higher order is so computationally expensive that it is
-  not worth it. The \(k\)-th order can be thought as the sum over the \emph{fully connected
+  The reason is that computing higher orders is so computationally expensive that it is
+  not worth it. The \(k\)-th order can be thought of as the sum over the \emph{fully connected
   sub-graph} of the RBM, with \emph{\(k\) arcs} and where edges can be considered multiple
   times\footnote{
-    This picture does not gives coefficients (that still require a full calculation to be computed),
-     but it only help to double-check the calculations.
+    This picture does not give coefficients (that still require a full calculation to be computed),
+     but it only helps to double-check the calculations.
   }.
-  In this picture the order we have computed are
+  In this picture the orders we have computed are
   \begin{itemize}
     \item order 0 are all the single nodes;
     \item order 1 are all the pairs directly connected, with the corresponding edge;
@@ -527,7 +527,7 @@ developed in \cite{georges1991expand} which makes the calculations much more eas
   \end{itemize}
   So to compute the first 3 orders we have to sum only on the edges, that it is still reasonable.
   The fourth order instead (and also orders above) has a \emph{quadrilateral} topology that does not
-  go away, so it requires a sum on all possible pair of edges, that is too much.
+  go away, so it requires a sum on all possible pairs of edges, which is too much.
   
   In \cite{georges1991expand} there are some drawings that can help in understanding the picture
   we have described.
@@ -549,8 +549,8 @@ A{\left[\vec{m}^v, \vec{m}^h;\beta\right]} &\approx
 that is the approximated formula we will use to do our further calculations.
 
 \subsection{Estimation of the log-likelihood gradient}
-The quantity we are interested is \(\FEn{\vec{0}}{1}\) that can be calculated by minimizing \(\Gam{\vec{m}}{1}\).
-First of all we set \(\beta=1\) since as in the RBM distributions, and using the approximation
+The quantity we are interested in is \(\FEn{\vec{0}}{1}\) that can be calculated by minimizing \(\Gam{\vec{m}}{1}\).
+First of all, we set \(\beta=1\) as RBM distributions, and using the approximation
 on \(A\) we write
 \begin{align*}
   \Gam{\vec{m}^v, \vec{m}^h}{1} &\approx
@@ -563,14 +563,14 @@ on \(A\) we write
         \left(\mhj-\mhjsq\right)
     \Bigg]
 \end{align*}
-We use this equation both for finding the minimum \(\vec{\hat{m}}\), and the to compute the gradient.
+We use this equation both for finding the minimum \(\vec{\hat{m}}\), and the to compute gradient.
 
 \subsubsection{Equation for the minimum of \(\Gamma\)}
 Since \(\Gamma\) is convex and smooth we have an easy equation for \(\vec{\hat{m}}\)
 \[
   \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}=0.
 \]
-Let's compute the gradient respect to \(\mvi\), the case \(\mhj\) is  the same.
+Let's compute the gradient with respect to \(\mvi\), the case \(\mhj\) is  the same.
 \begin{align*}
   \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}
     &= \log\left(\hmvi\right) + 1 - \log\left(1-\hmvi\right) - 1 - b_i \\
@@ -594,13 +594,13 @@ and  applying to the equation above we get the \emph{consistency relations} for 
            +w_{i,j}^3\left(2\hmhjsq-2\hmhj+\frac{1}{3}\right)\left(\frac{1}{2}-\hmvi\right)
            \right)\right]}
 \end{align}
-Solving these equations give us \(\vec{\hat{m}}\) to be used when evaluating the gradient.
+Solving these equations gives us \(\vec{\hat{m}}\) to be used when evaluating the gradient.
 \MyIdeaBox{Solving these equations}{
   In the article \cite{gabrie18training}, the suggested method for solving these equations 
-  is just start from a random guess of \(\vec{m}\), and then iterate until it converges to a
+  is just to start from a random guess of \(\vec{m}\), and then iterate until it converges to the
   desired precision.
   
-  I'm quite convinced that this is far from optimal solution for this. Maybe a smarter
+  I'm quite convinced that this is far from the optimal solution. Maybe a smarter
   implementation of finding solutions can speed up the algorithm noticeably.
 }
 

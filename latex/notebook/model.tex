@@ -4,18 +4,18 @@
   the starting distribution as closely as possible.
   
   \subsection{General RBM}
-  Consider a fully connected bipartite undirected graph as shown in Figure~\ref{fig:generalRBM}.
-  It consists in a \emph{visible} layer with $m$ nodes labeled by \(V_1, \dots, V_m\) and an
+  Consider a fully-connected bipartite undirected graph as shown in Figure~\ref{fig:generalRBM}.
+  It consists of \emph{visible} layer with $m$ nodes labeled by \(V_1, \dots, V_m\) and a
   \emph{hidden} layer whose \(n\) nodes are labeled by \(H_1, \dots, H_n\). We call \(\mathcal{V}\)
   the set of visible nodes, and \(\mathcal{H}\) the set of hidden nodes.
   \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{example-image-duck}
+    \resizebox{\textwidth}{!}{\input{img/example-RBM.tikz}}
     \caption{An RBM graph with \(n\) hidden and \(m\) visible nodes.}
     \label{fig:generalRBM}
   \end{figure}
-  Let us consider a random variable \(X_U\) associated a node \(U\) (either visible or hidden)
-  that take values in \(\Lambda_U\). We say that our  satisfy the \emph{Markov
+  Let us consider a random variable \(X_U\) associated with a node \(U\) (either visible or hidden)
+  that takes values in \(\Lambda_U\). We say that our graph satisfies the \emph{Markov
   property} if 
   \begin{align*}
     \CondProb{X_v}{\{X_{v'}\}_{v'\in (\mathcal{V} \setminus \{v\})}, \{X_h\}_{h\in \mathcal{H}}} =
@@ -23,10 +23,10 @@
     \CondProb{X_h}{\{X_v\}_{v\in \mathcal{V}}, \{X_{h'}\}_{h'\in (\mathcal{H} \setminus \{h\})}} =
     \CondProb{X_h}{\{X_v\}_{v\in \mathcal{V}}}.
   \end{align*}
-  or saying it simpler: a visible node is independent from all others visible nodes,
+  or saying it simpler: a visible node is independent of all other visible nodes,
   and the same for hidden ones. The graph structure is telling us the dependencies between
   the random variables: if 2 nodes are not connected their associated variables are independent.
-  We will assume that \(\Lambda_v = \Lambda_{v'} \,\, \forall v,v' \in \mathcal{V}\) and analogue
+  We will assume that \(\Lambda_v = \Lambda_{v'} \,\, \forall v,v' \in \mathcal{V}\) and analog
   for the hidden variables. For simplicity we use the notation
   \[\prob{\vec{v}, \vec{h}} = \Prob{X_{V_i} = v_i, X_{H_j} = h_j
                                     \quad\forall i \in \{1,\dots,m\}, \forall j \in \{1,\dots,n\}}.\]
@@ -52,9 +52,9 @@
   only between nodes of different layers, so only when nodes are directly connected: the graph
   structure is again useful to understand RBMs.
   
-  The division in visible and hidden nodes is used because only the visible one represent the
-  features of the goal distribution; the hidden nodes can be thought as hidden features that
-  the model learn during training. Given this context, it's particularly important the marginal
+  The division between visible and hidden nodes is used because only the visible one represents the
+  features of the goal distribution; the hidden nodes can be thought of as hidden features that
+  the model learns during training. Given this context, it's particularly important the marginal
   distribution
   \[\prob{\vec{v}} = \sum_{\vec{h}} \prob{\vec{v},\vec{h}}.\]
   The Markov property above easily imply this relations on conditional probabilities
@@ -63,7 +63,7 @@
     \condprob{\vec{v}}{\vec{h}} = \prod_{i=1}^m \condprob{v_i}{\vec{h}}.
   \]
   
-  We empathize the fact that the energy function must be sum of function of at most 2 nodes;
+  We empathize that the energy function must be sum of functions of at most 2 nodes;
   the most general energy for an RBM is
   \begin{equation} \label{eq:energyRBM}
     E(\vec{v}, \vec{h}) = \sum_{i}^m f_i{(v_i)} + \sum_{j}^n g_j{(h_j)} +
@@ -72,7 +72,7 @@
   
   \subsubsection{Maximum Likelihood}
   We suppose that the energy depends on a set of parameters \(\vec{\theta}\), so it is the function
-  \(E(\vec{v}, \vec{h};\vec{\theta})\); obviously also all the other objects of the RBM depends on these parameters. The standard way of estimating parameters in a statistical
+  \(E(\vec{v}, \vec{h};\vec{\theta})\); obviously also all the other objects of the RBM depend on these parameters. The standard way of estimating parameters in a statistical
   model is maximizing the likelihood. Suppose that our \emph{training set} is 
   \(S = \left\{\vec{\bar{v}}_k\right\}_{k \in \{1,\dots,\ell\}}\) so that the likelihood
   \begin{align*}
@@ -87,7 +87,7 @@
                                  \exp\left[-E(\vec{v},\vec{h};\vec{\theta})\right]\right)
    \end{align*}
    where we used the \(\log\) since it's a monotonic function and does not change the maximum position.
-  Let's compute the gradient (we drop the sum on \(S\) since the likelihood it's linear, and the dependence from \(\vec{\theta}\))
+  Let's compute the gradient (we drop both the sum on \(S\) since the likelihood it's linear and the dependence from \(\vec{\theta}\))
   \begin{align*} \displaystyle
     \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}}
       &= -\frac{1}{\sum_{\vec{h}}\exp\left[-E(\vec{\bar{v}},\vec{h})\right]}
@@ -107,7 +107,7 @@
   Until now we haven't used the fact that the RBM is a bipartite graph and what we said on likelihood
   hold also for general graph topologies\footnote{See \cite{fischer2012introduction} for \emph{Markov
   Random Fields}}.
-  We recall that for RBMs the energy must have the form \eqref{eq:energyRBM} and the parameters \(\vec{\theta}\) are the union for parameters on single functions \(f_i\), \(g_j\) and \(I_{i,j}\).
+  We recall that for RBMs the energy must have the form \eqref{eq:energyRBM} and the parameters \(\vec{\theta}\) are the union of parameters on single functions \(f_i\), \(g_j\), and \(I_{i,j}\).
   Using these facts, and calling \(\vec{\theta}_{i,j}\) the parameters of the function \(I_{i,j}\)
   \[
     \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}_{i,j}} 
@@ -126,18 +126,18 @@
        +\ExpVal{\prob{h_j}}{\ParDer{g_j(h_j)}{\vec{\theta}_j}}.
   \end{align*}
   Despite the gradient formulas seem simple, calculating the expected values is computationally
-  untreatable and some approximation are needed. Training algorithms for RBM are just clever way
+  untreatable and some approximations are needed. Training algorithms for RBM are just a clever way
   of computing an approximation of these gradients.
   
   \subsection{Binary Classic RBM} \label{subsec:binary-classic-RBM}
-  Binary RBM are the simpler form of RBM, but still they are quite powerful.
+  Binary RBM is the simpler form of RBM, but still, they are quite powerful.
   They are obtained by choosing
   \[\Lambda_V = \Lambda_H = \{0,1\},\]
   \[
     f_i(x) = -b_ix, \quad g_j(y) = -c_jy  \quad\text{and}\quad I_{i,j}(x,y)=-w_{i,j}xy.
   \]
   It's not difficult to prove these relations\footnote{The proof can be found on
-  \cite{fischer2012introduction}, at pages 24-25.}
+  \cite{fischer2012introduction}, pages 24-25.}
   \begin{align}
     \label{eq:prob-one-hidden-given-visible}
     \condprob{h_j=1}{\vec{v}} &= \sigmoid{\sum_{i=1}^m w_{i,j}v_i+c_j},\\
@@ -166,9 +166,9 @@
   \ExplainBox{Why all the formulas contains an expected value on \(\prob{\vec{v}}\)?}{
     Essentially because it's convenient when implementing the training algorithms.
     
-    Since we have to figure out a way to sample complex distribution, it's better having
-    only one instead of one for each node. In example, for the derivative respect to \(c_j\)
-    I have to take the expected value on the distribution \(\prob{h_j}\), but using the fact
+    Since we have to figure out a way to sample complex distributions, it's better to have
+    only one instead of one different for each node. For example, for the derivative with
+    respect to \(c_j\) we have to take the expected value on the distribution \(\prob{h_j}\), but using the fact
     \(\sum_{\vec{v}}\prob{\vec{v}}=1\)
     \begin{align*}
       \ExpVal{\prob{h_j}}{h_j} & = \sum_{h_j}\prob{h_j}h_j 
@@ -179,7 +179,7 @@
     \end{align*}
     we obtained an expected value respect \(\prob{\vec{v}}\). We are lucky because
     in Classic Binary RBM the other expected value can be computed analytically in
-    an easy way\footnote{Well, it's not fortune... Classic binary RBM are so important
-    because of this little trick that makes training far more easier than others BMs
+    an easy way\footnote{Well, it's not fortune... Classic binary RBMs are so important
+    because of this little trick that makes training far easier than other BMs
     \& RBMs.}.
   }
