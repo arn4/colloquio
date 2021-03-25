@@ -8,8 +8,13 @@ theory of the  Ising model in Statistical Mechanics. The key idea is notice that
 log-likelihood contains a term that is the free energy of the model. Moreover the
 algorithm is deterministic, since no random sample is needed.
 
+The algorithm is essentially a different approach for computing the gradient. All other
+consideration we have done in Section~\ref{subsec:general-gradient-rules} apply the same
+also here.
+
 We present a pure mathematical derivation, highlighting the physics that inspired the
-steps in {\bf \color{physics-blue}blue~boxes}. We deal only with classical binary RBMs,
+steps in {\bf \color{physics-blue}blue~boxes}, although is not necessary read them for
+understating the procedure. We deal only with classical binary RBMs,
 but the method can be generalized. We introduce also a few more notation in
 {\bf \color{pink-notation}pink~boxes}.
 
@@ -38,6 +43,8 @@ but the method can be generalized. We introduce also a few more notation in
 \newcommand{\lvimz}{\lvi{i\vec{m}}{0}}
 \newcommand{\lhjmz}{\lhj{\vec{m}}{0}}
 
+\newcommand{\lgtbarmz}{\lambda_{\bar{t}}{\left[\vec{m};0\right]}}
+
 \newcommand{\mgt}{m_t}
 \newcommand{\mvi}{m_i^v}
 \newcommand{\mhj}{m_j^h}
@@ -55,6 +62,8 @@ but the method can be generalized. We introduce also a few more notation in
 
 \newcommand{\sums}{\sum_{\vec{s}}}
 \newcommand{\sumst}{\sum_{s_t \in \{0,1\}}}
+\newcommand{\sumstprim}{\sum_{{s'}_t \in \{0,1\}}}
+\newcommand{\sumstbar}{\sum_{s_{\bar{t}} \in \{0,1\}}}
 
 \newcommand{\GammaExp}[1]{\exp{\left(-\beta E(\vec{s#1}) +    
                                                 \Lambd{\vec{m}}{\beta}\cdot(\vec{s#1}-\vec{m})\right)}}
@@ -103,13 +112,21 @@ Using these considerations the gradient of log-likelihood can be expressed in fu
 \[
   \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{w_{i,j}} =
     \bar{v}_i \sigmoid{\sum_{i'=1}^m w_{i',j}\bar{v}_{i'}+c_j}
-    -\ParDer{\left(\FEn{\vec{0}}{1}\right)}{w_{i,j}}.
+    +\ParDer{\left(\FEn{\vec{0}}{1}\right)}{w_{i,j}}.
 \]
 For now we've only lay the foundation of the computation.
 
 \PhysicsBox{What are \(F\) and \(\vec{q}\) in  physics?}{
   \(F\) is the Helmholtz free energy; \(\vec{q}\) the external magnetic field.
-  %TODO: explain much more. Why are not b and c the external fields?
+  
+  One may ask now how can be \(\vec{q}\) the external fields if there are already \(b\)
+  and \(c\) parameters in the energy \(E\) that do this role. The answer is that \(E\)
+  is the microscopic Hamiltonian of the system, and of course \(b\) and \(c\) behave
+  like a local parameter, but since the are a microscopic property they haven't a 
+  macroscopic thermodynamic quantity associated. Instead since \(\vec{q}\) is controlled
+  from the extern of the system can be treated as thermodynamic variable.
+  However, this does not mean that without \(\vec{q}\) the magnetization is null. The
+  system can have ferromagnetic behavior, as we will see next sections.   
 }
 
 \subsection[Computing F: \textGamma and A]{Computinng \(F\): \(\Gamma\) and \(A\)}
@@ -201,12 +218,15 @@ We can do the following observations on the expression
     point and if it exist it must be a maximum.
 \end{enumerate}
 We can now write an equation for \(\qhat{\vec{m}}\)
-\begin{align*}
+\begin{align}
+  \nonumber
   \vec{\nabla}_{\vec{q}} \Big(\vec{q}\cdot\vec{m} + \FEn{\vec{q}}{\beta}\Big)
     \bigg|_{\vec{q}=\qhat{\vec{m}}}&=0 \\
+  \nonumber
   \vec{m} + \left.\ParDer{F}{\vec{q}}\right|_{\vec{q}=\qhat{\vec{m}}}&=0 \\
+  \label{eq:m-s-mean}
   \vec{m} - \Fmean{\vec{s}}{\qhat{\vec{m}}}{\beta} = 0.
-\end{align*}
+\end{align}
 In other words we can say that the function \(\qhat{\vec{m}}\) is the inverse of
 magnetization function
 \begin{equation}
@@ -244,9 +264,12 @@ where we have defined the
  so \(\vec{\lambda}\) can take finite values at \(\beta = 0\):
  \[\Lambd{\vec{m}}{0}\neq0.\]
  \PhysicsBox{Why this makes sense physically}{
-   The function \(\qhat{\vec{m}}\) is answering the question ``what must be the field for the magnetization to be equal to \(\vec{m}\)?''. The limit of \(\beta\to0\) correspond to high temperatures, so the system it's much more disordered by thermal fluctuations. If we want
-   to keep the magnetization fixed (so impose some kind of order) we have to use a  strong field
-   in order to overcome the effect of temperature. It's natural that the field diverges.
+   The function \(\qhat{\vec{m}}\) is answering the question ``what must be the field
+   for having the magnetization equal to \(\vec{m}\)?''. The limit of \(\beta\to0\)
+   correspond to high temperatures, so the system it's much more disordered by thermal
+   fluctuations. If we want to keep the magnetization fixed (so impose some kind of order)
+   we have to use a  strong field in order to overcome the effect of temperature.
+   It's natural that the field diverges.
  }
 }
 \NotationBox{\Gmean{\cdot}{\vec{q}}{\beta}}{
@@ -281,21 +304,36 @@ it works. In our derivation we use terms up to the third order.
     \frac{\beta^3}{6} 
       \left.\frac{\partial^3A{\left[\vec{m};\beta\right]}}{\partial\beta^3}\right|_{\beta=0}    
 \]
-Before going through the computation of the derivatives, we prove 3 useful lemmas.
+Before going through the computation of the derivatives, we prove 2 useful lemmas.
 \begin{lemma} \label{lem:lambda-t-zero}
   \(\Lambd{\vec{m}}{\beta}\) at \(\beta = 0\) is
   \[
     \lgtmz = \log{\left(m_t\right)} - \log{\left(1-m_t\right)}.
   \]
-  \proof 
-\end{lemma}
-\begin{lemma} \label{lem:first-derivative-lambda}
-  The derivative of \(\Lambd{\vec{m}}{\beta}\) at \(\beta = 0\) is
-  \begin{align*}
-    \left.\ParDer{\lvim{\beta}}{\beta}\right|_{\beta=0} &= -\sum_{j=1}^n w_{i,j}m^h_j-b_i\\
-    \left.\ParDer{\lhjm{\beta}}{\beta}\right|_{\beta=0} &= -\sum_{i=1}^m w_{i,j}m^v_i-c_j
-  \end{align*}
-  \proof
+  \begin{proof}
+    Let's write the component \(m_{\bar{t}}\) of the equation~\eqref{eq:m-s-mean}
+    \[
+      m_{\bar{t}} = \Fmean{s_{\bar{t}}}{\qhat{\vec{m}}}{0}
+      = \frac{\sums s_{\bar{t}} e^{-\beta E(\vec{s}) + \beta \vec{\hat{q}}\cdot\vec{s}}}
+             {\sum_{\vec{s'}}e^{-\beta E(\vec{s'}) + \beta \vec{\hat{q}}\cdot\vec{s'}}}
+      = \frac{\sums s_{\bar{t}} e^{-\beta E(\vec{s}) + \Lambd{\vec{m}}{\beta}\cdot\vec{s}}}
+             {\sum_{\vec{s'}}e^{-\beta E(\vec{s'}) + \Lambd{\vec{m}}{\beta}\cdot\vec{s'}}}
+    \]
+    Let's now fix \(\beta=0\)
+    \begin{align*} \displaystyle
+      m_{\bar{t}} &= \frac{\sums s_{\bar{t}} e^{\Lambd{\vec{m}}{\beta}\cdot\vec{s}}}
+                          {\sum_{\vec{s'}}e^{\Lambd{\vec{m}}{\beta}\cdot\vec{s'}}} 
+                   = \frac{\sums s_{\bar{t}} \prodt e^{\lgtmz s_t}}
+                          {\sum_{\vec{s'}}\prodt e^{\lgtmz s'_t}} \\
+                  &= \frac{\left(\sumstbar s_{\bar{t}}e^{\lgtbarmz s_{\bar{t}}}\right)
+                           \prod_{t=1,t\neq{\bar{t}}}^{m+n}\left(\sumst e^{\lgtmz s_t}\right)}
+                          {\prodt\sumstprim e^{\lgtmz {s'}_t}} \\
+                  &= \frac{\sumstbar s_{\bar{t}}e^{\lgtbarmz s_{\bar{t}}}}
+                          {\sumstbar e^{\lgtbarmz s_{\bar{t}}}}
+                   = \frac{e^{\lgtbarmz}}{1+e^{\lgtbarmz}} = \sigmoid{\lgtbarmz}              
+    \end{align*}
+    Inverting the last equality gives the thesis.
+  \end{proof}
 \end{lemma}
 \begin{lemma} \label{lem:operator-mean-gamma}
   Let \(O{(\vec{s})}\) an operator of the spins that can be written as a polynomial in the \(s_t\)
@@ -312,7 +350,24 @@ Before going through the computation of the derivatives, we prove 3 useful lemma
     \]
     The energy instead is a proper operator on which apply the Lemma.
   }
-  \proof
+  \begin{proof}
+    Without losing generality we consider the operator
+    \[O{(\vec{s})} = \prodt s_t.\]
+    If we prove the thesis on this particular operator by linearity we can easily extend to all ones
+    allowed by hypothesis.
+    The computation is straightforward
+    \begin{align*}
+      \Gmean{O}{\vec{m}}{0} 
+        &= \frac{\sums O{(\vec{s})} e^{\Lambd{\vec{m}}{\beta}\cdot(\vec{s}-\vec{m})}}
+               {\sum_{\vec{s'}}e^{\Lambd{\vec{m}}{\beta}\cdot \cdot (\vec{s'}-\vec{m})}}
+         = \frac{\sums \prodt s_t e^{\lgtmz \cdot (s_t-m_t)}}
+                {\sum_{\vec{s'}} \prodt e^{\lgtmz \cdot ({s'}_t-m_t)}} \\
+       &= \frac{\prodt \sumst s_t e^{\lgtmz \cdot (s_t-m_t)}}
+               {\prodt \sumstprim e^{\lgtmz \cdot ({s'}_t-m_t)}}
+        = \prodt \frac{e^{\lgtmz}}{1+e^{\lgtmz}} = \\
+       &= \prodt \sigmoid{\lgtmz} = O{(\vec{m})}.
+    \end{align*}
+  \end{proof}
 \end{lemma}
 \subsubsection{Order 0}
 The computation is easy
@@ -340,7 +395,7 @@ where \(S_2{(\cdot)}\) is the entropy of a binary distribution.
   The order 0 is the total entropy of the system when spins are not correlated.
 }
 
-\subsubsection{Order 1}
+\subsubsection{Order 1} \label{subsec:order-1-A}
 We compute the derivative starting from equation~\eqref{eq:A-nicer-form}
 \begin{align*}
   \left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}
@@ -361,7 +416,36 @@ In the last equality we have used the Lemma~\ref{lem:operator-mean-gamma}.
 }
 
 \subsubsection{Order 2}
-Starting again from equation~\eqref{eq:A-nicer-form} after little calculations we get
+Let's begin with a lemma that we use later in the calculation.
+\begin{lemma} \label{lem:first-derivative-lambda}
+  The derivative of \(\Lambd{\vec{m}}{\beta}\) at \(\beta = 0\) is
+  \begin{align*}
+    \left.\ParDer{\lvim{\beta}}{\beta}\right|_{\beta=0} &= -\sum_{j=1}^n w_{i,j}m^h_j-b_i\\
+    \left.\ParDer{\lhjm{\beta}}{\beta}\right|_{\beta=0} &= -\sum_{i=1}^m w_{i,j}m^v_i-c_j
+  \end{align*}
+  \begin{proof}
+    Let's consider the quantity
+    \begin{align*}
+      \ParDer{}{\vec{m}}\left(\left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}\right)
+      &= \left.\left(\ParDer{}{\beta}\ParDer{A{\left[\vec{m};\beta\right]}}{\vec{m}}\right)\right|_{\beta=0}
+      = \left.\left(\ParDer{}{\beta}\Gmean{-\Lambd{\vec{m}}{\beta}}{\vec{m}}{\beta}\right)\right|_{\beta=0}
+      = -\left.\ParDer{\Lambd{\vec{m}}{\beta}}{\beta}\right|_{\beta=0}
+    \end{align*}
+    where we were able to exchange derivative because \(A\) is smooth.
+    We can compute the same quantity explicitly using the result obtained in the
+    section~\ref{subsec:order-1-A}
+    \[
+      \ParDer{}{\vec{m}}\left(\left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}\right)
+      = -\ParDer{E{(\vec{m})}}{\vec{m}}.
+    \]
+    The thesis can be obtained by explicitly write the vector components.
+    \PhysicsBox{The idea behind this proof}{
+      Essentially what we are doing when we exchange derivatives in the first passage is using 
+      a \emph{Maxwell relation} on the potential \(\Gamma\) (here we use \(A\) for convenience).
+    }
+  \end{proof}
+\end{lemma}
+Going back to the main calculation, we can start again from equation~\eqref{eq:A-nicer-form} after little calculations we get
 \begin{align*}
   \left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}
   &= \Gmean{
@@ -488,13 +572,12 @@ Since \(\Gamma\) is convex and smooth we have an easy equation for \(\vec{\hat{m
 \]
 Let's compute the gradient respect to \(\mvi\), the case \(\mhj\) is  the same.
 \begin{align*}
-  \hspace*{-1.2cm}
   \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}
     &= \log\left(\hmvi\right) + 1 - \log\left(1-\hmvi\right) - 1 - b_i \\
-    &\quad-\sum_{j=1}^n\left[w_{i,j}\hmhj
-      +\frac{1}{2}w_{i,j}\left(1-2\hmvi\right)\left(\hmhj-\hmhjsq\right)
-      +\frac{2}{3}w_{i,j}^3\left(3\hmvisq-3\hmvi+\frac{1}{2}\right)\left(\frac{1}{2}-\hmhj\right)
-      \left(\hmhj-\hmhjsq\right)\right].
+    &\quad-\sum_{j=1}^n\bigg[w_{i,j}\hmhj
+      +\frac{1}{2}w_{i,j}\left(1-2\hmvi\right)\left(\hmhj-\hmhjsq\right) \\
+      &\qquad\qquad+\frac{2}{3}w_{i,j}^3\left(3\hmvisq-3\hmvi+\frac{1}{2}\right)\left(\frac{1}{2}-\hmhj\right)
+      \left(\hmhj-\hmhjsq\right)\bigg].
 \end{align*}
 Now we notice that
 \[
@@ -511,4 +594,29 @@ and  applying to the equation above we get the \emph{consistency relations} for 
            +w_{i,j}^3\left(2\hmhjsq-2\hmhj+\frac{1}{3}\right)\left(\frac{1}{2}-\hmvi\right)
            \right)\right]}
 \end{align}
-Solving these equations give us \(\vec{\hat{m}}\) to be used when evaluating the gradient.  
+Solving these equations give us \(\vec{\hat{m}}\) to be used when evaluating the gradient.
+\MyIdeaBox{Solving these equations}{
+  In the article \cite{gabrie18training}, the suggested method for solving these equations 
+  is just start from a random guess of \(\vec{m}\), and then iterate until it converges to a
+  desired precision.
+  
+  I'm quite convinced that this is far from optimal solution for this. Maybe a smarter
+  implementation of finding solutions can speed up the algorithm noticeably.
+}
+
+\subsubsection{Gradient respect to parameters}
+To complete our update rule we have to calculate
+\[
+  \ParDer{\left(\FEn{\vec{0}}{1}\right)}{\vec{\theta}} =
+  \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{\vec{\theta}}
+\]  
+The calculation is straightforward using the expression above of \(\Gamma\)
+\begin{align*}
+  \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{b_i} &= -\hmvi\\
+  \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{c_j} &= -\hmhj\\
+  %
+  \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{w_{i,j}}
+    &=\Bigg[-\hmvi\hmhj +w_{i,j}\left(\hmvi-\hmvisq\right)\left(\hmhj-\hmhjsq\right)+\\
+    &\qquad+2w_{i,j}^2\left(\hmvi-\hmvisq\right)\left(\frac{1}{2}-\hmvi\right)\left(\frac{1}{2}-\hmhj\right)
+      \left(\hmhj-\hmhjsq\right)\Bigg]
+\end{align*}
