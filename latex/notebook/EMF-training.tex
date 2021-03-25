@@ -289,7 +289,7 @@ where we have defined the
     a function of independent variables \(\vec{m}\).
   }
 }
-\subsection[Expansion of A around \textbeta=0]{Expansion of \(A\) around \(\beta=0\)}
+\subsection{Expansion of \(A\) around \(\beta=0\)}
 Deal with the exact form of \(A\) given by equation~\eqref{eq:A-nicer-form} is hard,
 so we expand around \(\beta = 0\) and use the truncated series for further steps.
 Of course since in the end we need the result for \(\beta=1\) the more terms we keep, the better
@@ -395,7 +395,7 @@ where \(S_2{(\cdot)}\) is the entropy of a binary distribution.
   The order 0 is the total entropy of the system when spins are not correlated.
 }
 
-\subsubsection{Order 1} \label{subsec:order-1-A}
+\subsubsection{First order} \label{subsec:order-1-A}
 We compute the derivative starting from equation~\eqref{eq:A-nicer-form}
 \begin{align*}
   \left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}
@@ -415,7 +415,7 @@ In the last equality we have used the Lemma~\ref{lem:operator-mean-gamma}.
   to the mean magnetization.
 }
 
-\subsubsection{Order 2}
+\subsubsection{Second order}
 Let's begin with a lemma that we use later in the calculation.
 \begin{lemma} \label{lem:first-derivative-lambda}
   The derivative of \(\Lambd{\vec{m}}{\beta}\) at \(\beta = 0\) is
@@ -492,7 +492,7 @@ and in the first only the ones with \(i=p\) and \(j=q\) survive
 where we used the equivalence \(s_t^2 \equiv s_t\), and the Lemma~\ref{lem:operator-mean-gamma}
 for computing the average.
 
-\subsubsection{Order 3}
+\subsubsection{Third order}
 The calculation of the third order is not too different from the second order, it only needs more
 steps and an expression for the second derivative of \(\vec{\lambda}\) that can be derived easily.
 We don't report the full calculation, but only the result, taken from \cite{gabrie18training}
