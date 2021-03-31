@@ -573,7 +573,7 @@ Since \(\Gamma\) is convex and smooth we have an easy equation for \(\vec{\hat{m
 \]
 Let's compute the gradient with respect to \(\mvi\), the case \(\mhj\) is  the same.
 \begin{align*}
-  \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}
+  \left.\ParDer{\Gam{\vec{m}}{1}}{\mvi}\right|_{\vec{m}=\vec{\hat{m}}}
     &= \log\left(\hmvi\right) + 1 - \log\left(1-\hmvi\right) - 1 - b_i \\
     &\quad-\sum_{j=1}^n\bigg[w_{i,j}\hmhj
       +\frac{1}{2}w_{i,j}\left(1-2\hmvi\right)\left(\hmhj-\hmhjsq\right) \\
@@ -588,12 +588,12 @@ and  applying to the equation above we get the \emph{consistency relations} for 
 \begin{align}
   \label{eq:converge-hmvi}
   \hmvi&=\sigmoid{b_i + \sum_{j=1}^n\left[w_{i,j}\hmhj+
-           \left(\hmhj-\hmhjsq\right)\left(w_{i,j}\left(\frac{1}{2}-\hmvi\right)
+           \left(\hmhj-\hmhjsq\right)\left(w^2_{i,j}\left(\frac{1}{2}-\hmvi\right)
            +w_{i,j}^3\left(2\hmvisq-2\hmvi+\frac{1}{3}\right)\left(\frac{1}{2}-\hmhj\right)
            \right)\right]}\\
   \label{eq:converge-hmhj}
   \hmhj&=\sigmoid{c_j + \sum_{i=1}^m\left[w_{i,j}\hmvi+
-           \left(\hmvi-\hmvisq\right)\left(w_{i,j}\left(\frac{1}{2}-\hmhj\right)
+           \left(\hmvi-\hmvisq\right)\left(w^2_{i,j}\left(\frac{1}{2}-\hmhj\right)
            +w_{i,j}^3\left(2\hmhjsq-2\hmhj+\frac{1}{3}\right)\left(\frac{1}{2}-\hmvi\right)
            \right)\right]}
 \end{align}
