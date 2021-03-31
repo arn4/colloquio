@@ -10,7 +10,8 @@ algorithm is deterministic, since no random sample is needed.
 
 The algorithm is essentially a different approach for computing the gradient. All other
 considerations we have done in Section~\ref{subsec:general-gradient-rules} apply the same
-also here.
+also here. The weight decay is particularly important because the algorithm rely on the assumption
+of weak interactions.
 
 We present a pure mathematical derivation, highlighting the physics that inspired the
 steps in {\bf \color{physics-blue}blue~boxes}, although it's not necessary to read them for
@@ -585,10 +586,12 @@ Now we notice that
 \]
 and  applying to the equation above we get the \emph{consistency relations} for the magnetization
 \begin{align}
+  \label{eq:converge-hmvi}
   \hmvi&=\sigmoid{b_i + \sum_{j=1}^n\left[w_{i,j}\hmhj+
            \left(\hmhj-\hmhjsq\right)\left(w_{i,j}\left(\frac{1}{2}-\hmvi\right)
            +w_{i,j}^3\left(2\hmvisq-2\hmvi+\frac{1}{3}\right)\left(\frac{1}{2}-\hmhj\right)
            \right)\right]}\\
+  \label{eq:converge-hmhj}
   \hmhj&=\sigmoid{c_j + \sum_{i=1}^m\left[w_{i,j}\hmvi+
            \left(\hmvi-\hmvisq\right)\left(w_{i,j}\left(\frac{1}{2}-\hmhj\right)
            +w_{i,j}^3\left(2\hmhjsq-2\hmhj+\frac{1}{3}\right)\left(\frac{1}{2}-\hmvi\right)
@@ -597,11 +600,12 @@ and  applying to the equation above we get the \emph{consistency relations} for 
 Solving these equations gives us \(\vec{\hat{m}}\) to be used when evaluating the gradient.
 \MyIdeaBox{Solving these equations}{
   In the article \cite{gabrie18training}, the suggested method for solving these equations 
-  is just to start from a random guess of \(\vec{m}\), and then iterate until it converges to the
-  desired precision.
+  is just to start from a random guess of \(\vec{m}\), and then iterate an appropriate
+  number of times (in the article is 3-30). After these iterations we are quite confident
+  that \(\vec{m}\) is decently converged.
   
   I'm quite convinced that this is far from the optimal solution. Maybe a smarter
-  implementation of finding solutions can speed up the algorithm noticeably.
+  implementation of solutions finding can speed up the algorithm noticeably.
 }
 
 \subsubsection{Gradient respect to parameters}
@@ -620,3 +624,6 @@ The calculation is straightforward using the expression above of \(\Gamma\)
     &\qquad+2w_{i,j}^2\left(\hmvi-\hmvisq\right)\left(\frac{1}{2}-\hmvi\right)\left(\frac{1}{2}-\hmhj\right)
       \left(\hmhj-\hmhjsq\right)\Bigg]
 \end{align*}
+
+\subsection{Persistent EMF training}
+Using the same idea of PCD-\(k\), we can implement an algorithm that keeps track of the previous estimated value of \(\vec{m}\), and  use it as initial parameter to converge the equations~\eqref{eq:converge-hmvi}~and~\eqref{eq:converge-hmhj}.
