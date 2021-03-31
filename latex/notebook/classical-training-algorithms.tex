@@ -203,7 +203,7 @@
   In example the expected value in Equation~\eqref{eq:logL-gradient-w-RBM} is computed as
   \[
     \ExpVal{\prob{\vec{v}}}{v_i \sigmoid{\sum_{i=1}^m w_{i',j}v_{i'}+c_j}} \approx
-      \vec{v}^{(k)}_i \sigmoid{\sum_{i=1}^m w_{i',j}\vec{v}^{(k)}_{i'}+c_j}
+      v^{(k)}_i \sigmoid{\sum_{i=1}^m w_{i',j}v^{(k)}_{i'}+c_j}
   \]
   The name of the algorithm comes from a function whose gradient is much more well approximated
   by this method. A detailed theoretical discussion on the argument can be found in

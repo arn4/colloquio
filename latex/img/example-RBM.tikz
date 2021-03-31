@@ -9,7 +9,7 @@
   \node[draw, circle] (v2) at (3.75,-1)   {$v_2$};
   \node[draw, circle] (v3) at (5.25,-1)   {$v_3$};
   \node            (vdots) at (6.5,-1) {$\cdots$};
-  \node[draw, circle] (vm) at (7.75,-1)   {$v_n$};
+  \node[draw, circle] (vm) at (7.75,-1)   {$v_m$};
   
   \draw (v1)--(h1)
         (v1)--(h2)
