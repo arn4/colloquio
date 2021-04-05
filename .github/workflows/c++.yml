@@ -13,16 +13,14 @@ jobs:
           cmake . -DCMAKE_BUILD_TYPE=Release -B build_release/
       - name: Compile Debug
         run: |
-          cd build_debug/
+          cd c++/build_debug/
           make
-          cd ..
       - name: Compile Release
         run: |
-          cd build_release/
+          cd c++/build_release/
           make
-          cd ..
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ubuntu-latest-release
-          path: build_release/
+          path: c++/build_release/
