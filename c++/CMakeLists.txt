@@ -9,9 +9,11 @@ project(Colloquio:RBM_Trainig
 )
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Werror -Wshadow -Wformat=2 -pedantic -Wfloat-equal -Wconversion -Wshift-overflow -Wcast-qual -Wcast-align")
-set(CMAKE_CXX_FLAGS_RELEASE "-static -Ofast  -funroll-loops")
-set(CMAKE_CXX_FLAGS_DEBUG "$CMAKE_CXX_FLAGS_DEBUG -Wlogical-op -Wduplicated-cond")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wshadow -Wformat=2 -pedantic -Wfloat-equal -Wconversion -Wshift-overflow -Wcast-qual -Wcast-align")
+set(CMAKE_CXX_FLAGS_RELEASE "-static -Ofast -funroll-loops")
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS_DEBUG "$CMAKE_CXX_FLAGS_DEBUG -Wlogical-op -Wduplicated-cond")
 endif()
 
 if (CLANG)
