@@ -1,0 +1,43 @@
+#include <BinaryRBM.hpp>
+using namespace rbm;
+
+#include <cstddef>
+#include <vector>
+#include <random>
+
+template<typename real_value>
+template<class Iterator>
+inline MarcovChain<real_value>::MarcovChain(BinaryRBM<real_value>& rbm, Iterator begin, Iterator end, std::mt19937& rng) {
+  MarcovChain(rbm, rng);
+  set_v(begin, end);
+}
+
+template<typename real_value>
+inline const std::vector<bool>& MarcovChain<real_value>::v() const {
+  return _v;
+}
+
+template<typename real_value>
+inline const std::vector<bool>& MarcovChain<real_value>::h() const {
+  return _h;
+}
+
+template<typename real_value>
+template<class Iterator>
+void MarcovChain<real_value>::set_v(Iterator begin, Iterator end) {
+  assert(end-begin == long(_rbm.m()));
+  for (bool& vi: _v) {
+    vi = (*begin);
+    begin++;
+  }
+}
+
+template<typename real_value>
+template<class Iterator>
+void MarcovChain<real_value>::set_h(Iterator begin, Iterator end) {
+  assert(end-begin == long(_rbm.n()));
+  for (bool& hj: _h) {
+    hj = (*begin);
+    begin++;
+  }
+}
