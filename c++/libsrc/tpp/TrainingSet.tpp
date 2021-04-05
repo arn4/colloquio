@@ -5,6 +5,7 @@ using namespace rbm;
 #include <vector>
 #include <cassert>
 #include <array>
+#include <algorithm>
 
 template<std::size_t features_size, std::size_t batch_size>
 TrainingBatch<features_size, batch_size>::TrainingBatch(const std::vector<std::vector<bool>>& batch) {
@@ -68,7 +69,7 @@ TrainingSet<features_size, batch_size>::TrainingSet(const std::vector<std::vecto
       candidate_batch.push_back(classes[c][last_index[c]]);
       last_index[c]++;
     }
-    shuffle(candidate_batch.begin(), candidate_batch.end(), rng);
+    std::shuffle(candidate_batch.begin(), candidate_batch.end(), rng);
     _training_set.push_back(TrainingBatch<features_size, batch_size>(candidate_batch));
   }
 }
