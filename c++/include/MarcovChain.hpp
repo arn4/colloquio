@@ -9,7 +9,6 @@
 
 
 namespace rbm {
-
   template <typename real_value>
   class MarcovChain {
     private:

@@ -46,15 +46,15 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::train_on_batch(st
   for (std::size_t k = 0; k < batch_size; k++) {
     // Compute log-likelihood of b_i
     for (std::size_t i = 0; i < _rbm.m(); i++) {
-      _last_update_b[i] = bool2real<real_value>(batch.get_element(k,i)) + b_second_term();
+      _last_update_b[i] = bool2real<real_value>(batch.get_element(k,i)) + b_second_term(i, k);
     }
 
     // Compute log-likelihood of c_j and w_ij; all together to optimize 
     for (std::size_t j = 0; j < _rbm.n(); j++) {
       real_value probability_hj = _rbm.prob_h(j, batch.get_iterator(k));
-      _last_update_c[j] = probability_hj + c_second_term();
+      _last_update_c[j] = probability_hj + c_second_term(j, k);
       for (std::size_t i = 0; i < _rbm.m(); i++) {
-        _last_update_w[features_size*i + j] = bool2real<real_value>(batch.get_element(k,i)) * probability_hj + w_second_term();
+        _last_update_w[features_size*i + j] = bool2real<real_value>(batch.get_element(k,i)) * probability_hj + w_second_term(i, j, k);
       }
     }
   }

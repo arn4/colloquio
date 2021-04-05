@@ -26,8 +26,8 @@ template<typename real_value>
 template<class Iterator>
 void MarcovChain<real_value>::set_v(Iterator begin, Iterator end) {
   assert(end-begin == long(_rbm.m()));
-  for (bool& vi: _v) {
-    vi = (*begin);
+  for (std::size_t i = 0; i < _rbm.m(); i++) {
+    _v[i] = (*begin);
     begin++;
   }
 }
