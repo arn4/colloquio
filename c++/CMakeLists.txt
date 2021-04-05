@@ -13,11 +13,13 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -Wshadow -Wformat=2 -pedantic -Wfloat-equal -Wconv
 set(CMAKE_CXX_FLAGS_RELEASE "-static -Ofast -funroll-loops")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS_DEBUG "$CMAKE_CXX_FLAGS_DEBUG -Wlogical-op -Wduplicated-cond")
+  message("Specializing on g++")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wlogical-op -Wduplicated-cond")
 endif()
 
 if (CLANG)
-  set(CMAKE_CXX_FLAGS_DEBUG "$CMAKE_CXX_FLAGS_DEBUG -Wduplicate-enum")
+  message("Specializing on Clang")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wduplicate-enum")
 endif()
 
 
