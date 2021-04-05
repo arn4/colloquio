@@ -1,0 +1,30 @@
+name: C++
+on: [push]
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+      - name: Move to C++ folder
+        run: |
+          cd c++/
+      - name: Run CMake
+        run: |
+          cmake . -DCMAKE_BUILD_TYPE=Debug -B build_debug/
+          cmake . -DCMAKE_BUILD_TYPE=Release -B build_release/
+      - name: Compile Debug
+        run: |
+          cd build_debug/
+          make
+          cd ..
+      - name: Compile Release
+        run: |
+          cd build_release/
+          make
+          cd ..
+      - name: Save artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ubuntu-latest-release
+          path: build_release/
