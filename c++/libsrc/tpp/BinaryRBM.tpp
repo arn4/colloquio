@@ -33,7 +33,7 @@ inline const real_value& BinaryRBM<real_value>::c(std::size_t j) const {
 
 template <typename real_value>
 inline const real_value& BinaryRBM<real_value>::w(std::size_t i, std::size_t j) const {
-  return _w[_m*i+j];
+  return _w[_n*i+j];
 }
 
 template <typename real_value>
@@ -48,7 +48,7 @@ inline void BinaryRBM<real_value>::update_c(std::size_t j, real_value upd) {
 
 template <typename real_value>
 inline void BinaryRBM<real_value>::update_w(std::size_t i, std::size_t j, real_value upd) {
-  _w[_m*i+j] += upd;
+  _w[_n*i+j] += upd;
 }
 
 // Template functions
@@ -91,7 +91,7 @@ inline real_value BinaryRBM<real_value>::free_energy_v(Iterator v_begin) const {
     free_energy -= bool2real<real_value>(*(v_begin+i)) * b(i);
   }
   for (std::size_t j = 0; j < _n; j++) {
-    free_energy -= std::log(1.+exp(x[j]));
+    free_energy -= std::log(1.+std::exp(x[j]));
   }
   return free_energy;
 }

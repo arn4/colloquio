@@ -35,7 +35,7 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::train_on_batch(st
   }
   for (std::size_t j = 0; j < _rbm.n(); j++) {
     _last_update_c[j] *= momentum;
-    _last_update_c[j] -= weight_decay * _rbm.b(j);
+    _last_update_c[j] -= weight_decay * _rbm.c(j);
     _last_update_c[j] *= real_value(batch_size)/learning_rate; // I'm doing this because I will divide by the same quantity before updating
   }
   for (std::size_t i = 0; i < _rbm.m(); i++) {

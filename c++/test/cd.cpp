@@ -9,7 +9,7 @@
 using namespace std;
 using namespace rbm;
 
-const unsigned FEATURES_SIZE = 20;
+const unsigned FEATURES_SIZE = 16;
 const unsigned TRAINING_SET_SIZE = 500;
 const unsigned BATCH_SIZE = 10;
 const unsigned SEED = 4584;
@@ -58,6 +58,9 @@ int main() {
       } clog << endl;
       for (unsigned j = 0; j < 5; j++) {
         clog << rbm.c(j) << ' ';
+      } clog << endl;
+      for (unsigned j = 0; j < 5; j++) {
+        clog << rbm.w(j,j+5) << ' ';
       } clog << endl;
     }
     clog << "  Epoch " << e << ": ";

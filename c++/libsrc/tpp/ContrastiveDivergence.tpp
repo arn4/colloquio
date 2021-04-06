@@ -44,15 +44,15 @@ void ContrastiveDivergence<real_value, features_size, batch_size>::epoch_precomp
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 inline real_value ContrastiveDivergence<real_value, features_size, batch_size>::w_second_term(std::size_t i, std::size_t j, std::size_t k) {
-  return bool2real<real_value>(_chains[k].v()[i]) * ContrastiveDivergence::_rbm.prob_h(j, _chains[k].v().begin());
+  return -bool2real<real_value>(_chains[k].v()[i]) * ContrastiveDivergence::_rbm.prob_h(j, _chains[k].v().begin());
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 inline real_value ContrastiveDivergence<real_value, features_size, batch_size>::b_second_term(std::size_t i, std::size_t k) {
-  return bool2real<real_value>(_chains[k].v()[i]);
+  return -bool2real<real_value>(_chains[k].v()[i]);
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 inline real_value ContrastiveDivergence<real_value, features_size, batch_size>::c_second_term(std::size_t j, std::size_t k) {
-  return ContrastiveDivergence::_rbm.prob_h(j, _chains[k].v().begin());
+  return -ContrastiveDivergence::_rbm.prob_h(j, _chains[k].v().begin());
 }

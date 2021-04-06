@@ -38,7 +38,7 @@ void MarcovChain<real_value>::init_random_v(real_value prob_one) {
 template<typename real_value>
 void MarcovChain<real_value>::next_step_v() {
   std::uniform_real_distribution<real_value> probability(real_value(0.),real_value(1.));
-  for (std::size_t i = 0; i < _rbm.n(); i++) {
+  for (std::size_t i = 0; i < _rbm.m(); i++) {
     if (probability(_rng) <=  _rbm.prob_v(i, _h.begin())) {
       _v[i] = true;
     } else {
@@ -50,8 +50,8 @@ void MarcovChain<real_value>::next_step_v() {
 template<typename real_value>
 void MarcovChain<real_value>::next_step_h() {
   std::uniform_real_distribution<real_value> probability(real_value(0.),real_value(1.));
-  for (std::size_t j = 0; j < _rbm.m(); j++) {
-    if (probability(_rng) <= _rbm.prob_h(j, _h.begin())) {
+  for (std::size_t j = 0; j < _rbm.n(); j++) {
+    if (probability(_rng) <= _rbm.prob_h(j, _v.begin())) {
       _h[j] = true;
     } else {
       _h[j] = false;
