@@ -4,6 +4,7 @@ using namespace rbm;
 #include <cstddef>
 #include <vector>
 #include <random>
+#include <cassert>
 
 template<typename real_value>
 template<class Iterator>
@@ -39,5 +40,13 @@ void MarcovChain<real_value>::set_h(Iterator begin, Iterator end) {
   for (bool& hj: _h) {
     hj = (*begin);
     begin++;
+  }
+}
+
+template<typename real_value>
+inline void MarcovChain<real_value>::evolve(unsigned times) {
+  while (times--) {
+    next_step_h();
+    next_step_v();
   }
 }

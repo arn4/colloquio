@@ -6,6 +6,7 @@
 #include <random>
 #include <array>
 
+
 namespace rbm {
   
   template<std::size_t features_size, std::size_t batch_size>
@@ -31,6 +32,7 @@ namespace rbm {
       TrainingSet(const std::vector<std::vector<std::vector<bool>>>& classes, std::mt19937& rng);
 
       const TrainingBatch<features_size, batch_size>& batch(std::size_t s) const;
+      std::size_t num_of_batches();
   };
 
 }

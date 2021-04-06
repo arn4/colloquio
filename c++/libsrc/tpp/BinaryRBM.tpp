@@ -6,6 +6,8 @@ using namespace rbm;
 #include <cstddef>
 #include <vector>
 #include <utility.cpp>
+#include <cmath>
+#include <iostream>
 
 // Inline functions
 
@@ -58,6 +60,7 @@ inline real_value BinaryRBM<real_value>::prob_v(std::size_t i, Iterator h_begin)
     sum_var += w(i,j) * bool2real<real_value>(*h_begin);
     h_begin++;
   }
+  //std::clog << "Prob. V_" << i << " is " << sigmoid(sum_var+b(i)) << std::endl;
   return sigmoid(sum_var+b(i));
 }
 
@@ -69,5 +72,26 @@ inline real_value BinaryRBM<real_value>::prob_h(std::size_t j, Iterator v_begin)
     sum_var += w(i,j) * bool2real<real_value>(*v_begin);
     v_begin++;
   }
+  //std::clog << "Prob. H_" << j << " is " << sigmoid(sum_var+c(j)) << std::endl;
   return sigmoid(sum_var+c(j));
+}
+
+template<typename real_value>
+template<class Iterator>
+inline real_value BinaryRBM<real_value>::free_energy_v(Iterator v_begin) const {
+  std::vector<real_value> x(_n,  real_value(0.));
+  for (std::size_t j = 0; j < _n; j++) {
+    x[j] += c(j);
+    for (std::size_t i = 0; i < _m; i++) {
+      x[j] += w(i,j) * bool2real<real_value>(*(v_begin+i));
+    }
+  }
+  real_value free_energy = 0.;
+  for (std::size_t i = 0; i < _m; i++) {
+    free_energy -= bool2real<real_value>(*(v_begin+i)) * b(i);
+  }
+  for (std::size_t j = 0; j < _n; j++) {
+    free_energy -= std::log(1.+exp(x[j]));
+  }
+  return free_energy;
 }

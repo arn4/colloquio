@@ -48,6 +48,10 @@ namespace rbm {
       real_value prob_v(std::size_t i, Iterator h_begin) const;
       template<class Iterator>
       real_value prob_h(std::size_t j, Iterator v_begin) const;
+
+      //Others
+      template<class Iterator>
+      real_value free_energy_v(Iterator v_begin) const;
   };
 
 }

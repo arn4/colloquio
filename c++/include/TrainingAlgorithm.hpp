@@ -47,8 +47,12 @@ namespace rbm {
       virtual real_value b_second_term(std::size_t i, std::size_t k) = 0;
       virtual real_value c_second_term(std::size_t j, std::size_t k) = 0;
 
+      // Training methods
       void epoch();
+
+      // Monitoring method
       real_value log_likelihood();
+      real_value free_energy();
   };
 }
 

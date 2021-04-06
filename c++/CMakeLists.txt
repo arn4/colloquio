@@ -9,7 +9,7 @@ project(Colloquio:RBM_Trainig
 )
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wshadow -Wformat=2 -pedantic -Wfloat-equal -Wconversion -Wshift-overflow -Wcast-qual -Wcast-align")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wshadow -Wformat=2 -pedantic -Wfloat-equal -Wconversion -Wshift-overflow -Wcast-qual -Wcast-align -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fstack-protector -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-static -Ofast -funroll-loops")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -39,6 +39,14 @@ target_compile_features(rbm PUBLIC
   cxx_std_17
 )
 
+## Compile the tests
+add_executable(test_cd test/cd.cpp)
+target_link_libraries(test_cd PRIVATE
+  rbm
+)
+target_compile_features(test_cd PUBLIC
+  cxx_std_17 # not really needed since the library has already the same PUBLIC feature 
+)
 
 # ## Compile the executables
 # add_executable(test test_exec.cpp)

@@ -2,6 +2,7 @@
 #include <TrainingAlgorithm.hpp>
 #include <MarcovChain.hpp>
 #include <utility.cpp>
+#include <iostream>
 
 #include <cstddef>
 
@@ -30,7 +31,11 @@ void ContrastiveDivergence<real_value, features_size, batch_size>::batch_precomp
   for (std::size_t k = 0; k < batch_size; k++) {
     auto it = ContrastiveDivergence::_training_set.batch(b).get_iterator(k);
     _chains[k].set_v(it, it + features_size);
+    //for (bool b:_chains[k].v()) {std::clog << b;}
+    //std::clog << " --> ";
     _chains[k].evolve(_k);
+    //for (bool b:_chains[k].v()) {std::clog << b;}
+    //std::clog << std::endl;
   }
 }
 

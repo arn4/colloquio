@@ -43,7 +43,7 @@ TrainingSet<features_size, batch_size>::TrainingSet(const std::vector<std::vecto
   }
 
   _training_set.resize(training_set.size()/batch_size);
-  for (std::size_t i = 0; i + batch_size < training_set.size(); i += batch_size) {
+  for (std::size_t i = 0; i + batch_size <= training_set.size(); i += batch_size) {
     _training_set.at(i/batch_size) = TrainingBatch<features_size,batch_size>(
                                       std::vector<std::vector<bool>>(
                                         training_set.begin()+long(i),
@@ -55,6 +55,7 @@ TrainingSet<features_size, batch_size>::TrainingSet(const std::vector<std::vecto
 
 template<std::size_t features_size, std::size_t batch_size>
 TrainingSet<features_size, batch_size>::TrainingSet(const std::vector<std::vector<std::vector<bool>>>& classes, std::mt19937& rng) {
+  // TODO: shuffle class. This is not working!
   // for(auto& cl: classes) {
   //   std::shuffle(cl.begin(), cl.end(), rng);
   // }
@@ -72,4 +73,9 @@ TrainingSet<features_size, batch_size>::TrainingSet(const std::vector<std::vecto
     std::shuffle(candidate_batch.begin(), candidate_batch.end(), rng);
     _training_set.push_back(TrainingBatch<features_size, batch_size>(candidate_batch));
   }
+}
+
+template<std::size_t features_size, std::size_t batch_size>
+inline std::size_t TrainingSet<features_size, batch_size>::num_of_batches() {
+  return _training_set.size();
 }

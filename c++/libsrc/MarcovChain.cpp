@@ -11,10 +11,10 @@ const real_value MarcovChain<real_value>::default_init_probabality = real_value(
 
 template<typename real_value>
 MarcovChain<real_value>::MarcovChain(BinaryRBM<real_value>& rbm, std::mt19937& rng) :
-_rbm(rbm),
-_v(_rbm.m()),
-_h(_rbm.n()),
-_rng(rng)
+  _rbm(rbm),
+  _v(_rbm.m()),
+  _h(_rbm.n()),
+  _rng(rng)
 {}
 
 template<typename real_value>
@@ -37,7 +37,7 @@ void MarcovChain<real_value>::init_random_v(real_value prob_one) {
 
 template<typename real_value>
 void MarcovChain<real_value>::next_step_v() {
-  std::uniform_real_distribution<double> probability(real_value(0.),real_value(1.));
+  std::uniform_real_distribution<real_value> probability(real_value(0.),real_value(1.));
   for (std::size_t i = 0; i < _rbm.n(); i++) {
     if (probability(_rng) <=  _rbm.prob_v(i, _h.begin())) {
       _v[i] = true;
@@ -49,7 +49,7 @@ void MarcovChain<real_value>::next_step_v() {
 
 template<typename real_value>
 void MarcovChain<real_value>::next_step_h() {
-  std::uniform_real_distribution<double> probability(real_value(0.),real_value(1.));
+  std::uniform_real_distribution<real_value> probability(real_value(0.),real_value(1.));
   for (std::size_t j = 0; j < _rbm.m(); j++) {
     if (probability(_rng) <= _rbm.prob_h(j, _h.begin())) {
       _h[j] = true;
