@@ -26,6 +26,7 @@ namespace rbm {
       //Initializers: default values come from Hinton
       void init_gaussian_b(real_value mu = default_mu, real_value sigma = default_sigma);
       void init_fixed_b(const std::vector<real_value>& b);
+      void init_gaussian_c(real_value mu = default_mu, real_value sigma = default_sigma);
       void init_constant_c(real_value c = 0.);
       void init_gaussian_w(real_value mu = default_mu, real_value sigma = default_sigma);
 

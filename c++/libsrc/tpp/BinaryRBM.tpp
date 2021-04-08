@@ -1,4 +1,3 @@
-#include <MarcovChain.hpp>
 #include <BinaryRBM.hpp>
 
 using namespace rbm;

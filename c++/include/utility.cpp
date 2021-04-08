@@ -1,8 +1,8 @@
 
-#include <cmath>
-
 #ifndef __utility4rbm_cpp__
 #define __utility4rbm_cpp__
+
+#include <cmath>
 
 namespace rbm{
   template<typename real_value>

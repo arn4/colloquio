@@ -1,5 +1,5 @@
 
-#include <BinaryRBM.hpp>
+#include <MarcovChain.hpp>
 using namespace rbm;
 
 #include <cstddef>

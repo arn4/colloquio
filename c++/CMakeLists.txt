@@ -10,7 +10,7 @@ project(Colloquio:RBM_Trainig
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wshadow -Wformat=2 -pedantic -Wfloat-equal -Wconversion -Wshift-overflow -Wcast-qual -Wcast-align -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fstack-protector -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
-set(CMAKE_CXX_FLAGS_RELEASE "-static -Ofast -funroll-loops")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -funroll-loops")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
   message("Specializing on g++")
@@ -22,6 +22,9 @@ if (CLANG)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wduplicate-enum")
 endif()
 
+if (NOT APPLE)
+  set(CMAKE_CXX_FLAGS_RELEASE "-static ${CMAKE_CXX_FLAGS_RELEASE}")
+endif()
 
 ## Compile the library
 add_library(rbm
@@ -46,6 +49,16 @@ target_link_libraries(test_cd PRIVATE
 )
 target_compile_features(test_cd PUBLIC
   cxx_std_17 # not really needed since the library has already the same PUBLIC feature 
+)
+
+add_executable(generate-and-train-cd test/learn-generated.cpp)
+target_link_libraries(generate-and-train-cd PRIVATE
+  rbm
+)
+
+add_executable(rbm-test test/rbm.cpp)
+target_link_libraries(rbm-test PRIVATE
+  rbm
 )
 
 # ## Compile the executables
