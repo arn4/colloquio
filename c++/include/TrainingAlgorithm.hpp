@@ -41,17 +41,17 @@ namespace rbm {
 
       // Methods to be overriden in specialized training algorithms
       virtual void batch_precomputing(std::size_t b) = 0;
-      virtual void epoch_precomputing() = 0;
+      virtual void epoch_precomputing(std::size_t e) = 0;
 
       virtual real_value w_second_term(std::size_t i, std::size_t j, std::size_t k) = 0;
       virtual real_value b_second_term(std::size_t i, std::size_t k) = 0;
       virtual real_value c_second_term(std::size_t j, std::size_t k) = 0;
 
       // Training methods
-      void epoch();
+      void epoch(std::size_t e = 0);
 
       // Monitoring method
-      real_value log_likelihood();
+      real_value log_pseudolikelihood();
       real_value free_energy();
   };
 }

@@ -21,6 +21,21 @@ inline const std::size_t& BinaryRBM<real_value>::m() const {
 }
 
 template <typename real_value>
+inline const std::vector<real_value>& BinaryRBM<real_value>::b() const {
+  return _b;
+}
+
+template <typename real_value>
+inline const std::vector<real_value>& BinaryRBM<real_value>::c() const {
+  return _c;
+}
+
+template <typename real_value>
+inline const std::vector<real_value>& BinaryRBM<real_value>::w() const {
+  return _w;
+}
+
+template <typename real_value>
 inline const real_value& BinaryRBM<real_value>::b(std::size_t i) const {
   return _b[i];
 }

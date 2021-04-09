@@ -17,9 +17,10 @@ namespace rbm {
   >
   class ContrastiveDivergence: public TrainingAlgorithm<real_value, features_size, batch_size> {
     private:
+      std::mt19937& _rng;
+    protected:
       std::vector<MarcovChain<real_value>> _chains;
       unsigned _k;
-      std::mt19937& _rng;
     public:
       ContrastiveDivergence(
         BinaryRBM<real_value>& rbm,
@@ -31,8 +32,8 @@ namespace rbm {
         real_value m = 0.
       );
 
-      void batch_precomputing(std::size_t b);
-      void epoch_precomputing();
+      virtual void batch_precomputing(std::size_t b);
+      void epoch_precomputing(std::size_t e);
 
       real_value w_second_term(std::size_t i, std::size_t j, std::size_t k);
       real_value b_second_term(std::size_t i, std::size_t k);

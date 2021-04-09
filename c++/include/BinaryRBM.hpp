@@ -14,13 +14,15 @@ namespace rbm {
     private:
       std::size_t _m, _n;
       std::vector<real_value> _b, _c, _w;
-      std::mt19937& _rng;
 
       static const real_value default_mu;
       static const real_value default_sigma;
     public:
+      std::mt19937& _rng;
+      
       // Constructors
       BinaryRBM(std::size_t m, std::size_t n, std::mt19937& rng);
+      BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<real_value>& w, std::mt19937& rng);
       BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<std::vector<real_value>>& w, std::mt19937& rng);
 
       //Initializers: default values come from Hinton
@@ -35,6 +37,9 @@ namespace rbm {
       // Getters
       const std::size_t& n() const;
       const std::size_t& m() const;
+      const std::vector<real_value>& b() const;
+      const std::vector<real_value>& c() const;
+      const std::vector<real_value>& w() const;
       const real_value& b(std::size_t i) const;
       const real_value& c(std::size_t j) const;
       const real_value& w(std::size_t i, std::size_t j) const;

@@ -5,6 +5,7 @@ using namespace rbm;
 #include <cstddef>
 #include <vector>
 #include <random>
+#include <iostream>
 
 template<typename real_value>
 const real_value MarcovChain<real_value>::default_init_probabality = real_value(0.5);

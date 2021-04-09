@@ -65,7 +65,7 @@ int main() {
     }
     clog << "  Epoch " << e << ": ";
     cd.epoch();
-    clog << cd.free_energy() << endl;
+    clog << cd.log_pseudolikelihood() << endl;
     clog << " ";
     clog << endl;
   }

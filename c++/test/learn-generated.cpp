@@ -4,7 +4,7 @@
 
 #include <BinaryRBM.hpp>
 #include <TrainingSet.hpp>
-#include <ContrastiveDivergence.hpp>
+#include <PersistentContrastiveDivergence.hpp>
 #include <MarcovChain.hpp>
 
 using namespace std;
@@ -16,9 +16,9 @@ const unsigned TRAINING_SET_SIZE = 5000;
 const unsigned STEPS_TO_STATIONARY = 400;
 const unsigned BATCH_SIZE = 10;
 const unsigned SEED = 64770;
-const unsigned EPOCHS = 500;
+const unsigned EPOCHS = 100;
 const bool     READ_FROM_FILE = false;
-const bool     WRITE_ON_FILE = true;
+const bool     WRITE_ON_FILE = false;
 using real_value = double;
 
 int main() {
@@ -93,8 +93,10 @@ int main() {
 
   // Training 
   clog << "Training... " << endl;
-  BinaryRBM<real_value> rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
-  ContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE> cd(rbm, ts, 30, rng, .001, .0, .0);
+  //BinaryRBM<real_value> rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
+  BinaryRBM<real_value> rbm(goal_rbm.b(), goal_rbm.c(), goal_rbm.w(), rng);
+  PersistentContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE> cd(rbm, ts, 30, rng, .001, .0, .0);
+  clog << "Initial PLH: " << cd.log_pseudolikelihood() << endl;
   for (unsigned e = 1; e <= EPOCHS; e++) {
     // if (e%10==0) {
     //   for (unsigned i = 0; i < 5; i++) {
@@ -109,7 +111,7 @@ int main() {
     // }
     clog << "  Epoch " << e << ": ";
     cd.epoch();
-    //clog << cd.free_energy() << endl;
+    clog << cd.log_pseudolikelihood() << endl;
     clog << " ";
     clog << endl;
   }

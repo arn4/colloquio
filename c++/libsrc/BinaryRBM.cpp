@@ -42,6 +42,16 @@ BinaryRBM<real_value>::BinaryRBM(const std::vector<real_value>& b, const std::ve
 }
 
 template<typename real_value>
+BinaryRBM<real_value>::BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<real_value>& w, std::mt19937& rng)  :
+  _m(b.size()),
+  _n(c.size()),
+  _b(b.begin(), b.end()),
+  _c(c.begin(), c.end()),
+  _w(w.begin(), w.end()),
+  _rng(rng)
+{}
+
+template<typename real_value>
 void BinaryRBM<real_value>::init_gaussian_b(real_value mu, real_value sigma) {
   _b.resize(_m);
   std::normal_distribution<real_value> distribution(mu, sigma);

@@ -1,8 +1,10 @@
 #include <TrainingAlgorithm.hpp>
+#include <MarcovChain.hpp>
 #include <utility.cpp>
 
 #include <cstddef>
 #include <iostream>
+#include <cmath>
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 TrainingAlgorithm<real_value, features_size, batch_size>::TrainingAlgorithm (
@@ -81,12 +83,30 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::train_on_batch(st
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
-void TrainingAlgorithm<real_value, features_size, batch_size>::epoch() {
-  epoch_precomputing();
+void TrainingAlgorithm<real_value, features_size, batch_size>::epoch(std::size_t e) {
+  epoch_precomputing(e);
 
   for (std::size_t b = 0; b < _training_set.num_of_batches(); b++) {
     train_on_batch(b);
   }
+}
+
+template<typename real_value, std::size_t features_size, std::size_t batch_size>
+real_value TrainingAlgorithm<real_value, features_size, batch_size>::log_pseudolikelihood() {
+  real_value psl = 0.;
+  MarcovChain<real_value> estimate_h(_rbm, _rbm._rng);
+  for (std::size_t b = 0; b < _training_set.num_of_batches(); b++) {
+    for (std::size_t k = 0; k < batch_size; k++) {
+        for (std::size_t i = 0; i < _rbm.m(); i++) {
+          auto itk = _training_set.batch(b).get_iterator(k);
+          estimate_h.set_v(itk, itk + features_size);
+          estimate_h.next_step_h();
+          real_value psl_element = _rbm.prob_v(i, estimate_h.h().begin());
+          psl += (_training_set.batch(b).get_element(k,i) ? std::log(psl_element): std::log(real_value(1.)-psl_element));
+      }
+    }
+  }
+  return psl/real_value(_training_set.num_of_batches()*batch_size);
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
