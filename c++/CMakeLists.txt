@@ -33,6 +33,7 @@ add_library(rbm
   ./libsrc/MarcovChain.cpp
   ./libsrc/TrainingAlgorithm.cpp
   ./libsrc/ContrastiveDivergence.cpp
+  ./libsrc/PersistentContrastiveDivergence.cpp
 )
 target_include_directories(rbm PUBLIC #PUBLIC will set this include path also for object
   ./include    # stardard function that can be precompiled

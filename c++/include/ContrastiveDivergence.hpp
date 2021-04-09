@@ -18,6 +18,7 @@ namespace rbm {
   class ContrastiveDivergence: public TrainingAlgorithm<real_value, features_size, batch_size> {
     private:
       std::mt19937& _rng;
+      std::vector<real_value> prob_j_table;
     protected:
       std::vector<MarcovChain<real_value>> _chains;
       unsigned _k;

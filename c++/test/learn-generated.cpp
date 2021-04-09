@@ -10,14 +10,14 @@
 using namespace std;
 using namespace rbm;
 
-const unsigned FEATURES_SIZE = 30;
-const unsigned HIDDEN_SIZE = 20;
-const unsigned TRAINING_SET_SIZE = 5000;
+const unsigned FEATURES_SIZE = 300;
+const unsigned HIDDEN_SIZE = 200;
+const unsigned TRAINING_SET_SIZE = 10000;
 const unsigned STEPS_TO_STATIONARY = 400;
 const unsigned BATCH_SIZE = 10;
-const unsigned SEED = 64770;
-const unsigned EPOCHS = 100;
-const bool     READ_FROM_FILE = false;
+const unsigned SEED = 647700;
+const unsigned EPOCHS = 200;
+const bool     READ_FROM_FILE = true;
 const bool     WRITE_ON_FILE = false;
 using real_value = double;
 
@@ -28,9 +28,9 @@ int main() {
   // Generate a random RBM
   clog << "Generation of the goal RBM... ";
   BinaryRBM<real_value> goal_rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
-  goal_rbm.init_gaussian_b(0., .01);
-  goal_rbm.init_gaussian_c(0., .01);
-  goal_rbm.init_gaussian_w(0., .01);
+  goal_rbm.init_gaussian_b(0., 0.1);
+  goal_rbm.init_gaussian_c(0., 0.1);
+  goal_rbm.init_gaussian_w(0., 0.1);
   clog << "Done!" << endl << endl;
 
   if (not READ_FROM_FILE) {
@@ -93,22 +93,11 @@ int main() {
 
   // Training 
   clog << "Training... " << endl;
-  //BinaryRBM<real_value> rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm(goal_rbm.b(), goal_rbm.c(), goal_rbm.w(), rng);
-  PersistentContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE> cd(rbm, ts, 30, rng, .001, .0, .0);
+  BinaryRBM<real_value> rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
+  //BinaryRBM<real_value> rbm(goal_rbm.b(), goal_rbm.c(), goal_rbm.w(), rng);
+  PersistentContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE> cd(rbm, ts, 1, rng, .001, .0, .0);
   clog << "Initial PLH: " << cd.log_pseudolikelihood() << endl;
   for (unsigned e = 1; e <= EPOCHS; e++) {
-    // if (e%10==0) {
-    //   for (unsigned i = 0; i < 5; i++) {
-    //     clog << rbm.b(i) << ' ';
-    //   } clog << endl;
-    //   for (unsigned j = 0; j < 5; j++) {
-    //     clog << rbm.c(j) << ' ';
-    //   } clog << endl;
-    //   for (unsigned j = 0; j < 5; j++) {
-    //     clog << rbm.w(j,j+5) << ' ';
-    //   } clog << endl;
-    // }
     clog << "  Epoch " << e << ": ";
     cd.epoch();
     clog << cd.log_pseudolikelihood() << endl;

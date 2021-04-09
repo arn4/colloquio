@@ -68,18 +68,25 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::train_on_batch(st
   }
 
   for (std::size_t i = 0; i < _rbm.m(); i++) {
-    //std::clog << _last_update_b[i]/(real_value(batch_size)/learning_rate) << ' ';
-    _rbm.update_b(i, _last_update_b[i]/(real_value(batch_size)/learning_rate));
+    _last_update_b[i] /= (real_value(batch_size)/learning_rate);
+    _rbm.update_b(i, _last_update_b[i]);
+    // std::clog << _last_update_b[i] << ' ';
   }
-  //std::clog << std::endl;
+  // std::clog << std::endl;
   for (std::size_t j = 0; j < _rbm.n(); j++) {
-    _rbm.update_c(j, _last_update_c[j]/(real_value(batch_size)/learning_rate));
+    _last_update_c[j] /= (real_value(batch_size)/learning_rate);
+    _rbm.update_c(j, _last_update_c[j]);
+    // std::clog << _last_update_c[j] << ' ';
   }
+  // std::clog << std::endl;
   for (std::size_t i = 0; i < _rbm.m(); i++) {
     for (std::size_t j = 0; j < _rbm.n(); j++) {
-      _rbm.update_w(i, j, _last_update_w[i*_rbm.n()+j]/(real_value(batch_size)/learning_rate));
+      _last_update_w[i*_rbm.n()+j] /= (real_value(batch_size)/learning_rate);
+      _rbm.update_w(i, j, _last_update_w[i*_rbm.n()+j]);
+      // std::clog << _last_update_w[i*_rbm.n()+j] << ' ';
     }
   }
+  // std::clog << std::endl;
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
@@ -96,13 +103,15 @@ real_value TrainingAlgorithm<real_value, features_size, batch_size>::log_pseudol
   real_value psl = 0.;
   MarcovChain<real_value> estimate_h(_rbm, _rbm._rng);
   for (std::size_t b = 0; b < _training_set.num_of_batches(); b++) {
+    auto batch = _training_set.batch(b);
     for (std::size_t k = 0; k < batch_size; k++) {
+        auto itk = batch.get_iterator(k);
+        estimate_h.set_v(itk, itk + features_size);
+        estimate_h.next_step_h();
         for (std::size_t i = 0; i < _rbm.m(); i++) {
-          auto itk = _training_set.batch(b).get_iterator(k);
-          estimate_h.set_v(itk, itk + features_size);
-          estimate_h.next_step_h();
           real_value psl_element = _rbm.prob_v(i, estimate_h.h().begin());
-          psl += (_training_set.batch(b).get_element(k,i) ? std::log(psl_element): std::log(real_value(1.)-psl_element));
+          // std::clog << "Prob: "<< psl_element << std::endl;
+          psl += (batch.get_element(k,i) ? std::log(psl_element): std::log(real_value(1.)-psl_element));
       }
     }
   }
