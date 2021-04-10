@@ -6,6 +6,7 @@ using namespace rbm;
 #include <random>
 #include <string>
 #include <fstream>
+#include <iomanip>
 
 template<typename real_value>
 const real_value BinaryRBM<real_value>::default_mu = real_value(0.);
