@@ -22,9 +22,9 @@ if (CLANG)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wduplicate-enum -Wno-undefined-var-template")
 endif()
 
-if (NOT APPLE)
-  set(CMAKE_CXX_FLAGS_RELEASE "-static ${CMAKE_CXX_FLAGS_RELEASE}")
-endif()
+# if (NOT APPLE)
+#   set(CMAKE_CXX_FLAGS_RELEASE "-static ${CMAKE_CXX_FLAGS_RELEASE}")
+# endif()
 
 ## Compile the library
 add_library(rbm
