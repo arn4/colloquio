@@ -4,6 +4,8 @@ using namespace rbm;
 #include <cstddef>
 #include <vector>
 #include <random>
+#include <string>
+#include <fstream>
 
 template<typename real_value>
 const real_value BinaryRBM<real_value>::default_mu = real_value(0.);
@@ -86,6 +88,39 @@ void BinaryRBM<real_value>::init_gaussian_w(real_value mu, real_value sigma) {
   for (auto& w_ij: _w) {
     w_ij = distribution(_rng); 
   }
+}
+
+template<typename real_value>
+void BinaryRBM<real_value>::save_on_file(std::string filename) const {
+  std::ofstream fout(filename);
+  fout << std::fixed << std::setprecision(7);
+  for (const auto bi: _b) {
+    fout << bi;
+  }
+  fout << std::endl;
+  for (const auto cj: _c) {
+    fout << cj;
+  }
+  fout << std::endl;
+  for (const auto wij: _w) {
+    fout << wij;
+  }
+  fout.close();
+}
+
+template<typename real_value>
+void BinaryRBM<real_value>::load_from_file(std::string filename) {
+  std::ifstream fin(filename);
+  for (auto& bi: _b) {
+    fin >> bi;
+  }
+  for (auto& cj: _c) {
+    fin >> cj;
+  }
+  for (auto& wij: _w) {
+    fin >> wij;
+  }
+  fin.close();
 }
 
 // Explicit Instantiation

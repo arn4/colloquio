@@ -38,6 +38,7 @@ int main() {
   goal_rbm.init_gaussian_b(0., 0.1);
   goal_rbm.init_gaussian_c(0., 0.1);
   goal_rbm.init_gaussian_w(0., 0.1);
+  goal_rbm.save_on_file("generated-goal.rbm");
   clog << "Done!" << endl << endl;
 
   if (not READ_FROM_FILE) {
@@ -125,21 +126,9 @@ int main() {
     result << e << ' ' << psl1 << ' ' << psl2 << endl;
   }
   clog << "Done!" << endl << endl;
-
-  // // Comparsion
-  // for (unsigned i = 0; i < min(unsigned(5), FEATURES_SIZE); i++) {
-  //   clog << "b_"<<i << ": " << rbm.b(i) << " " << goal_rbm.b(i) << " " << abs(rbm.b(i)-goal_rbm.b(i))/goal_rbm.b(i) << endl;
-  // }
-
-  // for (unsigned j = 0; j < min(unsigned(5), HIDDEN_SIZE); j++) {
-  //   clog << "c_"<<j << ": " << rbm.c(j) << " " << goal_rbm.c(j) << " " << abs(rbm.c(j)-goal_rbm.c(j))/goal_rbm.c(j) << endl;
-  // }
-
-  // for (unsigned i = 0; i < min(unsigned(2), FEATURES_SIZE); i++) {
-  //   for (unsigned j = 0; j < min(unsigned(3), HIDDEN_SIZE); j++) {
-  //     clog << "w_"<<i<<","<<j << ": " << rbm.w(i,j) << " " << goal_rbm.w(i,j) << " " << abs(rbm.w(i,j)-goal_rbm.w(i,j))/goal_rbm.w(i,j) << endl;
-  //   }
-  // }
+  rbm1.save_on_file("learned-on-generated-1.rbm");
+  rbm2.save_on_file("learned-on-generated-2.rbm");
+  
 
   return 0;
 }

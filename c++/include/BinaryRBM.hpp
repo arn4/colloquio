@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <vector>
 #include <random>
+#include <string>
 
 /* The class is avaible with real_value in {float, double, long double} */
 
@@ -32,7 +33,10 @@ namespace rbm {
       void init_constant_c(real_value c = 0.);
       void init_gaussian_w(real_value mu = default_mu, real_value sigma = default_sigma);
 
-      //bool check_good_initialization(real_value p_low_limit, real_value p_high_limit);
+      // Files
+      void load_from_file(std::string filename);
+      void save_on_file(std::string filename) const;
+
 
       // Getters
       const std::size_t& n() const;
