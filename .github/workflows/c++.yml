@@ -1,26 +1,26 @@
 name: C++
 on: [push]
 jobs:
-  compile:
+  rbm-library:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
       - name: Run CMake
         run: |
-          cd c++/
+          cd rbm-library/
           cmake . -DCMAKE_BUILD_TYPE=Debug -B build_debug/
           cmake . -DCMAKE_BUILD_TYPE=Release -B build_release/
       - name: Compile Debug
         run: |
-          cd c++/build_debug/
+          cd rbm-library/build_debug/
           make
       - name: Compile Release
         run: |
-          cd c++/build_release/
+          cd rbm-library/build_release/
           make
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ubuntu-latest-release
-          path: c++/build_release/
+          path: rbm-library/build_release/
