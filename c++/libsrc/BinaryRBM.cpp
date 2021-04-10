@@ -96,15 +96,15 @@ void BinaryRBM<real_value>::save_on_file(std::string filename) const {
   std::ofstream fout(filename);
   fout << std::fixed << std::setprecision(7);
   for (const auto bi: _b) {
-    fout << bi;
+    fout << bi << ' ';
   }
   fout << std::endl;
   for (const auto cj: _c) {
-    fout << cj;
+    fout << cj << ' ';
   }
   fout << std::endl;
   for (const auto wij: _w) {
-    fout << wij;
+    fout << wij << ' ';
   }
   fout.close();
 }
