@@ -44,10 +44,11 @@ namespace rbm {
 
       // Next Steps: shortcuts
       void evolve(unsigned times);
-
-      // TODO: evolve with probabilities
   };
 }
+
+template<typename real_value>
+const real_value MarcovChain<real_value>::default_init_probabality = real_value(0.5);
 
 #include <MarcovChain.tpp>
 #endif

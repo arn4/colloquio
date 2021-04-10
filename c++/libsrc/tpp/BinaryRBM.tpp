@@ -74,7 +74,6 @@ inline real_value BinaryRBM<real_value>::prob_v(std::size_t i, Iterator h_begin)
     sum_var += w(i,j) * bool2real<real_value>(*h_begin);
     h_begin++;
   }
-  //std::clog << "Prob. V_" << i << " is " << sigmoid(sum_var+b(i)) << std::endl;
   return sigmoid(sum_var+b(i));
 }
 
@@ -86,7 +85,6 @@ inline real_value BinaryRBM<real_value>::prob_h(std::size_t j, Iterator v_begin)
     sum_var += w(i,j) * bool2real<real_value>(*v_begin);
     v_begin++;
   }
-  //std::clog << "Prob. H_" << j << " is " << sigmoid(sum_var+c(j)) << std::endl;
   return sigmoid(sum_var+c(j));
 }
 

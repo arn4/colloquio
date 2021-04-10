@@ -18,6 +18,7 @@ ContrastiveDivergence<real_value, features_size, batch_size>::ContrastiveDiverge
 ) :
   TrainingAlgorithm<real_value, features_size, batch_size>(rbm, training_set, lr, wd, m),
   _rng(rng),
+  prob_j_table(rbm.n()*batch_size),
   _chains(batch_size, MarcovChain<real_value>(rbm, rng)),
   _k(k)
 {}
@@ -28,6 +29,9 @@ void ContrastiveDivergence<real_value, features_size, batch_size>::batch_precomp
     auto it = ContrastiveDivergence::_training_set.batch(b).get_iterator(k);
     _chains[k].set_v(it, it + features_size);
     _chains[k].evolve(_k);
+    for (std::size_t j = 0; j < ContrastiveDivergence::_rbm.n(); j++) {
+      ContrastiveDivergence::prob_j_table[ContrastiveDivergence::_rbm.n()*k+j] = ContrastiveDivergence::_rbm.prob_h(j, ContrastiveDivergence::_chains[k].v().begin());
+    }
   }
 }
 
@@ -36,7 +40,7 @@ void ContrastiveDivergence<real_value, features_size, batch_size>::epoch_precomp
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 inline real_value ContrastiveDivergence<real_value, features_size, batch_size>::w_second_term(std::size_t i, std::size_t j, std::size_t k) {
-  return -bool2real<real_value>(_chains[k].v()[i]) * ContrastiveDivergence::_rbm.prob_h(j, _chains[k].v().begin());
+  return -bool2real<real_value>(_chains[k].v()[i]) * prob_j_table[ContrastiveDivergence::_rbm.n()*k+j];
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
@@ -46,5 +50,5 @@ inline real_value ContrastiveDivergence<real_value, features_size, batch_size>::
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 inline real_value ContrastiveDivergence<real_value, features_size, batch_size>::c_second_term(std::size_t j, std::size_t k) {
-  return -ContrastiveDivergence::_rbm.prob_h(j, _chains[k].v().begin());
+  return -prob_j_table[ContrastiveDivergence::_rbm.n()*k+j];
 }

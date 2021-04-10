@@ -19,7 +19,7 @@ endif()
 
 if (CLANG)
   message("Specializing on Clang")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wduplicate-enum")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wduplicate-enum -Wno-undefined-var-template")
 endif()
 
 if (NOT APPLE)
@@ -42,31 +42,28 @@ target_include_directories(rbm PUBLIC #PUBLIC will set this include path also fo
 target_compile_features(rbm PUBLIC
   cxx_std_17
 )
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(rbm PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
+
 
 ## Compile the tests
-add_executable(test_cd test/cd.cpp)
-target_link_libraries(test_cd PRIVATE
+add_executable(test-cd test/cd.cpp)
+target_link_libraries(test-cd PRIVATE
   rbm
 )
-target_compile_features(test_cd PUBLIC
+target_compile_features(test-cd PUBLIC
   cxx_std_17 # not really needed since the library has already the same PUBLIC feature 
 )
 
-add_executable(generate-and-train-cd test/learn-generated.cpp)
-target_link_libraries(generate-and-train-cd PRIVATE
+add_executable(test-learn-generated test/learn-generated.cpp)
+target_link_libraries(test-learn-generated PRIVATE
   rbm
 )
 
-add_executable(rbm-test test/rbm.cpp)
-target_link_libraries(rbm-test PRIVATE
+add_executable(test-rbm test/rbm.cpp)
+target_link_libraries(test-rbm PRIVATE
   rbm
 )
-
-# ## Compile the executables
-# add_executable(test test_exec.cpp)
-# target_link_libraries(test PRIVATE
-#   rbm
-# )
-# target_compile_features(test PUBLIC
-#   cxx_std_17 # not really needed since the library has already the same PUBLIC feature 
-# )

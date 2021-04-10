@@ -8,9 +8,6 @@ using namespace rbm;
 #include <iostream>
 
 template<typename real_value>
-const real_value MarcovChain<real_value>::default_init_probabality = real_value(0.5);
-
-template<typename real_value>
 MarcovChain<real_value>::MarcovChain(BinaryRBM<real_value>& rbm, std::mt19937& rng) :
   _rbm(rbm),
   _v(_rbm.m()),

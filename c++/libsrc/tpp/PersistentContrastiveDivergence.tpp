@@ -18,5 +18,8 @@ template<typename real_value, std::size_t features_size, std::size_t batch_size>
 void PersistentContrastiveDivergence<real_value, features_size, batch_size>::batch_precomputing(std::size_t) {
   for (std::size_t k = 0; k < batch_size; k++) {
     PersistentContrastiveDivergence::_chains[k].evolve(PersistentContrastiveDivergence::_k);
+    for (std::size_t j = 0; j < PersistentContrastiveDivergence::_rbm.n(); j++) {
+      PersistentContrastiveDivergence::prob_j_table[PersistentContrastiveDivergence::_rbm.n()*k+j] = PersistentContrastiveDivergence::_rbm.prob_h(j, PersistentContrastiveDivergence::_chains[k].v().begin());
+    }
   }
 }
