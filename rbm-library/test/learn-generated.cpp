@@ -11,13 +11,13 @@
 using namespace std;
 using namespace rbm;
 
-const unsigned FEATURES_SIZE = 300;
-const unsigned HIDDEN_SIZE = 200;
-const unsigned TRAINING_SET_SIZE = 10000;
-const unsigned STEPS_TO_STATIONARY = 400;
+const unsigned FEATURES_SIZE = 150;
+const unsigned HIDDEN_SIZE = 80;
+const unsigned TRAINING_SET_SIZE = 3000;
+const unsigned STEPS_TO_STATIONARY = 40;
 const unsigned BATCH_SIZE = 10;
 const unsigned SEED = 647700;
-const unsigned EPOCHS = 50;
+const unsigned EPOCHS = 10;
 const unsigned K = 5;
 const bool     READ_FROM_FILE = false;
 const bool     WRITE_ON_FILE = false;

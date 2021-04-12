@@ -6,16 +6,17 @@
 #include <cstddef>
 #include <vector>
 #include <random>
-
+#include <utility.cpp>
 
 namespace rbm {
   template <typename real_value>
   class MarcovChain {
     private:
       BinaryRBM<real_value>& _rbm;
-      std::vector<bool> _v, _h;
+      std::vector<binary_value> _v, _h;
       std::mt19937& _rng;
       static const real_value default_init_probabality;
+      std::minstd_rand fast_rng;
     public:
       // Constructors
       MarcovChain(BinaryRBM<real_value>& rbm, std::mt19937& rng);
@@ -28,8 +29,8 @@ namespace rbm {
       void init_random_v(real_value prob_one = default_init_probabality);
 
       // Getters
-      const std::vector<bool>& v() const;
-      const std::vector<bool>& h() const;
+      const std::vector<binary_value>& v() const;
+      const std::vector<binary_value>& h() const;
       // I don't write getters for iterators because they can be easilly got from these.
 
       //Setters

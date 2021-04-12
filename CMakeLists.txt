@@ -14,11 +14,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -funroll-loops")
 if (CMAKE_COMPILER_IS_GNUCXX)
   message("Specializing on g++")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wlogical-op -Wduplicated-cond")
+  #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
 
 if (CLANG)
   message("Specializing on Clang")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wduplicate-enum -Wno-undefined-var-template")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -mllvm -inline-treshold=10000")
 endif()
 
 ## Static Linking does not work also in Ubuntu...

@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
   BinaryRBM<real_value> rbm_PCD1(PIXELS, HIDDEN_SIZE, rng);
   
   
-  rbm_CD1.load_from_file("mnist-cd1.rbm");
-  rbm_PCD1.load_from_file("mnist-pcd1.rbm");
+  rbm_CD1.load_from_file("mnist-cd1-64770.rbm");
+  rbm_PCD1.load_from_file("mnist-pcd1-64770.rbm");
   clog << "Done!" << endl << endl;
 
   

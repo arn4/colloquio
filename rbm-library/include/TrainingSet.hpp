@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include <array>
+#include <utility.cpp>
 
 
 namespace rbm {
@@ -12,14 +13,14 @@ namespace rbm {
   template<std::size_t features_size, std::size_t batch_size>
   class TrainingBatch {
     private:
-      std::array<bool, features_size*batch_size> data;
+      std::array<binary_value, features_size*batch_size> data;
     public:
       TrainingBatch() {};
       TrainingBatch(const std::vector<std::vector<bool>>& batch);
 
       auto get_iterator(std::size_t k) const;
 
-      bool get_element(std::size_t k, std::size_t i) const;
+      binary_value get_element(std::size_t k, std::size_t i) const;
 
   };
 

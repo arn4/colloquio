@@ -14,7 +14,7 @@ TrainingBatch<features_size, batch_size>::TrainingBatch(const std::vector<std::v
   for (auto& d: batch) {
     assert(d.size() ==features_size);
     for(bool f: d) {
-      data[ki] = f;
+      data[ki] = binary_value(f);
       ++ki;
     }
   }
@@ -26,7 +26,7 @@ inline auto TrainingBatch<features_size, batch_size>::get_iterator(std::size_t k
 }
 
 template<std::size_t features_size, std::size_t batch_size>
-inline bool TrainingBatch<features_size, batch_size>::get_element(std::size_t k, std::size_t i) const {
+inline binary_value TrainingBatch<features_size, batch_size>::get_element(std::size_t k, std::size_t i) const {
   return data[k*features_size+i];
 }
 

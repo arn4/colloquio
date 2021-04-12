@@ -58,6 +58,10 @@ namespace rbm {
       real_value prob_v(std::size_t i, Iterator h_begin) const;
       template<class Iterator>
       real_value prob_h(std::size_t j, Iterator v_begin) const;
+      template<class Iterator>
+      std::vector<real_value> vec_prob_v(Iterator h_begin) const;
+      template<class Iterator>
+      std::vector<real_value> vec_prob_h(Iterator v_begin) const;
 
       //Others
       template<class Iterator>

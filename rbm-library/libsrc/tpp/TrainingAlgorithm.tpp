@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 TrainingAlgorithm<real_value, features_size, batch_size>::TrainingAlgorithm (
@@ -54,15 +55,15 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::train_on_batch(st
   for (std::size_t k = 0; k < batch_size; k++) {
     // Compute log-likelihood of b_i
     for (std::size_t i = 0; i < _rbm.m(); i++) {
-      _last_update_b[i] += bool2real<real_value>(batch.get_element(k,i)) + b_second_term(i, k);
+      _last_update_b[i] += binary2real<real_value>(batch.get_element(k,i)) + b_second_term(i, k);
     }
 
     // Compute log-likelihood of c_j and w_ij; all together to optimize 
+    std::vector<real_value> probability_h = _rbm.vec_prob_h(batch.get_iterator(k));
     for (std::size_t j = 0; j < _rbm.n(); j++) {
-      real_value probability_hj = _rbm.prob_h(j, batch.get_iterator(k));
-      _last_update_c[j] += probability_hj + c_second_term(j, k);
+      _last_update_c[j] += probability_h[j] + c_second_term(j, k);
       for (std::size_t i = 0; i < _rbm.m(); i++) {
-        _last_update_w[_rbm.n()*i + j] += bool2real<real_value>(batch.get_element(k,i)) * probability_hj + w_second_term(i, j, k);
+        _last_update_w[_rbm.n()*i + j] += binary2real<real_value>(batch.get_element(k,i)) * probability_h[j] + w_second_term(i, j, k);
       }
     }
   }
