@@ -82,7 +82,13 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::train_on_batch(st
       _rbm.update_w(i, j, _last_update_w[i*_rbm.n()+j]);
     }
   }
+  // if (b%400==0) {
+  //   std::clog << "b[0]: " << _rbm.b(406) << ' ' << _last_update_b[406] << ' ' << _last_update_b[406]/_rbm.b(406) << std::endl;
+  //   std::clog << "c[0]: " << _rbm.c(0) << ' ' << _last_update_c[0] << ' ' << _last_update_c[0]/_rbm.c(0) << std::endl;
+  //   std::clog << "w[mezzo]: " << _rbm.w(406,0) << ' ' << _last_update_w[406*_rbm.n()] << ' ' << _last_update_w[406*_rbm.n()]/_rbm.w(406,0) << std::endl;
+  // }
 }
+
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 void TrainingAlgorithm<real_value, features_size, batch_size>::epoch(std::size_t e) {
@@ -109,7 +115,7 @@ real_value TrainingAlgorithm<real_value, features_size, batch_size>::log_pseudol
       }
     }
   }
-  return psl/real_value(_training_set.num_of_batches()*batch_size);
+  return psl/real_value(_training_set.num_of_batches()*batch_size)/_rbm.m();
 }
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>

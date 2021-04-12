@@ -19,10 +19,10 @@ const size_t   PIXELS = 28*28;
 const size_t   TRAINING_SET_SIZE = 60000;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
-const unsigned EPOCHS = 40;
-const unsigned MONITOR_EVERY = 3;
+const unsigned EPOCHS = 50;
+const unsigned MONITOR_EVERY = 1;
 using real_value = double;
-const real_value LEARNING_RATE = 0.05;
+const real_value LEARNING_RATE = 0.06;
 const real_value WEIGHT_DECAY = 0.0001;
 const real_value MOMENTUM = 0.;
 
@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
   BinaryRBM<real_value> rbm_cd1 (PIXELS, HIDDEN_SIZE, rng);
   BinaryRBM<real_value> rbm_pcd1(PIXELS, HIDDEN_SIZE, rng);
 
-  CD cd1(rbm_cd1, ts, 1, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  PCD pcd1(rbm_pcd1, ts, 1, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  CD cd1(rbm_cd1, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  PCD pcd1(rbm_pcd1, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
 
   ofstream result("mnist-psl-"+to_string(seed)+".txt");
   for (unsigned e = 1; e <= EPOCHS; e++) {
