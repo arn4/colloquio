@@ -94,7 +94,7 @@ void BinaryRBM<real_value>::init_gaussian_w(real_value mu, real_value sigma) {
 template<typename real_value>
 void BinaryRBM<real_value>::save_on_file(std::string filename) const {
   std::ofstream fout(filename);
-  fout << std::fixed << std::setprecision(7);
+  fout << std::fixed << std::setprecision(10);
   for (const auto bi: _b) {
     fout << bi << ' ';
   }

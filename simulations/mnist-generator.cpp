@@ -18,7 +18,7 @@ const size_t   PIXELS = 28*28;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned SAMPLES = 20;
-const unsigned STEPS_TO_STATIONARY = 40;
+const unsigned STEPS_TO_STATIONARY = 1000;
 using real_value = double;
 
 int main(int argc, char *argv[]) {

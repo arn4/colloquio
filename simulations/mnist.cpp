@@ -16,13 +16,14 @@ using namespace rbm;
 
 const size_t   DIGITS = 10; // from 0 to 9
 const size_t   PIXELS = 28*28;
-const size_t   TRAINING_SET_SIZE = 60000;
+const size_t   TRAINING_SET_SIZE = 60;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned EPOCHS = 50;
 const unsigned MONITOR_EVERY = 1;
+const unsigned SAVE_RBM_EVERY = 10;
 using real_value = double;
-const real_value LEARNING_RATE = 0.06;
+const real_value LEARNING_RATE = 0.05;
 const real_value WEIGHT_DECAY = 0.0001;
 const real_value MOMENTUM = 0.;
 
@@ -75,38 +76,71 @@ int main(int argc, char *argv[]) {
 
   BinaryRBM<real_value> rbm_cd1 (PIXELS, HIDDEN_SIZE, rng);
   BinaryRBM<real_value> rbm_pcd1(PIXELS, HIDDEN_SIZE, rng);
+  BinaryRBM<real_value> rbm_cd10 (PIXELS, HIDDEN_SIZE, rng);
+  BinaryRBM<real_value> rbm_pcd10(PIXELS, HIDDEN_SIZE, rng);
+  BinaryRBM<real_value> rbm_pcd30(PIXELS, HIDDEN_SIZE, rng);
 
-  CD cd1(rbm_cd1, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  PCD pcd1(rbm_pcd1, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  CD cd1(rbm_cd1, ts, 1, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  PCD pcd1(rbm_pcd1, ts, 1, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  CD cd10(rbm_cd10, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  PCD pcd10(rbm_pcd10, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  PCD pcd30(rbm_pcd30, ts, 30, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
 
-  ofstream result("mnist-psl-"+to_string(seed)+".txt");
+  ofstream result(to_string(seed)+"/psl.txt");
   for (unsigned e = 1; e <= EPOCHS; e++) {
     clog << "Epoch " << e << endl;
     thread epoch_cd1(&CD::epoch, cd1, 0);
     thread epoch_pcd1(&PCD::epoch, pcd1, 0);
+    thread epoch_cd10(&CD::epoch, cd10, 0);
+    thread epoch_pcd10(&PCD::epoch, pcd10, 0);
+    thread epoch_pcd30(&PCD::epoch, pcd30, 0);
     epoch_cd1.join();
     epoch_pcd1.join();
-    // pcd1.epoch();
-    // real_value psl_pcd1 = pcd1.log_pseudolikelihood();
+    epoch_cd10.join();
+    epoch_pcd10.join();
+    epoch_pcd30.join();
 
     if (e%MONITOR_EVERY==0) {
       auto future_psl_cd1 = async(&CD::log_pseudolikelihood, cd1);
       auto future_psl_pcd1 = async(&PCD::log_pseudolikelihood, pcd1);
+      auto future_psl_cd10 = async(&CD::log_pseudolikelihood, cd10);
+      auto future_psl_pcd10 = async(&PCD::log_pseudolikelihood, pcd10);
+      auto future_psl_pcd30 = async(&PCD::log_pseudolikelihood, pcd30);
 
       real_value psl_cd1  = future_psl_cd1.get();
       real_value psl_pcd1 = future_psl_pcd1.get();
+      real_value psl_cd10  = future_psl_cd10.get();
+      real_value psl_pcd10 = future_psl_pcd10.get();
+      real_value psl_pcd30 = future_psl_pcd30.get();
 
       clog << "  PSL CD-1: "  << psl_cd1 << endl;
       clog << "  PSL PCD-1: " << psl_pcd1  << endl;
+      clog << "  PSL CD-10: "  << psl_cd10 << endl;
+      clog << "  PSL PCD-10: " << psl_pcd10  << endl;
+      clog << "  PSL PCD-30: " << psl_pcd30  << endl;
 
       result << e;
       result << ' ' << psl_cd1;
       result << ' ' << psl_pcd1;
+      result << ' ' << psl_cd10;
+      result << ' ' << psl_pcd10;
+      result << ' ' << psl_pcd30;
       result << endl;
+
+      if (e%SAVE_RBM_EVERY == 0) {
+        rbm_cd1.save_on_file(to_string(seed)+"/rbm/cd1_ep"+to_string(e)+".rbm");
+        rbm_pcd1.save_on_file(to_string(seed)+"/rbm/pcd1_ep"+to_string(e)+".rbm");
+        rbm_cd10.save_on_file(to_string(seed)+"/rbm/cd10_ep"+to_string(e)+".rbm");
+        rbm_pcd10.save_on_file(to_string(seed)+"/rbm/pcd10_ep"+to_string(e)+".rbm");
+        rbm_pcd30.save_on_file(to_string(seed)+"/rbm/pcd30_ep"+to_string(e)+".rbm");
+      }
     }
   }
   result.close();
   clog << "Done!" << endl << endl;
-  rbm_cd1.save_on_file("mnist-cd1-"+to_string(seed)+".rbm");
-  rbm_pcd1.save_on_file("mnist-pcd1-"+to_string(seed)+".rbm");
+  rbm_cd1.save_on_file(to_string(seed)+"/cd1.rbm");
+  rbm_pcd1.save_on_file(to_string(seed)+"/pcd1.rbm");
+  rbm_cd10.save_on_file(to_string(seed)+"/cd10.rbm");
+  rbm_pcd10.save_on_file(to_string(seed)+"/pcd10.rbm");
+  rbm_pcd30.save_on_file(to_string(seed)+"/pcd30.rbm");
 }
