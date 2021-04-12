@@ -16,7 +16,7 @@ using namespace rbm;
 
 const size_t   DIGITS = 10; // from 0 to 9
 const size_t   PIXELS = 28*28;
-const size_t   TRAINING_SET_SIZE = 60;
+const size_t   TRAINING_SET_SIZE = 6000;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned EPOCHS = 50;
