@@ -6,6 +6,7 @@ add_library(rbm
   libsrc/TrainingAlgorithm.cpp
   libsrc/ContrastiveDivergence.cpp
   libsrc/PersistentContrastiveDivergence.cpp
+  libsrc/ExtendedMeanField.cpp
 )
 target_include_directories(rbm PUBLIC #PUBLIC will set this include path also for code that rely on this library
   include/   # stardard functions that can be precompiled
