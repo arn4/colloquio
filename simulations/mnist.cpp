@@ -128,19 +128,19 @@ int main(int argc, char *argv[]) {
       result << endl;
 
       if (e%SAVE_RBM_EVERY == 0) {
-        rbm_cd1.save_on_file(to_string(seed)+"/rbm/cd1_ep"+to_string(e)+".rbm");
-        rbm_pcd1.save_on_file(to_string(seed)+"/rbm/pcd1_ep"+to_string(e)+".rbm");
-        rbm_cd10.save_on_file(to_string(seed)+"/rbm/cd10_ep"+to_string(e)+".rbm");
-        rbm_pcd10.save_on_file(to_string(seed)+"/rbm/pcd10_ep"+to_string(e)+".rbm");
-        rbm_pcd30.save_on_file(to_string(seed)+"/rbm/pcd30_ep"+to_string(e)+".rbm");
+        rbm_cd1.save_on_file(to_string(seed)+"/rbm/cd1_ep"+to_string(e)+".rbm.txt");
+        rbm_pcd1.save_on_file(to_string(seed)+"/rbm/pcd1_ep"+to_string(e)+".rbm.txt");
+        rbm_cd10.save_on_file(to_string(seed)+"/rbm/cd10_ep"+to_string(e)+".rbm.txt");
+        rbm_pcd10.save_on_file(to_string(seed)+"/rbm/pcd10_ep"+to_string(e)+".rbm.txt");
+        rbm_pcd30.save_on_file(to_string(seed)+"/rbm/pcd30_ep"+to_string(e)+".rbm.txt");
       }
     }
   }
   result.close();
   clog << "Done!" << endl << endl;
-  rbm_cd1.save_on_file(to_string(seed)+"/cd1.rbm");
-  rbm_pcd1.save_on_file(to_string(seed)+"/pcd1.rbm");
-  rbm_cd10.save_on_file(to_string(seed)+"/cd10.rbm");
-  rbm_pcd10.save_on_file(to_string(seed)+"/pcd10.rbm");
-  rbm_pcd30.save_on_file(to_string(seed)+"/pcd30.rbm");
+  rbm_cd1.save_on_file(to_string(seed)+"/cd1.rbm.txt");
+  rbm_pcd1.save_on_file(to_string(seed)+"/pcd1.rbm.txt");
+  rbm_cd10.save_on_file(to_string(seed)+"/cd10.rbm.txt");
+  rbm_pcd10.save_on_file(to_string(seed)+"/pcd10.rbm.txt");
+  rbm_pcd30.save_on_file(to_string(seed)+"/pcd30.rbm.txt");
 }
