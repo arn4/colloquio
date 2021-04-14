@@ -18,8 +18,10 @@ const size_t   PIXELS = 28*28;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned SAMPLES = 20;
-const unsigned STEPS_TO_STATIONARY = 1000;
+const unsigned STEPS_TO_STATIONARY = 150;
 using real_value = double;
+
+const vector<string> trained = {"cd1", "pcd1", "cd10", "pcd10", "pcd30"};
 
 int main(int argc, char *argv[]) {
   unsigned seed;
@@ -33,54 +35,45 @@ int main(int argc, char *argv[]) {
 
   // Load RBM
   clog << "Loading the RBM... ";
-  BinaryRBM<real_value> rbm_CD1(PIXELS, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm_PCD1(PIXELS, HIDDEN_SIZE, rng);
+  vector<BinaryRBM<real_value>> rbms(trained.size(), BinaryRBM<real_value>(PIXELS, HIDDEN_SIZE, rng));
   
-  
-  rbm_CD1.load_from_file("mnist-cd1-"+to_string(seed)+".rbm");
-  rbm_PCD1.load_from_file("mnist-pcd1-"+to_string(seed)+".rbm");
+  for (unsigned r = 0; r < trained.size(); r++) {
+    rbms[r].load_from_file(to_string(seed)+"/"+trained[r]+".rbm.txt");
+  }
   clog << "Done!" << endl << endl;
 
   
   // Generate TestSet
   clog << "Generation of the samples... " << endl;
-  vector<vector<bool>> samples_CD1;
-  vector<vector<bool>> samples_PCD1;
-  MarcovChain<real_value> mc_CD1(rbm_PCD1, rng);
-  MarcovChain<real_value> mc_PCD1(rbm_PCD1, rng);
+  vector<vector<vector<bool>>> samples(trained.size());
 
-  for (unsigned i = 1; i <= SAMPLES; i++) {
-    mc_CD1.init_random_v();
-    mc_CD1.evolve(STEPS_TO_STATIONARY);
-    auto sample = mc_CD1.v();
-    samples_CD1.push_back(vector<bool>(sample.begin(), sample.end()));
+  vector<MarcovChain<real_value>> mc;
+  for (unsigned r = 0; r < trained.size(); r++) {
+    mc.push_back(MarcovChain<real_value>(rbms[r], rng));
+  }
 
-    mc_PCD1.init_random_v();
-    mc_PCD1.evolve(STEPS_TO_STATIONARY);
-    sample = mc_PCD1.v();
-    samples_PCD1.push_back(vector<bool>(sample.begin(), sample.end()));
+  for (unsigned r = 0; r < trained.size(); r++) {
+    for (unsigned i = 1; i <= SAMPLES; i++) {
+      mc[r].init_random_v();
+      mc[r].evolve(STEPS_TO_STATIONARY);
+      auto sample = mc[r].v();
+      samples[r].push_back(vector<bool>(sample.begin(), sample.end()));
+    }
   }
   clog << "Done!" << endl << endl;
     
   clog << "Writing on file... " << endl;
-  ofstream cd1_out("./samples-CD1-"+to_string(seed)+".txt");
-  ofstream pcd1_out("./samples-PCD1-"+to_string(seed)+".txt");
 
-  for (auto s: samples_CD1) {
-    for (bool b: s) {
-      cd1_out << b << ' ';
+  for (unsigned r = 0; r < trained.size(); r++) {
+    ofstream sout(to_string(seed)+"/samples-"+trained[r]+".txt");
+    for (auto s: samples[r]) {
+      for (bool b: s) {
+        sout << b << ' ';
+      }
+      sout << endl;
     }
-    cd1_out << endl;
+    sout.close();
   }
-  cd1_out.close();
 
-  for (auto s: samples_PCD1) {
-    for (bool b: s) {
-      pcd1_out << b << ' ';
-    }
-    pcd1_out << endl;
-  }
-  pcd1_out.close();
-   
   return 0;
 }

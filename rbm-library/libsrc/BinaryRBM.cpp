@@ -12,7 +12,7 @@ template<typename real_value>
 const real_value BinaryRBM<real_value>::default_mu = real_value(0.);
 
 template<typename real_value>
-const real_value BinaryRBM<real_value>::default_sigma = real_value(1.);
+const real_value BinaryRBM<real_value>::default_sigma = real_value(0.001);
 
 template<typename real_value>
 BinaryRBM<real_value>::BinaryRBM(std::size_t m, std::size_t n, std::mt19937& rng) :

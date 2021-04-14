@@ -9,6 +9,7 @@
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
 #include <MarcovChain.hpp>
+#include <ExtendedMeanField.hpp>
 
 
 using namespace std;
@@ -16,19 +17,38 @@ using namespace rbm;
 
 const size_t   DIGITS = 10; // from 0 to 9
 const size_t   PIXELS = 28*28;
-const size_t   TRAINING_SET_SIZE = 60000;
+const size_t   TRAINING_SET_SIZE = 6000;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned EPOCHS = 50;
 const unsigned MONITOR_EVERY = 1;
 const unsigned SAVE_RBM_EVERY = 10;
 using real_value = double;
-const real_value LEARNING_RATE = 0.05;
-const real_value WEIGHT_DECAY = 0.0001;
+const real_value LEARNING_RATE = 0.0005;
+const real_value WEIGHT_DECAY = .00001;
 const real_value MOMENTUM = 0.;
+
+// Insert here the nuber of iterations you would like to do, for each algortihm
+const vector<vector<unsigned>> algs = {
+  {1}, // cd
+  {}, // pcd
+  {3}, // mf
+  {3}, // tap2
+  {}, // ptap2
+  {}, // tap3
+  {3}, // ptap3
+};
+
 
 using CD = ContrastiveDivergence<real_value, PIXELS, DIGITS>;
 using PCD = PersistentContrastiveDivergence<real_value, PIXELS, DIGITS>;
+using MF = MeanField<real_value, PIXELS, DIGITS>;
+using TAP2s = TAP2<real_value, PIXELS, DIGITS>;
+using TAP3s = TAP3<real_value, PIXELS, DIGITS>;
+using PTAP2 = PersistentTAP2<real_value, PIXELS, DIGITS>;
+using PTAP3 = PersistentTAP3<real_value, PIXELS, DIGITS>;
+
+const vector <string> alg_names = {"cd", "pcd", "mf", "tap2", "tap3", "ptap2", "ptap3"};
 
 int main(int argc, char *argv[]) {
   unsigned seed;
@@ -74,73 +94,129 @@ int main(int argc, char *argv[]) {
   // Training 
   clog << "Training... " << endl;
 
-  BinaryRBM<real_value> rbm_cd1 (PIXELS, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm_pcd1(PIXELS, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm_cd10 (PIXELS, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm_pcd10(PIXELS, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm_pcd30(PIXELS, HIDDEN_SIZE, rng);
-
-  CD cd1(rbm_cd1, ts, 1, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  PCD pcd1(rbm_pcd1, ts, 1, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  CD cd10(rbm_cd10, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  PCD pcd10(rbm_pcd10, ts, 10, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  PCD pcd30(rbm_pcd30, ts, 30, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  vector<vector<BinaryRBM<real_value>>> rbm(alg_names.size());
+  for (unsigned s = 0; s < alg_names.size(); s++) {
+    rbm[s] = vector<BinaryRBM<real_value>>(algs[s].size(), BinaryRBM<real_value>(PIXELS, HIDDEN_SIZE, rng));
+  }
+ 
+  vector<CD> alg_cd;
+  for (unsigned k = 0; k< algs[0].size();k++) {
+    alg_cd.push_back(CD(rbm[0][k], ts, algs[0][k], rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<PCD> alg_pcd;
+  for (unsigned k = 0; k< algs[1].size();k++) {
+    alg_pcd.push_back(PCD(rbm[1][k], ts, algs[1][k], rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<MF> alg_mf;
+  for (unsigned k = 0; k< algs[2].size();k++) {
+    alg_mf.push_back(MF(rbm[2][k], ts, algs[2][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<TAP2s> alg_tap2;
+  for (unsigned k = 0; k< algs[3].size();k++) {
+    alg_tap2.push_back(TAP2s(rbm[3][k], ts, algs[3][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<TAP3s> alg_tap3;
+  for (unsigned k = 0; k< algs[4].size();k++) {
+    alg_tap3.push_back(TAP3s(rbm[4][k], ts, algs[4][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<PTAP2> alg_ptap2;
+  for (unsigned k = 0; k< algs[5].size();k++) {
+    alg_ptap2.push_back(PTAP2(rbm[5][k], ts, algs[5][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<PTAP3> alg_ptap3;
+  for (unsigned k = 0; k< algs[6].size();k++) {
+    alg_ptap3.push_back(PTAP3(rbm[6][k], ts, algs[6][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
 
   ofstream result(to_string(seed)+"/psl.txt");
   for (unsigned e = 1; e <= EPOCHS; e++) {
     clog << "Epoch " << e << endl;
-    thread epoch_cd1(&CD::epoch, cd1, 0);
-    thread epoch_pcd1(&PCD::epoch, pcd1, 0);
-    thread epoch_cd10(&CD::epoch, cd10, 0);
-    thread epoch_pcd10(&PCD::epoch, pcd10, 0);
-    thread epoch_pcd30(&PCD::epoch, pcd30, 0);
-    epoch_cd1.join();
-    epoch_pcd1.join();
-    epoch_cd10.join();
-    epoch_pcd10.join();
-    epoch_pcd30.join();
+    vector<thread> thr;
+    for (auto& a: alg_cd) {
+      thr.push_back(thread(&CD::epoch, a, 0));
+    }
+    for (auto& a: alg_pcd) {
+      thr.push_back(thread(&PCD::epoch, a, 0));
+    }
+    for (auto& a: alg_mf) {
+      thr.push_back(thread(&MF::epoch, a, 0));
+    }
+    for (auto& a: alg_tap2) {
+      thr.push_back(thread(&TAP2s::epoch, a, 0));
+    }
+    for (auto& a: alg_tap3) {
+      thr.push_back(thread(&TAP3s::epoch, a, 0));
+    }
+    for (auto& a: alg_ptap2) {
+      thr.push_back(thread(&PTAP2::epoch, a, 0));
+    }
+    for (auto& a: alg_ptap3) {
+      thr.push_back(thread(&PTAP3::epoch, a, 0));
+    }
+
+    for (auto& t: thr) {t.join();}
 
     if (e%MONITOR_EVERY==0) {
-      auto future_psl_cd1 = async(&CD::log_pseudolikelihood, cd1);
-      auto future_psl_pcd1 = async(&PCD::log_pseudolikelihood, pcd1);
-      auto future_psl_cd10 = async(&CD::log_pseudolikelihood, cd10);
-      auto future_psl_pcd10 = async(&PCD::log_pseudolikelihood, pcd10);
-      auto future_psl_pcd30 = async(&PCD::log_pseudolikelihood, pcd30);
+      vector<vector<future<real_value>>> fpsl(algs.size());
+      for (auto& a: alg_cd) {
+        fpsl[0].push_back(async(&CD::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_pcd) {
+        fpsl[1].push_back(async(&CD::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_mf) {
+        fpsl[2].push_back(async(&MF::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_tap2) {
+        fpsl[3].push_back(async(&TAP2s::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_ptap2) {
+        fpsl[4].push_back(async(&TAP3s::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_tap3) {
+        fpsl[5].push_back(async(&PTAP2::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_ptap3) {
+        fpsl[6].push_back(async(&PTAP3::log_pseudolikelihood, a));
+      }
+      
+      vector<vector<real_value>> psl(algs.size());
 
-      real_value psl_cd1  = future_psl_cd1.get();
-      real_value psl_pcd1 = future_psl_pcd1.get();
-      real_value psl_cd10  = future_psl_cd10.get();
-      real_value psl_pcd10 = future_psl_pcd10.get();
-      real_value psl_pcd30 = future_psl_pcd30.get();
+      for (unsigned s = 0; s < alg_names.size(); s++) {
+        for (auto& f: fpsl[s]) {
+          psl[s].push_back(f.get());
+        }
+      }
 
-      clog << "  PSL CD-1: "  << psl_cd1 << endl;
-      clog << "  PSL PCD-1: " << psl_pcd1  << endl;
-      clog << "  PSL CD-10: "  << psl_cd10 << endl;
-      clog << "  PSL PCD-10: " << psl_pcd10  << endl;
-      clog << "  PSL PCD-30: " << psl_pcd30  << endl;
+      for (unsigned s = 0; s < algs.size(); s++) {
+        for (unsigned f = 0; f < algs[s].size(); f++) {
+          clog << "  PSL "<<alg_names[s]<<"-"<<algs[s][f]<<": "<<psl[s][f]<<endl;
+        }
+      }
 
       result << e;
-      result << ' ' << psl_cd1;
-      result << ' ' << psl_pcd1;
-      result << ' ' << psl_cd10;
-      result << ' ' << psl_pcd10;
-      result << ' ' << psl_pcd30;
+      for (unsigned s = 0; s < algs.size(); s++) {
+        for (unsigned f = 0; f < algs[s].size(); f++) {
+          result << ' ' << psl[s][f];
+        }
+      }
       result << endl;
 
       if (e%SAVE_RBM_EVERY == 0) {
-        rbm_cd1.save_on_file(to_string(seed)+"/rbm/cd1_ep"+to_string(e)+".rbm.txt");
-        rbm_pcd1.save_on_file(to_string(seed)+"/rbm/pcd1_ep"+to_string(e)+".rbm.txt");
-        rbm_cd10.save_on_file(to_string(seed)+"/rbm/cd10_ep"+to_string(e)+".rbm.txt");
-        rbm_pcd10.save_on_file(to_string(seed)+"/rbm/pcd10_ep"+to_string(e)+".rbm.txt");
-        rbm_pcd30.save_on_file(to_string(seed)+"/rbm/pcd30_ep"+to_string(e)+".rbm.txt");
+        for (unsigned s = 0; s < algs.size(); s++) {
+          for (unsigned f = 0; f < algs[s].size(); f++) {
+            rbm[s][f].save_on_file(to_string(seed)+"/rbm/"+alg_names[s]+"-"+to_string(algs[s][f])+"_ep"+to_string(e)+".rbm.txt");
+          }
+        }
       }
     }
   }
   result.close();
+
+  for (unsigned s = 0; s < algs.size(); s++) {
+    for (unsigned f = 0; f < algs[s].size(); f++) {
+      rbm[s][f].save_on_file(to_string(seed)+"/rbm/"+alg_names[s]+"-"+to_string(algs[s][f])+".rbm.txt");
+    }
+  }
   clog << "Done!" << endl << endl;
-  rbm_cd1.save_on_file(to_string(seed)+"/cd1.rbm.txt");
-  rbm_pcd1.save_on_file(to_string(seed)+"/pcd1.rbm.txt");
-  rbm_cd10.save_on_file(to_string(seed)+"/cd10.rbm.txt");
-  rbm_pcd10.save_on_file(to_string(seed)+"/pcd10.rbm.txt");
-  rbm_pcd30.save_on_file(to_string(seed)+"/pcd30.rbm.txt");
 }
