@@ -17,26 +17,27 @@ using namespace rbm;
 
 const size_t   DIGITS = 10; // from 0 to 9
 const size_t   PIXELS = 28*28;
-const size_t   TRAINING_SET_SIZE = 6000;
+const size_t   TRAINING_SET_SIZE = 60000;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned EPOCHS = 50;
 const unsigned MONITOR_EVERY = 1;
 const unsigned SAVE_RBM_EVERY = 10;
 using real_value = double;
-const real_value LEARNING_RATE = 0.0005;
-const real_value WEIGHT_DECAY = .00001;
+const real_value LEARNING_RATE = 0.05;
+const real_value WEIGHT_DECAY = .0001;
 const real_value MOMENTUM = 0.;
 
 // Insert here the nuber of iterations you would like to do, for each algortihm
 const vector<vector<unsigned>> algs = {
   {1}, // cd
-  {}, // pcd
-  {3}, // mf
-  {3}, // tap2
-  {}, // ptap2
-  {}, // tap3
-  {3}, // ptap3
+  {1}, // pcd
+  {5, 10,}, // mf
+  {5, 10}, // tap2
+  {5, 10}, // tap3
+  {15}, // pmf
+  {15}, // ptap2
+  {30}, // ptap3
 };
 
 
@@ -45,10 +46,11 @@ using PCD = PersistentContrastiveDivergence<real_value, PIXELS, DIGITS>;
 using MF = MeanField<real_value, PIXELS, DIGITS>;
 using TAP2s = TAP2<real_value, PIXELS, DIGITS>;
 using TAP3s = TAP3<real_value, PIXELS, DIGITS>;
+using PMF = PersistentMeanField<real_value, PIXELS, DIGITS>;
 using PTAP2 = PersistentTAP2<real_value, PIXELS, DIGITS>;
 using PTAP3 = PersistentTAP3<real_value, PIXELS, DIGITS>;
 
-const vector <string> alg_names = {"cd", "pcd", "mf", "tap2", "tap3", "ptap2", "ptap3"};
+const vector <string> alg_names = {"cd", "pcd", "mf", "tap2", "tap3", "pmf", "ptap2", "ptap3"};
 
 int main(int argc, char *argv[]) {
   unsigned seed;
@@ -119,13 +121,17 @@ int main(int argc, char *argv[]) {
   for (unsigned k = 0; k< algs[4].size();k++) {
     alg_tap3.push_back(TAP3s(rbm[4][k], ts, algs[4][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
-  vector<PTAP2> alg_ptap2;
+  vector<PMF> alg_pmf;
   for (unsigned k = 0; k< algs[5].size();k++) {
-    alg_ptap2.push_back(PTAP2(rbm[5][k], ts, algs[5][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_pmf.push_back(PMF(rbm[5][k], ts, algs[5][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  }
+  vector<PTAP2> alg_ptap2;
+  for (unsigned k = 0; k< algs[6].size();k++) {
+    alg_ptap2.push_back(PTAP2(rbm[6][k], ts, algs[6][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
   vector<PTAP3> alg_ptap3;
-  for (unsigned k = 0; k< algs[6].size();k++) {
-    alg_ptap3.push_back(PTAP3(rbm[6][k], ts, algs[6][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+  for (unsigned k = 0; k< algs[7].size();k++) {
+    alg_ptap3.push_back(PTAP3(rbm[7][k], ts, algs[7][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
 
   ofstream result(to_string(seed)+"/psl.txt");
@@ -146,6 +152,9 @@ int main(int argc, char *argv[]) {
     }
     for (auto& a: alg_tap3) {
       thr.push_back(thread(&TAP3s::epoch, a, 0));
+    }
+    for (auto& a: alg_pmf) {
+      thr.push_back(thread(&PMF::epoch, a, 0));
     }
     for (auto& a: alg_ptap2) {
       thr.push_back(thread(&PTAP2::epoch, a, 0));
@@ -170,14 +179,17 @@ int main(int argc, char *argv[]) {
       for (auto& a: alg_tap2) {
         fpsl[3].push_back(async(&TAP2s::log_pseudolikelihood, a));
       }
-      for (auto& a: alg_ptap2) {
+      for (auto& a: alg_tap3) {
         fpsl[4].push_back(async(&TAP3s::log_pseudolikelihood, a));
       }
-      for (auto& a: alg_tap3) {
-        fpsl[5].push_back(async(&PTAP2::log_pseudolikelihood, a));
+      for (auto& a: alg_pmf) {
+        fpsl[5].push_back(async(&PMF::log_pseudolikelihood, a));
+      }
+      for (auto& a: alg_ptap2) {
+        fpsl[6].push_back(async(&PTAP2::log_pseudolikelihood, a));
       }
       for (auto& a: alg_ptap3) {
-        fpsl[6].push_back(async(&PTAP3::log_pseudolikelihood, a));
+        fpsl[7].push_back(async(&PTAP3::log_pseudolikelihood, a));
       }
       
       vector<vector<real_value>> psl(algs.size());
