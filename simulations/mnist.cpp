@@ -227,7 +227,7 @@ int main(int argc, char *argv[]) {
 
   for (unsigned s = 0; s < algs.size(); s++) {
     for (unsigned f = 0; f < algs[s].size(); f++) {
-      rbm[s][f].save_on_file(to_string(seed)+"/rbm/"+alg_names[s]+"-"+to_string(algs[s][f])+".rbm.txt");
+      rbm[s][f].save_on_file(to_string(seed)+"/"+alg_names[s]+"-"+to_string(algs[s][f])+".rbm.txt");
     }
   }
   clog << "Done!" << endl << endl;

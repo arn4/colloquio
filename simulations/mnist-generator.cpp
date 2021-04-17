@@ -18,7 +18,7 @@ const size_t   PIXELS = 28*28;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
 const unsigned SAMPLES = 20;
-const unsigned STEPS_TO_STATIONARY = 150;
+const unsigned STEPS_TO_STATIONARY = 50;
 using real_value = double;
 
 const vector<string> trained = {"cd1", "pcd1", "cd10", "pcd10", "pcd30"};
@@ -54,7 +54,8 @@ int main(int argc, char *argv[]) {
 
   for (unsigned r = 0; r < trained.size(); r++) {
     for (unsigned i = 1; i <= SAMPLES; i++) {
-      mc[r].init_random_v();
+      mc[r].init_random_h();
+      mc[r].next_step_v();
       mc[r].evolve(STEPS_TO_STATIONARY);
       auto sample = mc[r].v();
       samples[r].push_back(vector<bool>(sample.begin(), sample.end()));
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]) {
   clog << "Writing on file... " << endl;
 
   for (unsigned r = 0; r < trained.size(); r++) {
-    ofstream sout(to_string(seed)+"/samples-"+trained[r]+".txt");
+    ofstream sout(to_string(seed)+"/generated-set/samples-"+trained[r]+".txt");
     for (auto s: samples[r]) {
       for (bool b: s) {
         sout << b << ' ';

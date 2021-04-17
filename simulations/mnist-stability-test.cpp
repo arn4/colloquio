@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     
   clog << "Writing on file... " << endl;
   for (unsigned r = 0; r < trained.size(); r++) {
-    ofstream sout(to_string(seed)+"/stability-"+trained[r]+".txt");
+    ofstream sout(to_string(seed)+"/generated-set/stability-"+trained[r]+".txt");
     for (auto s: samples[r]) {
       for (bool b: s) {
         sout << b << ' ';

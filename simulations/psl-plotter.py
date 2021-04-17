@@ -5,8 +5,8 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble='\\usepackage{amsmath} \\usepackage{siunitx}')
 plt.style.use('seaborn')
 
-seed = '567137'
-trained = ['cd1', 'pcd1', 'cd10', 'pcd10','pcd30']
+seed = '2204'
+trained = ["cd-1", "pcd-1", "mf-5", "mf-10", "tap2-5", "tap2-10", "tap3-5", "tap3-10", "pmf-15", "ptap2-15", "ptap3-30"]
 
 
 epoch, *_alg = np.loadtxt(str(seed)+'/psl.txt', unpack=True)
