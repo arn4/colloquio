@@ -540,7 +540,7 @@ Now we have computed all the orders that we need we can write
 A{\left[\vec{m}^v, \vec{m}^h;\beta\right]} &\approx
   -\sum_{i=1}^{m}\left[\log{\left(\mvi\right)}\mvi + \log{\left(1-\mvi\right)}(1-\mvi)\right]
   -\sum_{j=1}^{n}\left[\log{\left(\mhj\right)}\mhj + \log{\left(1-\mhj\right)}(1-\mhj)\right]\\
-  &\quad-\beta \sum_{i,j=1}^{m,n}\mvi w_{i,j} \mhj -\beta\sum_{i=1}^{m} b_i\mvi -\beta\sum_{j=1}^{m} c_j\mhj\\
+  &\quad+\beta \sum_{i,j=1}^{m,n}\mvi w_{i,j} \mhj +\beta\sum_{i=1}^{m} b_i\mvi +\beta\sum_{j=1}^{m} c_j\mhj\\
   &\quad+\frac{\beta^2}{2}
   \sum_{i,j=1}^{m,n} w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)\\
   &\quad+\frac{2}{3}\beta^3 
@@ -557,8 +557,8 @@ on \(A\) we write
   \Gam{\vec{m}^v, \vec{m}^h}{1} &\approx
     \quad\sum_{i=1}^{m}\left[\log{\left(\mvi\right)}\mvi + \log{\left(1-\mvi\right)}(1-\mvi)-b_i\mvi\right]\\
     &\quad+\sum_{j=1}^{n}\left[\log{\left(\mhj\right)}\mhj+\log{\left(1-\mhj\right)}(1-\mhj)-c_j\mhj\right]\\
-    &\quad+\sum_{i,j=1}^{m,n}\Bigg[
-      -\mvi w_{i,j}\mhj
+    &\quad-\sum_{i,j=1}^{m,n}\Bigg[
+      \mvi w_{i,j}\mhj
       +\frac{1}{2}w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)+\\
       &\qquad\qquad\quad+\frac{2}{3}w_{i,j}^3\left(\mvi-\mvisq\right)\left(\frac{1}{2}-\mvi\right)\left(\frac{1}{2}-\mhj\right)
         \left(\mhj-\mhjsq\right)
@@ -576,7 +576,7 @@ Let's compute the gradient with respect to \(\mvi\), the case \(\mhj\) is  the s
   \left.\ParDer{\Gam{\vec{m}}{1}}{\mvi}\right|_{\vec{m}=\vec{\hat{m}}}
     &= \log\left(\hmvi\right) + 1 - \log\left(1-\hmvi\right) - 1 - b_i \\
     &\quad-\sum_{j=1}^n\bigg[w_{i,j}\hmhj
-      +\frac{1}{2}w_{i,j}\left(1-2\hmvi\right)\left(\hmhj-\hmhjsq\right) \\
+      +\frac{1}{2}w^2_{i,j}\left(1-2\hmvi\right)\left(\hmhj-\hmhjsq\right) \\
       &\qquad\qquad+\frac{2}{3}w_{i,j}^3\left(3\hmvisq-3\hmvi+\frac{1}{2}\right)\left(\frac{1}{2}-\hmhj\right)
       \left(\hmhj-\hmhjsq\right)\bigg].
 \end{align*}
@@ -620,7 +620,7 @@ The calculation is straightforward using the expression above of \(\Gamma\)
   \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{c_j} &= -\hmhj\\
   %
   \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{w_{i,j}}
-    &=\Bigg[-\hmvi\hmhj +w_{i,j}\left(\hmvi-\hmvisq\right)\left(\hmhj-\hmhjsq\right)+\\
+    &=-\Bigg[\hmvi\hmhj +w_{i,j}\left(\hmvi-\hmvisq\right)\left(\hmhj-\hmhjsq\right)+\\
     &\qquad+2w_{i,j}^2\left(\hmvi-\hmvisq\right)\left(\frac{1}{2}-\hmvi\right)\left(\frac{1}{2}-\hmhj\right)
       \left(\hmhj-\hmhjsq\right)\Bigg]
 \end{align*}

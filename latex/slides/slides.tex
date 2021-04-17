@@ -1,0 +1,40 @@
+\documentclass[handout]{beamer}
+\usepackage{pack}
+
+%\usepackage{enumitem}
+
+\usetheme{CambridgeUS}
+\usecolortheme{beaver} %seahorse, beaver
+
+
+%% Title page
+\title[\colloquioShortTitle]{\colloquioTitle}
+%\subtitle{\texttt{Insert  subtitle}}
+\author[\myFullName]{\myFullName \\[1ex]
+  {\small Advisor: \advisorFullName}}      
+\institute[]{\includegraphics[height=2.20cm]{img/sns-logo-gray-sign}}
+\date[\colloquioShortDate]{\colloquioDate}
+\logo{\includegraphics[height=1.cm]{img/sns-logo-gray}}
+
+\begin{document}
+  \frame[plain,noframenumbering]{\titlepage}
+  
+  \input{model}
+  \input{classical-algorithms}
+  
+  
+  % No section
+  \section{}
+  % Avoid righthand cornern numbering
+  \setbeamertemplate{page number in head/foot}{\phantom{0/0}}
+  
+  \begin{frame}[noframenumbering]
+    \centerline{\huge Thanks for the attention!} 
+    \vfill
+    \textbf{\structure{Bibliography}}
+    \printbibliography
+  \end{frame}
+
+  \appendix
+  
+\end{document}

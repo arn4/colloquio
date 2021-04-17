@@ -1,0 +1,110 @@
+
+\section{Classical training Algorithms}
+\subsection{Update Rule}
+\begin{frame}
+  \frametitle{Update rule}
+  Gradients + some correction to improve learning:
+  \[
+  \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)}
+  \underbrace{
+    + \eta \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}}
+    - \lambda \vec{\theta}^{(t)}
+    + \nu \Delta\vec{\theta}^{(t-1)}
+  }_{\coloneqq \Delta\vec{\theta}^{(t)}}
+  \]
+  \begin{itemize}
+    \item \structure{Learning rate}: length of the step toward gradient direction
+    \item \structure{Weight decay}: keep parameters small
+    \item \structure{Momentum}: avoid fluctuations
+    \item \structure{Batches}: group updates before applying them 
+  \end{itemize}
+  All these are \alert{meta-parameters} of an algorithm:
+  \emph{Hinton's guide} \cite{hinton2012practical} for tuning.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{MCMC Algorithms}
+\begin{frame}
+  \frametitle{Naive Gibbs Sampling}
+  \begin{alertblock}{Idea!}
+    Use a \alert{Markov Chain Monte-Carlo} algorithm to sample \(\prob{\vec{v}}\).\\
+    RBM Markov Property \(\implies\) update one layer at a time, not single units.
+  \end{alertblock}
+  \vfill
+  \begin{columns}
+    \begin{column}{0.65\textwidth}
+      The algorithm is:
+      \begin{enumerate}
+        \item Choose visible layer state \(\vec{v}^{(0)}\) randomly.
+        \item\label{enm:sample-hidden} Sample an hidden layer state using \(\condprob{h^{(t+1)}_j=1}{\vec{v}^{(t)}}\).
+        \item Sample a visible layer state using \(\condprob{v^{(t+1)}_i=1}{\vec{h}^{(t)}}\).
+        \item Repeat from step \ref{enm:sample-hidden} until stationary condition is reached
+        \item Visible state \(\vec{v}^{(s)}\) is a sample from \(\prob{\vec{v}}\)
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.30\textwidth}
+      \begin{alertblock}{Problem!}
+        Reaching stationary distribution is too slow.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Contrastive Divergence}
+  \begin{alertblock}{Idea!}
+    Training samples are already from the goal distribution, that is also the invariant at the end of the train.\\
+  \end{alertblock}
+  \vspace{20pt}
+  \begin{columns}
+    \begin{column}{0.66\textwidth}
+      Algorithm modifications:
+      \begin{enumerate}
+        \item Set \(\vec{v}^{(0)} = \vec{\bar{v}}\), the training  sample.
+        \addtocounter{enumi}{2}
+        \item Repeat from step 2 for \alert{\(k\) times}
+        \item Expected values are estiated using \emph{only} \(\vec{v}^{(k)}\).
+      \end{enumerate}
+      2 kind  of boost:
+      \begin{itemize}
+        \item \(k\) is fixed (often is 1, for  sure less  then 10)
+        \item we use only one sample
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{alertblock}{Drawback!}
+        \(\vec{v}^{(k)}\) is biased\\
+        We are not maximizing the likelihood
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Persistent Contrastive Divergence}
+  \begin{alertblock}{Ideas!}
+    \begin{itemize}
+      \item Use the \(\vec{v}^{(k)}\) of the previous update as \(\vec{v}^{(0)}\) for the current
+      \item Use many chains to have a better statics  when computing expected values
+    \end{itemize}
+  \end{alertblock}
+  The number of chains is usually the size of the batch.
+  \begin{alertblock}{Why is better than CD?}
+     Parameters change slightly between two batches, so only few Markov Chain steps are needed to recover invariant distribution \\
+     At beginning of learning CD is far from real invariant distribution 
+  \end{alertblock}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Monitoring}
+\begin{frame}
+  \frametitle{Pseudo-likelihood}
+
+  \begin{alertblock}{Problem!}
+    Likelihood is not computable in practice! We can't compute \(Z\)
+  \end{alertblock}
+  \[
+    \vec{\bar{v}} \xrightarrow{\text{MC sample}} \vec{\bar{h}} \longrightarrow \log\likelihood{\vec{\theta}}{\vec{\bar{v}}} \approx \log{\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}}
+  \]
+  \(\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}\) can be easy computed analytically.
+\end{frame}

@@ -1,11 +1,12 @@
 % !TeX spellcheck = en_US 
-\documentclass[]{article}
+\documentclass{article}
 \usepackage[paper=a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
 \usepackage[section]{placeins}
 \usepackage[indent=0cm]{parskip}
 \usepackage[colorlinks, linkcolor=blue, urlcolor=magenta, citecolor=teal, bookmarks]{hyperref}
 
 \usepackage{pack}
+\usepackage{pack-notebook}
 
 \title{
   {\Huge Notebook on the \textit{Colloquio}} \\
@@ -16,6 +17,8 @@
   \myFullName \\
   {\small Advisor: \advisorFullName}
 }
+
+\date{\colloquioDate}
 
 \begin{document}
   \maketitle
@@ -34,6 +37,7 @@
   
   \clearpage
   \part{Numerical Experiments}
+  \include{implementation-details}
     
   \clearpage
   \printbibliography

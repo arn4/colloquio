@@ -1,0 +1,53 @@
+% BOXES
+% I know that this is not the correct way to define boxes (use \newcolorbox command
+% is prefered), but it's the simple working solution I found.
+\newcommand{\ExplainBox}[2] {
+  \begin{tcolorbox}[
+    fonttitle=\sffamily\bfseries,
+    title=#1,
+    colback = teal!5!white,
+    colframe = teal!85!black
+    ]
+    #2
+  \end{tcolorbox}
+}
+
+\definecolor{idea-yellow}{RGB}{255,255,0}
+\newcommand{\MyIdeaBox}[2] {
+  \begin{tcolorbox}[
+    fonttitle=\sffamily\bfseries,
+    title=#1,
+    colback = idea-yellow!5!white,
+    colframe = idea-yellow!85!black
+    ]
+    #2
+  \end{tcolorbox}
+}
+
+\definecolor{physics-blue}{RGB}{25,25,230}
+\newcommand{\PhysicsBox}[2] {
+  \begin{tcolorbox}[
+    fonttitle=\sffamily\bfseries,
+    title=#1,
+    colback = physics-blue!5!white,
+    colframe = physics-blue!85!black
+    ]
+    #2
+  \end{tcolorbox}
+}
+
+\definecolor{pink-notation}{RGB}{255,170,255}
+\newcommand{\NotationBox}[2] {
+  \begin{tcolorbox}[
+    fonttitle=\sffamily\bfseries,
+    title=Notation: \(\bm{#1}\),
+    colback = pink-notation!5!white,
+    colframe = pink-notation!85!black
+    ]
+    #2
+  \end{tcolorbox}
+}
+
+% THM ENVIROMEMENTS
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}[section]
