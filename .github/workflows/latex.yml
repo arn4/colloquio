@@ -6,15 +6,17 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
-      - name: Copying all .tex files in latex/
+      - name: Copying all .tex and .sty files in latex/
         run: |
           cp latex/*/*.tex latex/
+          cp latex/*/*.sty latex/
       - name: Compile LaTeX documents
         uses: xu-cheng/latex-action@v2
         with:
           working_directory: latex/
           root_file: |
             notebook/notebook.tex
+            slides/slides.tex
       - name: Move compiled files to outputs folder
         run: |
           mkdir outputs/

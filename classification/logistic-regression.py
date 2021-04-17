@@ -6,13 +6,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-trained = ['cd1', 'pcd1', 'cd10', 'pcd10','pcd30']
-seed = 567137
+trained = ["cd-1", "pcd-1", "mf-5", "mf-10", "tap2-5", "tap2-10", "tap3-5", "tap3-10", "pmf-15", "ptap2-15", "ptap3-30"]
+seed = 2204
 
 CLEAN_LOGIST_ACCURACY = 0.9182
 
 plt.rc('text', usetex=True)
-plt.rc('text.latex', preamble='\\usepackage{amsmath} \\usepackage{siuitx}')
+plt.rc('text.latex', preamble='\\usepackage{amsmath} \\usepackage{siunitx}')
 
 def regression(alg_name, train_label, test_label):
   print(f'Processing {alg_name}')
