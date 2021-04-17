@@ -20,7 +20,7 @@ const size_t   PIXELS = 28*28;
 const size_t   TRAINING_SET_SIZE = 60000;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
-const unsigned EPOCHS = 50;
+const unsigned EPOCHS = 100;
 const unsigned MONITOR_EVERY = 1;
 const unsigned SAVE_RBM_EVERY = 10;
 using real_value = double;
@@ -32,12 +32,12 @@ const real_value MOMENTUM = 0.;
 const vector<vector<unsigned>> algs = {
   {1}, // cd
   {1}, // pcd
-  {5, 10,}, // mf
-  {5, 10}, // tap2
-  {5, 10}, // tap3
-  {15}, // pmf
-  {15}, // ptap2
-  {30}, // ptap3
+  {}, // mf
+  {}, // tap2
+  {}, // tap3
+  {}, // pmf
+  {}, // ptap2
+  {}, // ptap3
 };
 
 
