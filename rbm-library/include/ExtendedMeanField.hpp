@@ -10,6 +10,37 @@
 #include <vector>
 
 namespace rbm {
+  // Calculations:
+  // template<typename real_value>
+  // void first_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // real_value compute_first_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // inline real_value first_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // void second_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // real_value compute_second_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // real_value second_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // void third_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+    
+  // template<typename real_value>
+  // real_value compute_third_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // real_value third_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
+
+  // template<typename real_value>
+  // void random_m(std::vector<real_value>& m, std::mt19937& rng);
+
   template<
     typename real_value,
     std::size_t features_size,
@@ -17,19 +48,25 @@ namespace rbm {
   >
   class MeanField: public TrainingAlgorithm<real_value, features_size, batch_size> {
     private:
-      //std::mt19937& _rng;
-    protected:
-      std::vector<real_value> mv;
-      std::vector<real_value> mh;
-      std::vector<real_value> weight_update_table;
+      std::mt19937& _rng;
+      unsigned _l;
       unsigned _k;
+      std::vector<real_value> b_update_table;
+      std::vector<real_value> c_update_table;
+      std::vector<real_value> w_update_table;
+    protected:
+      std::vector<std::vector<real_value>> _mv;
+      std::vector<std::vector<real_value>> _mh;
       virtual void init_m();
-      virtual void compute_logistic_arguments();
-      virtual real_value compute_weight_update(std::size_t i, std::size_t j);
+      virtual void convergence_step(std::size_t r);
+      virtual real_value compute_weight_update(std::size_t i, std::size_t j, std::size_t r);
+      virtual real_value gibbs_energy(std::size_t r);
     public:
       MeanField(
         BinaryRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
+        std::mt19937& rng,
+        unsigned l,
         unsigned k,
         real_value lr = 0.,
         real_value wd = 0.,
@@ -56,6 +93,8 @@ namespace rbm {
       PersistentMeanField(
         BinaryRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
+        std::mt19937& rng,
+        unsigned l,
         unsigned k,
         real_value lr = 0.,
         real_value wd = 0.,
@@ -70,12 +109,15 @@ namespace rbm {
   >
   class TAP2: public MeanField<real_value, features_size, batch_size> {
     protected:
-      void compute_logistic_arguments();
-      real_value compute_weight_update(std::size_t i, std::size_t j);
+      void convergence_step(std::size_t r);
+      real_value compute_weight_update(std::size_t i, std::size_t j, std::size_t r);
+      real_value gibbs_energy(std::size_t r);
     public:
       TAP2(
         BinaryRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
+        std::mt19937& rng,
+        unsigned l,
         unsigned k,
         real_value lr = 0.,
         real_value wd = 0.,
@@ -102,6 +144,8 @@ namespace rbm {
       PersistentTAP2(
         BinaryRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
+        std::mt19937& rng,
+        unsigned l,
         unsigned k,
         real_value lr = 0.,
         real_value wd = 0.,
@@ -116,12 +160,15 @@ namespace rbm {
   >
   class TAP3: public MeanField<real_value, features_size, batch_size> {
     protected:
-      void compute_logistic_arguments();
-      real_value compute_weight_update(std::size_t i, std::size_t j);
+      void convergence_step(std::size_t r);
+      real_value compute_weight_update(std::size_t i, std::size_t j, std::size_t r);
+      real_value gibbs_energy(std::size_t r);
     public:
       TAP3(
         BinaryRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
+        std::mt19937& rng,
+        unsigned l,
         unsigned k,
         real_value lr = 0.,
         real_value wd = 0.,
@@ -143,6 +190,8 @@ namespace rbm {
       PersistentTAP3(
         BinaryRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
+        std::mt19937& rng,
+        unsigned l,
         unsigned k,
         real_value lr = 0.,
         real_value wd = 0.,

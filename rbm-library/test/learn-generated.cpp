@@ -25,9 +25,9 @@ const bool     WRITE_ON_FILE = false;
 using real_value = double;
 // using LearningAlgorithm1 = ContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE>;
 // using LearningAlgorithm2 = PersistentContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE>;
-using LearningAlgorithm1 = TAP2<real_value, FEATURES_SIZE, BATCH_SIZE>;
-using LearningAlgorithm2 = TAP3<real_value, FEATURES_SIZE, BATCH_SIZE>;
-const real_value LEARNING_RATE = 0.0005;
+using LearningAlgorithm1 = ContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE>;
+using LearningAlgorithm2 = PersistentMeanField<real_value, FEATURES_SIZE, BATCH_SIZE>;
+const real_value LEARNING_RATE = 0.05;
 const real_value WEIGHT_DECAY = 0.00001;
 const real_value MOMENTUM = 0.5;
 
@@ -107,8 +107,8 @@ int main() {
   clog << "Training... " << endl;
   BinaryRBM<real_value> rbm1(FEATURES_SIZE, HIDDEN_SIZE, rng);
   BinaryRBM<real_value> rbm2(rbm1.b(), rbm1.c(), rbm1.w(), rng);
-  LearningAlgorithm1 la1(rbm1, ts, K, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
-  LearningAlgorithm2 la2(rbm2, ts, K, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  LearningAlgorithm1 la1(rbm1, ts, K, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
+  LearningAlgorithm2 la2(rbm2, ts, rng, 10, K, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
   clog << "Initial PLH1: " << la1.log_pseudolikelihood() << endl;
   clog << "Initial PLH2: " << la2.log_pseudolikelihood() << endl;
   ofstream result("psl.txt");

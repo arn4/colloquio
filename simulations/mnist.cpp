@@ -20,9 +20,10 @@ const size_t   PIXELS = 28*28;
 const size_t   TRAINING_SET_SIZE = 60000;
 const unsigned HIDDEN_SIZE = 500;
 const unsigned DEFAULT_SEED = 64770;
-const unsigned EPOCHS = 100;
+const unsigned NUM_CONVERGING_MAGNETIZATION = 10;
+const unsigned EPOCHS = 50;
 const unsigned MONITOR_EVERY = 1;
-const unsigned SAVE_RBM_EVERY = 10;
+const unsigned SAVE_RBM_EVERY = 5;
 using real_value = double;
 const real_value LEARNING_RATE = 0.05;
 const real_value WEIGHT_DECAY = .0001;
@@ -30,14 +31,14 @@ const real_value MOMENTUM = 0.;
 
 // Insert here the nuber of iterations you would like to do, for each algortihm
 const vector<vector<unsigned>> algs = {
-  {1}, // cd
+  {1,10}, // cd
   {1}, // pcd
-  {}, // mf
-  {}, // tap2
-  {}, // tap3
-  {}, // pmf
-  {}, // ptap2
-  {}, // ptap3
+  {3}, // mf
+  {3}, // tap2
+  {3}, // tap3
+  {3}, // pmf
+  {3}, // ptap2
+  {3,30}, // ptap3
 };
 
 
@@ -111,27 +112,27 @@ int main(int argc, char *argv[]) {
   }
   vector<MF> alg_mf;
   for (unsigned k = 0; k< algs[2].size();k++) {
-    alg_mf.push_back(MF(rbm[2][k], ts, algs[2][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_mf.push_back(MF(rbm[2][k], ts, rng, NUM_CONVERGING_MAGNETIZATION, algs[2][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
   vector<TAP2s> alg_tap2;
   for (unsigned k = 0; k< algs[3].size();k++) {
-    alg_tap2.push_back(TAP2s(rbm[3][k], ts, algs[3][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_tap2.push_back(TAP2s(rbm[3][k], ts, rng, NUM_CONVERGING_MAGNETIZATION, algs[3][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
   vector<TAP3s> alg_tap3;
   for (unsigned k = 0; k< algs[4].size();k++) {
-    alg_tap3.push_back(TAP3s(rbm[4][k], ts, algs[4][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_tap3.push_back(TAP3s(rbm[4][k], ts, rng, NUM_CONVERGING_MAGNETIZATION, algs[4][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
   vector<PMF> alg_pmf;
   for (unsigned k = 0; k< algs[5].size();k++) {
-    alg_pmf.push_back(PMF(rbm[5][k], ts, algs[5][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_pmf.push_back(PMF(rbm[5][k], ts, rng, NUM_CONVERGING_MAGNETIZATION, algs[5][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
   vector<PTAP2> alg_ptap2;
   for (unsigned k = 0; k< algs[6].size();k++) {
-    alg_ptap2.push_back(PTAP2(rbm[6][k], ts, algs[6][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_ptap2.push_back(PTAP2(rbm[6][k], ts, rng, NUM_CONVERGING_MAGNETIZATION, algs[6][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
   vector<PTAP3> alg_ptap3;
   for (unsigned k = 0; k< algs[7].size();k++) {
-    alg_ptap3.push_back(PTAP3(rbm[7][k], ts, algs[7][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
+    alg_ptap3.push_back(PTAP3(rbm[7][k], ts, rng, NUM_CONVERGING_MAGNETIZATION, algs[7][k], LEARNING_RATE, WEIGHT_DECAY, MOMENTUM));
   }
 
   ofstream result(to_string(seed)+"/psl.txt");
