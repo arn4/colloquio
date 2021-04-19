@@ -19,56 +19,8 @@ understating the procedure. We deal only with classical binary RBMs,
 but the method can be generalized. We introduce also a few more notations in
 {\bf \color{pink-notation}pink~boxes}.
 
-% There are many symbols often used in the calculations.
-% To amke typing faster I define few more shorcuts
-\newcommand{\FEn}[2]{F{\left[#1;#2\right]}}
-\newcommand{\Gam}[2]{\Gamma{\left[#1;#2\right]}}
-\newcommand{\DistributionMean}[4]{\left\langle#1\right\rangle_{#4{\left[#2;#3\right]}}}
-\newcommand{\Fmean}[3]{\DistributionMean{#1}{#2}{#3}{f}}
-\newcommand{\Gmean}[3]{\DistributionMean{#1}{#2}{#3}{\gamma}}
-\newcommand{\qhat}[1]{\vec{\hat{q}}{(#1)}}
-\newcommand{\Lambd}[2]{\vec{\lambda}{\left[#1;#2\right]}}
-
-% Really short shortcuts
-% I know that it's orrible what I'm doing, but I need to not die texxing all the calculations
-\newcommand{\lgt}[2]{\lambda_t{\left[#1;#2\right]}}
-\newcommand{\lvi}[2]{\lambda_i^v{\left[#1;#2\right]}}
-\newcommand{\lhj}[2]{\lambda_j^h{\left[#1;#2\right]}}
-\newcommand{\lgtz}[1]{\lgt{#1}{0}}
-\newcommand{\lviz}[1]{\lvi{#1}{0}}
-\newcommand{\lhjz}[1]{\lhj{#1}{0}}
-\newcommand{\lgtm}[1]{\lgt{\vec{m}}{#1}}
-\newcommand{\lvim}[1]{\lvi{\vec{m}}{#1}}
-\newcommand{\lhjm}[1]{\lhj{\vec{m}}{#1}}
-\newcommand{\lgtmz}{\lgt{\vec{m}}{0}}
-\newcommand{\lvimz}{\lvi{i\vec{m}}{0}}
-\newcommand{\lhjmz}{\lhj{\vec{m}}{0}}
-
-\newcommand{\lgtbarmz}{\lambda_{\bar{t}}{\left[\vec{m};0\right]}}
-
-\newcommand{\mgt}{m_t}
-\newcommand{\mvi}{m_i^v}
-\newcommand{\mhj}{m_j^h}
-\newcommand{\mvisq}{{\left(m_i^v\right)}^2}
-\newcommand{\mhjsq}{{\left(m_j^h\right)}^2}
-
-\newcommand{\hmgt}{\hat{m}_t}
-\newcommand{\hmvi}{\hat{m}_i^v}
-\newcommand{\hmhj}{\hat{m}_j^h}
-\newcommand{\hmvisq}{{\left(\hat{m}_i^v\right)}^2}
-\newcommand{\hmhjsq}{{\left(\hat{m}_j^h\right)}^2}
-
-\newcommand{\sumt}{\sum_{t=1}^{m+n}}
-\newcommand{\prodt}{\prod_{t=1}^{m+n}}
-
-\newcommand{\sums}{\sum_{\vec{s}}}
-\newcommand{\sumst}{\sum_{s_t \in \{0,1\}}}
-\newcommand{\sumstprim}{\sum_{{s'}_t \in \{0,1\}}}
-\newcommand{\sumstbar}{\sum_{s_{\bar{t}} \in \{0,1\}}}
-
-\newcommand{\GammaExp}[1]{\exp{\left(-\beta E(\vec{s#1}) +    
-                                                \Lambd{\vec{m}}{\beta}\cdot(\vec{s#1}-\vec{m})\right)}}
-
+%Include shortcuts
+\input{emf-shortcuts}
 
 \subsection{Introducing \(F\)}
 \NotationBox{\vec{s}}{

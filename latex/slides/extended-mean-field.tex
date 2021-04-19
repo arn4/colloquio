@@ -1,0 +1,314 @@
+
+%Include shortcuts
+\input{emf-shortcuts}
+
+\section{Extended Mean Field}
+\subsection{Introduction}
+\begin{frame}
+  \frametitle{Overview of EMF Training}
+  All classical training algorithm are \alert{stochastic}  estimation of the expected value. \\
+  \emph{Extended Mean Filed training} by M. Gabrié \cite{gabrie18training} is inspired from mean field theory 
+  of Ising model:
+  \begin{itemize}
+    \item The ``unknow'' expected value is the \alert{free energy}: \\
+          The algorithm is \alert{deterministic}!
+    \item The algorithm does not distinguish between hidden and visible layer
+    \item High temperature expansion to estimate it based on \emph{Thouless–Anderson–Palmer Equations} \cite{georges1991expand}
+          and beyond
+  \end{itemize}
+  Complete derivation on my Notebook: \url{https://github.com/arn4/colloquio}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Derivation}
+\begin{frame}
+  \frametitle{Helmholtz free energy}
+  We recall that the likelihood is (using \(\vec{s} \coloneqq (\vec{v},\vec{h})\)):
+  \[
+    \log\likelihood{\vec{\theta}}{\vec{\bar{v}}}
+      = \log\left(\sum_{\vec{h}} \exp\left[-E(\vec{\bar{v}},\vec{h})\right]\right)
+      - \log\left(\sums \exp\left[-E(\vec{s})\right]\right)
+  \]
+  \[
+    \FEn{\vec{q}}{\beta} \coloneqq - \frac{1}{\beta}
+    \log{\left[\sums \exp{\left(-\beta E(\vec{s}) + \beta \vec{q}\cdot\vec{s}\right)}\right]}
+  \]
+  \[
+    - \log\left(\sums \exp\left[-E(\vec{s})\right]\right) = \FEn{\vec{0}}{1}
+  \]
+  \begin{columns}
+    \begin{column}{0.80\textwidth}
+      \begin{alertblock}{What are \(F\) and \(\vec{q}\)?}
+        \begin{itemize}
+          \item \(F\) is the Helmholtz free energy
+          \item \(\vec{q}\) is the local \emph{external} field; different role from \(\vec{b}\) and \(\vec{c}\)
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Gibbs Free Energy}
+  We can apply a Legendre Transformation on \(-F\):
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{align*}
+        \Gam{\vec{m}}{\beta} &\coloneqq \sup_{\vec{q}}{\left\{\vec{q}\cdot\vec{m}
+          - \left(-\FEn{\vec{q}}{\beta}\right)\right\}}\\
+        -\FEn{\vec{q}}{\beta}& = \sup_{\vec{m}}{\left\{\vec{q}\cdot\vec{m} - \Gam{\vec{m}}{\beta}\right\}}
+      \end{align*}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \begin{alertblock}{What are \(\Gamma\) and \(\vec{m}\)?}
+        \begin{itemize}
+          \item \(F\) is the Gibbs free energy
+          \item \(\vec{m}\) is the magnetization
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+    
+  \end{columns}
+  \vspace{20pt}
+  It follows that
+  \(
+    \FEn{\vec{0}}{1} = \Gam{\vec{\hat{m}}}{1} \quad 
+    \text{ where } \vec{\hat{m}} \coloneqq \arginf_{\vec{m}}{\left\{\Gam{\vec{m}}{\beta}\right\}}
+  \)
+  \[
+    A{\left[\vec{m};\beta\right]} \coloneqq -\beta \Gam{\vec{m}}{\beta} =
+    \log{\left[\sums\exp{\left(-\beta E(\vec{s}) +     
+        \Lambd{\vec{m}}{\beta}\cdot(\vec{s}-\vec{m})\right)}\right]}
+  \]
+  where \(\Lambd{\vec{m}}{\beta} \coloneqq \beta \sup_{\vec{m}}{\left\{\vec{q}\cdot\vec{m} - \Gam{\vec{m}}{\beta}\right\}}\)
+\end{frame}
+
+\begin{frame}
+  \frametitle{High temperature expansion}
+  Expand \(A\) around \(\beta = 0\), up to order 3:
+  \[
+  A{\left[\vec{m};\beta\right]} \approx
+  A{\left[\vec{m};0\right]} + 
+  \beta \left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0} +
+  \frac{\beta^2}{2}
+  \left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}+
+  \frac{\beta^3}{6} 
+  \left.\frac{\partial^3A{\left[\vec{m};\beta\right]}}{\partial\beta^3}\right|_{\beta=0}    
+  \]
+  \begin{itemize}
+    \item \structure{order 0} it's the entropy, as predicted by thermodynamic
+    \[
+      A{\left[\vec{m};0\right]} = S{\left(\vec{m}\right)} \coloneqq -\sumt\left[\log{\left(m_t\right)}m_t + \log{\left(1-m_t\right)}(1-m_t)\right]
+     \]
+    \item \structure{order 1} energy of magnetizations
+    \[
+      \left.\ParDer{A{\left[\vec{m};\beta\right]}}{\beta}\right|_{\beta=0}
+      = -E{(\vec{m})}
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+    \item \structure{order 2}
+    \[
+      \left.\frac{\partial^2A{\left[\vec{m};\beta\right]}}{\partial\beta^2}\right|_{\beta=0}
+      =\sum_{i,j=1}^{m,n} w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)
+    \]
+    \begin{alertblock}{Compute derivative of \(\vec{\lambda}\)}
+      A \emph{Maxwell relation} is used during calculations
+    \end{alertblock}
+    \item \structure{order 3}
+    \begin{align*}
+    \left.\frac{\partial^3A{\left[\vec{m};\beta\right]}}{\partial\beta^3}\right|_{\beta=0}
+    = 4 \sum_{i,j=1}^{m,n} w_{i,j}^3&\left(\mvi-\mvisq\right) \left(\frac{1}{2}-\mvi\right) \cdot\\
+    &\left(\frac{1}{2}-\mhj\right) \left(\mhj-\mhjsq\right)
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Why can't we go over order 3?}
+  \begin{alertblock}{Graphical picture of expansion}
+    Considering the RBM as a graph, \emph{the \(k\)-th order can be thought of as the sum over the \alert{fully connected
+        sub-graph}, with \emph{\(k\) arcs}, and where interactions can be considered multiple times}.
+  \end{alertblock}
+
+  \begin{columns}
+    \column{0.14\textwidth}
+      \centering
+      \structure{Order 0}
+     \column{0.14\textwidth}
+      \centering
+      \structure{Order 1}
+     \column{0.14\textwidth}
+      \centering
+      \structure{Order 2}
+     \column{0.14\textwidth}
+      \centering
+      \structure{Order 3}
+     \column{0.14\textwidth}
+      \centering
+      \structure{Order 4}
+  \end{columns}
+
+  \begin{columns}[T]
+    \column{0.14\textwidth}
+    \centering  
+    \begin{figure}
+      \input{img/graphical-picture/order0.tikz}
+    \end{figure}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order1.tikz}
+    \end{figure}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order2.tikz}
+    \end{figure}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order3-direct.tikz}
+    \end{figure}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order4-direct.tikz}
+    \end{figure}
+  \end{columns}
+
+  \begin{columns}[T]
+    \column{0.1\textwidth}
+    \column{0.40\textwidth}
+    \centering  
+    \begin{alertblock}{Not allowed!}
+      Triangles are not possible sub-graphs in RBM
+    \end{alertblock}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order3-triangle.tikz}
+    \end{figure}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order4-triangle.tikz}
+    \end{figure}
+  \end{columns}
+
+  \begin{columns}[T]
+    \column{0.1\textwidth}
+    \column{0.45\textwidth}
+    \centering  
+    \begin{alertblock}{Uncomputable}
+      They require \(O{(n^2m^2)}\) iterations to be computed
+    \end{alertblock}
+    \column{0.1\textwidth}
+    \column{0.14\textwidth}
+    \centering
+    \begin{figure}
+      \input{img/graphical-picture/order4-quad.tikz}
+    \end{figure}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Expression for \(\Gamma\)}
+  Third order approximation of \(\Gam{\vec{m}^v, \vec{m}^h}{1}\) is
+  \begin{align*}
+    &\quad\sum_{i=1}^{m}\left[\log{\left(\mvi\right)}\mvi + \log{\left(1-\mvi\right)}(1-\mvi)-b_i\mvi\right]\\
+    &+\sum_{j=1}^{n}\left[\log{\left(\mhj\right)}\mhj+\log{\left(1-\mhj\right)}(1-\mhj)-c_j\mhj\right]\\
+    &-\sum_{i,j=1}^{m,n}\Bigg[
+    \mvi w_{i,j}\mhj
+    +\frac{1}{2}w_{i,j}^2\left(\mvi-\mvisq\right)\left(\mhj-\mhjsq\right)+\\
+    &\qquad\quad+\frac{2}{3}w_{i,j}^3\left(\mvi-\mvisq\right)\left(\frac{1}{2}-\mvi\right)\left(\frac{1}{2}-\mhj\right)
+    \left(\mhj-\mhjsq\right)\Bigg]
+  \end{align*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Minimization  of \(\Gamma\)}
+  We have to find the minimum of \(\Gamma\)
+  \[
+  \left.\ParDer{\Gam{\vec{m}}{1}}{\vec{m}}\right|_{\vec{m}=\vec{\hat{m}}}=0.
+  \]
+  We  have to solve these equations, we do it iteratively
+  \begin{align*}
+    \hmvi&=\sigmoid{b_i + \sum_{j=1}^n\left[w_{i,j}\hmhj+
+      \left(\hmhj-\hmhjsq\right)w^2_{i,j}\left(\frac{1}{2}-\hmvi\right)
+      + \cdots \right]}\\
+    \hmhj&=\sigmoid{c_j + \sum_{i=1}^m\left[w_{i,j}\hmvi+
+      \left(\hmvi-\hmvisq\right)w^2_{i,j}\left(\frac{1}{2}-\hmhj\right)  + \cdots \right]}
+  \end{align*}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{alertblock}{Multiple solutions!}
+        Itereative procedure may leed to a global minima (or even a maximum!)
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Computing the gradient of \(\FEn{\vec{0}}{1}\)}
+  We use solution 
+  \[
+  \ParDer{\left(\FEn{\vec{0}}{1}\right)}{\vec{\theta}} =
+  \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{\vec{\theta}}
+  \]  
+  We  have to solve these equations, we do it iteratively
+  \begin{align*}
+    \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{b_i} &= -\hmvi\\
+    \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{c_j} &= -\hmhj\\
+    %
+    \ParDer{\left(\Gam{\vec{\hat{m}}}{1}\right)}{w_{i,j}}
+    &=-\Bigg[\hmvi\hmhj +w_{i,j}\left(\hmvi-\hmvisq\right)\left(\hmhj-\hmhjsq\right)+ \cdots \Bigg]
+  \end{align*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Algorithm}
+\begin{frame}
+  \frametitle{The algorithm}
+  Once per batch:
+  \begin{enumerate}
+    \item Pick \(\ell\) magnetization \(\{\vec{m}_k\}_{k=1,\dots,\ell}\) randomly.
+    \item Apply consistency equations \(k\) times to coverge them to \(\{\vec{\hat{m}}_k\}_{k=1,\dots,\ell}\)
+    \item Compute \(\FEn{\vec{0}}{1}\) gradient for each \(\vec{\hat{m}}_k\)
+    \item Average the gradient using as weights
+    \[
+      e^{-\Gam{\vec{\hat{m}}_k}{1}}
+    \]
+  \end{enumerate}
+  \(\ell\) and \(k\) are other meta-parameters of the algorithm.\\
+  The \alert{weight decay} has a fundamental role in keeping true the hypothesis of high temperature
+  \begin{columns}
+   \column{0.8\textwidth}
+     \begin{alertblock}{Persistent EMF}
+       As with contrastive divergence, we can implement a \emph{persistent} version, where magetization are stored between different batches
+     \end{alertblock}
+  \end{columns}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
