@@ -31,7 +31,7 @@ const real_value MOMENTUM = 0.;
 
 // Insert here the nuber of iterations you would like to do, for each algortihm
 const vector<vector<unsigned>> algs = {
-  {1,}, // cd
+  {1}, // cd
   {1}, // pcd
   {3}, // mf
   {3}, // tap2

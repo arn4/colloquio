@@ -19,7 +19,7 @@ const size_t   TRAIN_SET_SIZE = 60000;
 //const unsigned EPOCHS = 50;
 //const unsigned RBM_EVERY = 10;
 using real_value = double;
-const vector<string> trained = {"cd-1", "pcd-1", "mf-5", "mf-10", "tap2-5", "tap2-10", "tap3-5", "tap3-10", "pmf-15", "ptap2-15", "ptap3-30"};
+const vector<string> trained = {"cd-1", "pcd-1", "mf-3", "pmf-3", "tap2-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"};
 
 int main(int argc, char *argv[]) {
   unsigned seed = 0;

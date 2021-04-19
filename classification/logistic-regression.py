@@ -1,4 +1,5 @@
 
+import sys
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 import numpy as np
@@ -6,8 +7,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-trained = ["cd-1", "pcd-1", "mf-5", "mf-10", "tap2-5", "tap2-10", "tap3-5", "tap3-10", "pmf-15", "ptap2-15", "ptap3-30"]
-seed = 2204
+trained = ["cd-1", "pcd-1", "mf-3", "pmf-3", "tap2-3", "tap3-3", "ptap2-3", "ptap3-3"]
+seed = int(sys.argv[1])
 
 CLEAN_LOGIST_ACCURACY = 0.9182
 

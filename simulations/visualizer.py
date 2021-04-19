@@ -1,12 +1,11 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 
-seed = 64770
-trained = ["pcd-1", "mf-3", "mf-3", "tap2-3", "tap2-3", "tap3-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"]
-#trained = ["cd1", "pcd1", "cd10", "pcd10", "pcd30"]
-# trained = ["cd-1", "pcd-1", "mf-5", "mf-10", "tap2-5", "tap2-10", "tap3-5", "tap3-10", "pmf-15", "ptap2-15", "ptap3-30"]
+seed = int(sys.argv[1])
+trained = ["cd-1", "pcd-1"]#, "mf-3", "tap2-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"]
 
 ROW = {'stability':2, 'samples':5}
 COL = {'stability':10, 'samples':4}
