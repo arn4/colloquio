@@ -21,7 +21,7 @@ const unsigned SAMPLES = 20;
 const unsigned STEPS_TO_STATIONARY = 50;
 using real_value = double;
 
-const vector<string> trained = {"cd-1", "pcd-1"};//, "mf-3", "tap2-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"};
+const vector<string> trained = {"cd-1", "pcd-1", "mf-3", "tap2-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"};
 
 int main(int argc, char *argv[]) {
   unsigned seed;

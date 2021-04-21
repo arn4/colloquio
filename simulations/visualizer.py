@@ -5,7 +5,7 @@ import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 
 seed = int(sys.argv[1])
-trained = ["cd-1", "pcd-1"]#, "mf-3", "tap2-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"]
+trained = ["cd-1", "pcd-1", "mf-3", "tap2-3", "tap3-3", "pmf-3", "ptap2-3", "ptap3-3"]
 
 ROW = {'stability':2, 'samples':5}
 COL = {'stability':10, 'samples':4}
