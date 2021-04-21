@@ -3,63 +3,54 @@
 
 \begin{frame}
   \frametitle{What is unsupervised learning?}
-  
+  \emph{Unsupervised learning} is a class of algorithms that learn patterns from \alert{uncategorized data}. \\
+  The model works on its own to discover representation previously undetected. \\
+  \vspace{15pt}
+  We would like to learn the \alert{probability distribution} of a \emph{training set}.
+  \pause
+  \begin{alertblock}{Example: handwritten digits}
+    We would like our model to learn that a given handwritten digit (not necessarily belonging to the training set) has a higher probability
+    than a generic image. We want to achieve this by training the model with some handwritten digits, without telling it which number the image contains.
+  \end{alertblock}
 \end{frame}
 
 \subsection{RBM basic properties}
 \begin{frame}
   \frametitle{What is a Restricted Boltzmann Machine?}
   \begin{itemize}
-    \item Two sets of \alert{units}
+    \item<1-> Two sets of \alert{units}
       \begin{itemize}
         \item \structure{visible layer}: \(\mathcal{V} = \{V_1, \dots, V_m\}\) are features of the empirical distribution
-        \item \structure{hidden layer}: \(\mathcal{H} = \{H_1, \dots, H_n\}\) are only used internally the machine
+        \item \structure{hidden layer}: \(\mathcal{H} = \{H_1, \dots, H_n\}\) are only used internally by the machine
       \end{itemize}
-    \item the units are \alert{binary}: \(v_i, h_j \in \{0,1\}\)
-    \item The \alert{Markov Property} applies
+    \item<2-> The units are \alert{binary}: \(v_i, h_j \in \{0,1\}\)
+    \item<3-> The \alert{Markov Property} applies
       \begin{align*}
-        \CondProb{X_v}{\{X_{v'}\}_{v'\in (\mathcal{V} \setminus \{v\})}, \{X_h\}_{h\in \mathcal{H}}} =
-        \CondProb{X_v}{\{X_h\}_{h\in \mathcal{H}}}, \\
-        \CondProb{X_h}{\{X_v\}_{v\in \mathcal{V}}, \{X_{h'}\}_{h'\in (\mathcal{H} \setminus \{h\})}} =
-        \CondProb{X_h}{\{X_v\}_{v\in \mathcal{V}}}.
+        \CondProb{V_i}{\{V_{i'}\}_{V_{i'}\in (\mathcal{V} \setminus \{V_i\})}, \{H_j\}_{H_j\in \mathcal{H}}} =
+        \CondProb{V_i}{\{H_j\}_{H_j\in \mathcal{H}}} \\
+        \CondProb{H_j}{\{V_i\}_{V_i\in \mathcal{V}}, \{H_{j'}\}_{H_{j'}\in (\mathcal{H} \setminus \{H_j\})}} =
+        \CondProb{H_j}{\{V_i\}_{V_i\in \mathcal{V}}}
       \end{align*}
-      \begin{figure}
-        \resizebox{0.6\textwidth}{!}{\input{img/example-RBM.tikz}}
-      \end{figure}
-    
   \end{itemize}
+	\begin{figure}[<1->]
+		\resizebox{0.6\textwidth}{!}{\input{img/example-RBM.tikz}}
+	\end{figure}
 \end{frame}
 
 \begin{frame}
   \frametitle{Probability distribution}
-    \begin{alertblock}{Cliques}
-      The only cliques of an RBM are all the pairs \((v_i,h_j)\).
-    \end{alertblock}
-    It follows from \emph{Hammersley-Clifford Theorem}\cite{fischer2012introduction} that 
-    \[\prob{\vec{v}, \vec{h}} = \frac{1}{Z} \prod_{i=1,j=1}^{m,n} \psi_{i,j}(v_i, h_j),\]
-    where
-    \[Z = \sum_{\vec{v}, \vec{h}}\prod_{i=1,j=1}^{m,n} \psi_{i,j}(v_i, h_j)\]
-    \pause
-     \[
-      \prob{\vec{v}, \vec{h}} 
-      = \frac{1}{Z} \exp\left(\sum_{i=1,j=1}^{m,n}\log\left(\psi_{i,j}(v_i, h_j)\right)\right)
-      = \frac{1}{Z} \exp\left(-E(\vec{v}, \vec{h})\right)
-    \]
-\end{frame}
-
-\begin{frame}
-  \frametitle{Energy function of Bernoulli RBM}
-  \(E(\vec{v}, \vec{h})\) must have the form
-  \[
-    E(\vec{v}, \vec{h}) = \sum_{i}^m f_i{(v_i)} + \sum_{j}^n g_j{(h_j)} +
-    \sum_{i=1,j=1}^{m,n} I_{i,j}{(v_i,h_j)}
-  \]
-  If only polynomial energy function are allowed
-  \[
-    E(\vec{v}, \vec{h}) = -\sum_{i}^m b_i v_i - \sum_{j}^n c_j h_j -
-      \sum_{i=1,j=1}^{m,n} v_i w_{i,j} h_j
-  \]
-  It's an \alert{Ising Model}:
+	It can be proven that
+	\[\prob{\vec{v}, \vec{h}} = \frac{1}{Z} \exp\left(-E(\vec{v}, \vec{h})\right)
+	\quad\text{ where }\quad
+	Z = \sum_{\vec{v}, \vec{h}}\exp\left(-E(\vec{v}, \vec{h})\right)\]
+	\pause
+	Allowing only polynomial energy:
+	\[
+	E(\vec{v}, \vec{h}) = -\sum_{i}^m b_i v_i - \sum_{j}^n c_j h_j -
+	\sum_{i=1,j=1}^{m,n} v_i w_{i,j} h_j
+	\]
+  \pause
+  This is an \alert{Ising Model}:
   \begin{itemize}
     \item \(\beta = 1\)
     \item \(b_i, c_j\) are local fields
@@ -70,17 +61,17 @@
 \begin{frame}
   \frametitle{Some other properties}
   \begin{itemize}
-    \item Markov property implies
+    \item<1-> The Markov property implies
       \[
         \condprob{\vec{h}}{\vec{v}} = \prod_{j=1}^n \condprob{h_j}{\vec{v}} \quad\text{and}\quad
         \condprob{\vec{v}}{\vec{h}} = \prod_{i=1}^m \condprob{v_i}{\vec{h}}.
       \]
-    \item Conditional activation probabilities can be computed analytically:
+    \item<2-> Conditional activation probabilities can be computed analytically:
       \begin{align*}
         \condprob{h_j=1}{\vec{v}} &= \sigmoid{\sum_{i=1}^m w_{i,j}v_i+c_j},\\
         \condprob{v_i=1}{\vec{h}} &= \sigmoid{\sum_{j=1}^n w_{i,j}h_j+b_i}.
       \end{align*}
-      where \(\sigmoid{\cdot}\) is the \alert{logistic function}.
+      where \(\sigmoid{\cdot}\) is the \alert{logistic function} \(\frac{1}{1+e^{-x}}\).
   \end{itemize}
 \end{frame}
 
@@ -90,17 +81,18 @@
 \begin{frame}
 \frametitle{Likelihood}
   \begin{itemize}
-		\item The basic idea of all training algorithm is \alert{maximize the (log)likelihhod}
+		\item The basic idea of all training algorithms is \alert{to~maximize~the~(log)likelihhod}
 		\item \(S = \left\{\vec{\bar{v}}_k\right\}_{k \in \{1,\dots,\ell\}}\) is the training set;\\
       \(\vec{\theta}\) is the set of model parameters
 		  \[
 			 \log\likelihood{\vec{\theta}}{S} = \sum_{k=1}^\ell \log\left(\prob{\vec{\bar{v}}_k;\vec{\theta}}\right)
 		  \]
+		\pause
     \item \alert{Gradient ascent} is used. The likelihood gradient is
       \[
          \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}} =
-          -\ExpVal{\condprob{\vec{h}}{\vec{\bar{v}}}}{\ParDer{E(\vec{\bar{v}},\vec{h})}{\vec{\theta}}}
-          +\ExpVal{\prob{\vec{v},\vec{h}}}{\ParDer{E(\vec{v},\vec{h})}{\vec{\theta}}}
+         	\underbrace{-\ExpVal{\condprob{\vec{h}}{\vec{\bar{v}}}}{\ParDer{E(\vec{\bar{v}},\vec{h})}{\vec{\theta}}}}_{\text{comes from } e^{-E(\vec{\bar{v}},\vec{h})}}
+          +\underbrace{\ExpVal{\prob{\vec{v},\vec{h}}}{\ParDer{E(\vec{v},\vec{h})}{\vec{\theta}}}}_{\text{comes from } Z}
       \]
 	\end{itemize}
 \end{frame}
@@ -120,9 +112,14 @@
     &= \sigmoid{\sum_{i=1}^m w_{i',j}\bar{v}_{i'}+c_j}
     -\ExpVal{\prob{\vec{v}}}{\sigmoid{\sum_{i=1}^m w_{i',j}v_{i'}+c_j}}
   \end{align*}
-  \begin{alertblock}{Problem!}
-    These expected values are uncomputable in practice! \(\#\{\vec{v}\} = 2^m\).
-  \end{alertblock}
+	\visible<2->{
+		\begin{columns}
+			\column{0.75\textwidth}
+	  	\begin{alertblock}{Problem!}
+	    	These expected values are uncomputable in practice! \(\#\{\vec{v}\} = 2^m\).
+	  	\end{alertblock}
+  	\end{columns}
+  }
 \end{frame}
 
 

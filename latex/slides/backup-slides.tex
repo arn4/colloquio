@@ -1,0 +1,33 @@
+
+\begin{frame}[noframenumbering]
+  \frametitle{Derivation of RBM probability distribution}
+  \begin{alertblock}{Cliques}
+    The only cliques of an RBM are all the pairs \((v_i,h_j)\).
+  \end{alertblock}
+  It follows from \emph{Hammersley-Clifford Theorem}\cite{fischer2012introduction} that 
+  \[\prob{\vec{v}, \vec{h}} = \frac{1}{Z} \prod_{i=1,j=1}^{m,n} \psi_{i,j}(v_i, h_j),\]
+  where
+  \[Z = \sum_{\vec{v}, \vec{h}}\prod_{i=1,j=1}^{m,n} \psi_{i,j}(v_i, h_j)\]
+  \pause
+  \[
+  \prob{\vec{v}, \vec{h}} 
+  = \frac{1}{Z} \exp\left(\sum_{i=1,j=1}^{m,n}\log\left(\psi_{i,j}(v_i, h_j)\right)\right)
+  = \frac{1}{Z} \exp\left(-E(\vec{v}, \vec{h})\right)
+  \]
+\end{frame}
+
+\begin{frame}[noframenumbering]
+  \(E(\vec{v}, \vec{h})\) must be of the form
+  \[
+  E(\vec{v}, \vec{h}) = \sum_{i}^m f_i{(v_i)} + \sum_{j}^n g_j{(h_j)} +
+  \sum_{i=1,j=1}^{m,n} I_{i,j}{(v_i,h_j)}
+  \]
+  \pause
+  If only polynomial energy functions are allowed:
+  \[\text{Since}\quad v_i^k =  v_i \text{ and } h_j^k=h_j \qquad \forall k \in \mathds{N},\]
+  \center{most general energy is}
+  \[
+  E(\vec{v}, \vec{h}) = -\sum_{i}^m b_i v_i - \sum_{j}^n c_j h_j -
+  \sum_{i=1,j=1}^{m,n} v_i w_{i,j} h_j
+  \]
+\end{frame}

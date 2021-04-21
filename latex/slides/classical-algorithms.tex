@@ -3,36 +3,38 @@
 \subsection{Update Rule}
 \begin{frame}
   \frametitle{Update rule}
-  Gradients + some correction to improve learning:
+  Gradient \& some corrections to improve learning:
   \[
   \vec{\theta}^{(t+1)} = \vec{\theta}^{(t)}
   \underbrace{
-    + \eta \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}}
-    - \lambda \vec{\theta}^{(t)}
-    + \nu \Delta\vec{\theta}^{(t-1)}
-  }_{\coloneqq \Delta\vec{\theta}^{(t)}}
+    \onslide<1->{+ \eta \ParDer{\log\likelihood{\vec{\theta}}{\vec{\bar{v}}}}{\vec{\theta}}}
+    \onslide<2->{- \lambda \vec{\theta}^{(t)}}
+    \onslide<3->{+ \nu \Delta\vec{\theta}^{(t-1)}}
+  \onslide<3->}_{{\coloneqq \Delta\vec{\theta}^{(t)}}}
+	\onslide<1->
   \]
   \begin{itemize}
-    \item \structure{Learning rate}: length of the step toward gradient direction
-    \item \structure{Weight decay}: keep parameters small
-    \item \structure{Momentum}: avoid fluctuations
-    \item \structure{Batches}: group updates before applying them 
+    \item<1-> \structure{Learning rate}: length of the step toward gradient
+    \item<2-> \structure{Weight decay}: keeps parameters small
+    \item<3-> \structure{Momentum}: avoids fluctuations
+    \item<4-> \structure{Batches}: group updates before applying them 
   \end{itemize}
-  All these are \alert{meta-parameters} of an algorithm:
-  \emph{Hinton's guide} \cite{hinton2012practical} for tuning.
+  \onslide<4->{All these are \alert{meta-parameters} of an algorithm:
+  \emph{Hinton's guide} \cite{hinton2012practical} for tuning.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{MCMC Algorithms}
 \begin{frame}
   \frametitle{Naive Gibbs Sampling}
-  \begin{alertblock}{Idea!}
-    Use a \alert{Markov Chain Monte-Carlo} algorithm to sample \(\prob{\vec{v}}\).\\
+  \begin{alertblock}<1->{Idea!}
+    Use a \alert{Markov Chain Monte-Carlo} algorithm that sample \(\prob{\vec{v}}\).\\
     RBM Markov Property \(\implies\) update one layer at a time, not single units.
   \end{alertblock}
   \vfill
   \begin{columns}
-    \begin{column}{0.65\textwidth}
+    \begin{column}{0.62\textwidth}
+    	\onslide<2->
       The algorithm is:
       \begin{enumerate}
         \item Choose visible layer state \(\vec{v}^{(0)}\) randomly.
@@ -42,40 +44,45 @@
         \item Visible state \(\vec{v}^{(s)}\) is a sample from \(\prob{\vec{v}}\)
       \end{enumerate}
     \end{column}
-    \begin{column}{0.30\textwidth}
-      \begin{alertblock}{Problem!}
-        Reaching stationary distribution is too slow.
-      \end{alertblock}
+    \begin{column}{0.35\textwidth}
+    	\visible<3->{
+	      \begin{alertblock}{Problem!}
+	        Reaching stationary distribution is too slow.
+	      \end{alertblock}
+      }
     \end{column}
   \end{columns}
 \end{frame}
 
 \begin{frame}
   \frametitle{Contrastive Divergence}
-  \begin{alertblock}{Idea!}
-    Training samples are already from the goal distribution, that is also the invariant at the end of the train.\\
+  \begin{alertblock}<1->{Idea!}
+    Training samples are already sampled from the goal distribution, that is also the invariant distribution at the end of the training.\\
   \end{alertblock}
   \vspace{20pt}
   \begin{columns}
     \begin{column}{0.66\textwidth}
-      Algorithm modifications:
+    	\onslide<2->
+      Algorithm changes:
       \begin{enumerate}
         \item Set \(\vec{v}^{(0)} = \vec{\bar{v}}\), the training  sample.
         \addtocounter{enumi}{2}
         \item Repeat from step 2 for \alert{\(k\) times}
-        \item Expected values are estiated using \emph{only} \(\vec{v}^{(k)}\).
+        \item Expected values are estimated using \emph{only} \(\vec{v}^{(k)}\).
       \end{enumerate}
-      2 kind  of boost:
+      Two kinds of speed-up:
       \begin{itemize}
-        \item \(k\) is fixed (often is 1, for  sure less  then 10)
-        \item we use only one sample
+        \item \(k\) is fixed (often to 1)
+        \item we only use \emph{one} sample from the distribution
       \end{itemize}
     \end{column}
     \begin{column}{0.32\textwidth}
-      \begin{alertblock}{Drawback!}
-        \(\vec{v}^{(k)}\) is biased\\
-        We are not maximizing the likelihood
-      \end{alertblock}
+    	\visible<3->{
+      	\begin{alertblock}{Drawback!}
+        	\(\vec{v}^{(k)}\) is biased\\
+        	We are not maximizing the likelihood
+      	\end{alertblock}
+      }
     \end{column}
   \end{columns}
 \end{frame}
@@ -84,15 +91,16 @@
   \frametitle{Persistent Contrastive Divergence}
   \begin{alertblock}{Ideas!}
     \begin{itemize}
-      \item Use the \(\vec{v}^{(k)}\) of the previous update as \(\vec{v}^{(0)}\) for the current
-      \item Use many chains to have a better statics  when computing expected values
+      \item Use the \(\vec{v}^{(k)}\) of the previous update as \(\vec{v}^{(0)}\) for the current one
+      \item Use many chains to have a better statistics  when computing expected values
     \end{itemize}
   \end{alertblock}
-  The number of chains is usually the size of the batch.
-  \begin{alertblock}{Why is better than CD?}
-     Parameters change slightly between two batches, so only few Markov Chain steps are needed to recover invariant distribution \\
-     At beginning of learning CD is far from real invariant distribution 
+	\pause
+  \begin{alertblock}{Why is it better than CD?}
+     Parameters change slightly between two consecutive updates, so only few Markov Chain steps are needed to recover the invariant distribution \\
+     At the beginning of learning CD is far from the real invariant distribution 
   \end{alertblock}
+	The number of chains is usually the size of the batch.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,8 +111,9 @@
   \begin{alertblock}{Problem!}
     Likelihood is not computable in practice! We can't compute \(Z\)
   \end{alertblock}
+	\pause
   \[
     \vec{\bar{v}} \xrightarrow{\text{MC sample}} \vec{\bar{h}} \longrightarrow \log\likelihood{\vec{\theta}}{\vec{\bar{v}}} \approx \log{\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}}
   \]
-  \(\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}\) can be easy computed analytically.
+  \(\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}\) can be easily computed analytically.
 \end{frame}
