@@ -1,16 +1,16 @@
 ## Compile the library
 add_library(rbm
-  libsrc/BinaryRBM.cpp
-  libsrc/TrainingSet.cpp
-  libsrc/MarkovChain.cpp
-  libsrc/TrainingAlgorithm.cpp
-  libsrc/ContrastiveDivergence.cpp
-  libsrc/PersistentContrastiveDivergence.cpp
-  libsrc/ExtendedMeanField.cpp
+  src/BinaryRBM.cpp
+  src/TrainingSet.cpp
+  src/MarkovChain.cpp
+  src/TrainingAlgorithm.cpp
+  src/ContrastiveDivergence.cpp
+  src/PersistentContrastiveDivergence.cpp
+  src/ExtendedMeanField.cpp
 )
 target_include_directories(rbm PUBLIC #PUBLIC will set this include path also for code that rely on this library
   include/   # stardard functions that can be precompiled
-  libsrc/tpp # inline and template functions that must be compiled when an executable is produced
+  src/tpp # inline and template functions that must be compiled when an executable is produced
 )
 target_compile_features(rbm PUBLIC
   cxx_std_17
