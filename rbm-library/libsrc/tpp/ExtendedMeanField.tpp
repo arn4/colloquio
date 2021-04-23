@@ -1,6 +1,6 @@
 #include <ExtendedMeanField.hpp>
 #include <TrainingAlgorithm.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 #include <utility.cpp>
 
 #include <iostream>

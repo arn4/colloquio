@@ -1,5 +1,5 @@
 #include <TrainingAlgorithm.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 #include <utility.cpp>
 
 #include <cstddef>
@@ -102,7 +102,7 @@ void TrainingAlgorithm<real_value, features_size, batch_size>::epoch(std::size_t
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 real_value TrainingAlgorithm<real_value, features_size, batch_size>::log_pseudolikelihood() {
   real_value psl = 0.;
-  MarcovChain<real_value> estimate_h(_rbm, _rbm._rng);
+  MarkovChain<real_value> estimate_h(_rbm, _rbm._rng);
   for (std::size_t b = 0; b < _training_set.num_of_batches(); b++) {
     auto batch = _training_set.batch(b);
     for (std::size_t k = 0; k < batch_size; k++) {

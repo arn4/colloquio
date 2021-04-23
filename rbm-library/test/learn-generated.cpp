@@ -6,7 +6,7 @@
 #include <BinaryRBM.hpp>
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 #include <ExtendedMeanField.hpp>
 
 using namespace std;
@@ -47,7 +47,7 @@ int main() {
   if (not READ_FROM_FILE) {
     // Generate TestSet
     clog << "Generation of the samples... " << endl;
-    MarcovChain<real_value> mc(goal_rbm, rng);
+    MarkovChain<real_value> mc(goal_rbm, rng);
     clog << " |                    |" << endl << "  ";
     for (unsigned i = 1; i <= TRAINING_SET_SIZE; i++) {
       if (i % (TRAINING_SET_SIZE/20)==0) {

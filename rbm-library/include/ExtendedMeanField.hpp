@@ -4,7 +4,7 @@
 #include <BinaryRBM.hpp>
 #include <TrainingSet.hpp>
 #include <TrainingAlgorithm.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 
 #include <cstddef>
 #include <vector>

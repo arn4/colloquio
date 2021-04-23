@@ -1,6 +1,6 @@
 #include <ContrastiveDivergence.hpp>
 #include <TrainingAlgorithm.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 #include <utility.cpp>
 #include <iostream>
 
@@ -19,7 +19,7 @@ ContrastiveDivergence<real_value, features_size, batch_size>::ContrastiveDiverge
   TrainingAlgorithm<real_value, features_size, batch_size>(rbm, training_set, lr, wd, m),
   _rng(rng),
   prob_j_table(rbm.n()*batch_size),
-  _chains(batch_size, MarcovChain<real_value>(rbm, rng)),
+  _chains(batch_size, MarkovChain<real_value>(rbm, rng)),
   _k(k)
 {}
 

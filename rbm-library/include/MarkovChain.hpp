@@ -1,5 +1,5 @@
-#ifndef __MarcovChain_hpp__
-#define __MarcovChain_hpp__
+#ifndef __MarkovChain_hpp__
+#define __MarkovChain_hpp__
 
 #include <BinaryRBM.hpp>
 
@@ -10,7 +10,7 @@
 
 namespace rbm {
   template <typename real_value>
-  class MarcovChain {
+  class MarkovChain {
     private:
       BinaryRBM<real_value>& _rbm;
       std::vector<binary_value> _v, _h;
@@ -19,9 +19,9 @@ namespace rbm {
       std::minstd_rand fast_rng;
     public:
       // Constructors
-      MarcovChain(BinaryRBM<real_value>& rbm, std::mt19937& rng);
+      MarkovChain(BinaryRBM<real_value>& rbm, std::mt19937& rng);
       template<class Iterator>
-      MarcovChain(BinaryRBM<real_value>& rbm, Iterator begin, Iterator end, std::mt19937& rng);
+      MarkovChain(BinaryRBM<real_value>& rbm, Iterator begin, Iterator end, std::mt19937& rng);
 
       //Initializers
       // TODO: move hardcoded value to approriete constant variables
@@ -49,7 +49,7 @@ namespace rbm {
 }
 
 template<typename real_value>
-const real_value MarcovChain<real_value>::default_init_probabality = real_value(0.5);
+const real_value MarkovChain<real_value>::default_init_probabality = real_value(0.5);
 
-#include <MarcovChain.tpp>
+#include <MarkovChain.tpp>
 #endif

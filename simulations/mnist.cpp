@@ -8,7 +8,7 @@
 #include <BinaryRBM.hpp>
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 #include <ExtendedMeanField.hpp>
 
 

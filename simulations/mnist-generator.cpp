@@ -7,7 +7,7 @@
 #include <BinaryRBM.hpp>
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 
 
 using namespace std;
@@ -47,9 +47,9 @@ int main(int argc, char *argv[]) {
   clog << "Generation of the samples... " << endl;
   vector<vector<vector<bool>>> samples(trained.size());
 
-  vector<MarcovChain<real_value>> mc;
+  vector<MarkovChain<real_value>> mc;
   for (unsigned r = 0; r < trained.size(); r++) {
-    mc.push_back(MarcovChain<real_value>(rbms[r], rng));
+    mc.push_back(MarkovChain<real_value>(rbms[r], rng));
   }
 
   for (unsigned r = 0; r < trained.size(); r++) {

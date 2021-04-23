@@ -4,7 +4,7 @@
 #include <BinaryRBM.hpp>
 #include <TrainingSet.hpp>
 #include <TrainingAlgorithm.hpp>
-#include <MarcovChain.hpp>
+#include <MarkovChain.hpp>
 
 #include <cstddef>
 #include <vector>
@@ -20,7 +20,7 @@ namespace rbm {
       std::mt19937& _rng;
     protected:
       std::vector<real_value> prob_j_table;
-      std::vector<MarcovChain<real_value>> _chains;
+      std::vector<MarkovChain<real_value>> _chains;
       unsigned _k;
     public:
       ContrastiveDivergence(

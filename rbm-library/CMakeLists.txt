@@ -2,7 +2,7 @@
 add_library(rbm
   libsrc/BinaryRBM.cpp
   libsrc/TrainingSet.cpp
-  libsrc/MarcovChain.cpp
+  libsrc/MarkovChain.cpp
   libsrc/TrainingAlgorithm.cpp
   libsrc/ContrastiveDivergence.cpp
   libsrc/PersistentContrastiveDivergence.cpp
