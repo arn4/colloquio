@@ -139,7 +139,7 @@
 \begin{frame}
   \frametitle{Why can't we go over order 3?}
   \begin{alertblock}{Graphical picture of expansion}
-    Considering the RBM as a graph, \emph{the \(k\)-th order can be thought of as the sum over the \alert{fully connected
+    Considering the RBM as a graph, \emph{the \(k\)-th order can be thought of as the sum over the \alert{strongly-irreducible connected
         sub-graph}, with \emph{\(k\) arcs}, and where interactions can be considered multiple times}.
   \end{alertblock}
 
@@ -295,7 +295,7 @@
     \item Pick \(\ell\) magnetizations \(\{\vec{m}_k\}_{k=1,\dots,\ell}\) randomly.
     \item Apply consistency equations \(k\) times to converge to \(\{\vec{\hat{m}}_k\}_{k=1,\dots,\ell}\)
     \item Compute \(\FEn{\vec{0}}{1}\) gradient for each \(\vec{\hat{m}}_k\)
-    \item Average the gradient using \(e^{-\Gam{\vec{\hat{m}}_k}{1}}\)as weights
+    \item Average the gradient using \(e^{-\Gam{\vec{\hat{m}}_k}{1}}\) as weights
   \end{enumerate}
 	\pause
   \(\ell\) and \(k\) are additional meta-parameters of the algorithm.\\

@@ -103,17 +103,3 @@
 	The number of chains is usually the size of the batch.
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Monitoring}
-\begin{frame}
-  \frametitle{Pseudo-likelihood}
-
-  \begin{alertblock}{Problem!}
-    Likelihood is not computable in practice! We can't compute \(Z\)
-  \end{alertblock}
-	\pause
-  \[
-    \vec{\bar{v}} \xrightarrow{\text{MC sample}} \vec{\bar{h}} \longrightarrow \log\likelihood{\vec{\theta}}{\vec{\bar{v}}} \approx \log{\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}}
-  \]
-  \(\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}\) can be easily computed analytically.
-\end{frame}

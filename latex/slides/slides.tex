@@ -4,8 +4,14 @@
 %\usepackage{enumitem}
 
 \usetheme{CambridgeUS}
-\usecolortheme{beaver} %seahorse, beaver
+\usecolortheme{beaver}
+\definecolor{beaver-red}{RGB}{168, 0, 0}
 \setbeamercovered{transparent}
+
+\setbeamercolor{item}{fg=beaver-red}
+\setbeamercolor{itemize subitem}{fg=beaver-red}
+\setbeamertemplate{itemize subitem}[triangle]
+\setbeamertemplate{enumerate items}[circle]
 
 
 %% Title page

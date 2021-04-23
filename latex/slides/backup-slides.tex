@@ -17,6 +17,7 @@
 \end{frame}
 
 \begin{frame}[noframenumbering]
+  \frametitle{Derivation of RBM probability distribution}
   \(E(\vec{v}, \vec{h})\) must be of the form
   \[
   E(\vec{v}, \vec{h}) = \sum_{i}^m f_i{(v_i)} + \sum_{j}^n g_j{(h_j)} +
@@ -30,4 +31,17 @@
   E(\vec{v}, \vec{h}) = -\sum_{i}^m b_i v_i - \sum_{j}^n c_j h_j -
   \sum_{i=1,j=1}^{m,n} v_i w_{i,j} h_j
   \]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Pseudo-likelihood}
+  
+  \begin{alertblock}{Problem!}
+    Likelihood is not computable in practice! We can't compute \(Z\)
+  \end{alertblock}
+  \pause
+  \[
+  \vec{\bar{v}} \xrightarrow{\text{MC sample}} \vec{\bar{h}} \longrightarrow \log\likelihood{\vec{\theta}}{\vec{\bar{v}}} \approx \log{\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}}
+  \]
+  \(\condprob{\vec{\bar{v}}}{\vec{\bar{h}}}\) can be easily computed analytically.
 \end{frame}

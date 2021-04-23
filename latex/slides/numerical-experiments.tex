@@ -6,22 +6,29 @@
   All the described algorithms have been implemented in \alert{C++}.
   {\small Code:~\url{https://github.com/arn4/colloquio/tree/main/rbm-library}}
   \vspace{10pt}
-  \pause
-  Dataset: \alert{MNIST} for handwritten digit recognition. \(28\times28\) pixels, B\&W images of digits from 0 to 9.
-  \begin{itemize}
-    \item \structure{training set}: \(60'000\) images. 
-          Divided in 5421 batches containing a single rep per class.
-          Only \(54'210\) used for training (90\%).
-    \item \structure{test set}: \(10'000\) images, with labels.
-  \end{itemize}
-  \vspace{10pt}
-  \pause
-  RBM:
-  \begin{itemize}
-    \item 784 visible units; 500 hidden
-    \item learning rate, weight decay and momentum are the same in every training to better compare algorithms.
-  \end{itemize}
-  All algorithms run for 50 epochs.
+  
+  \begin{columns}[T]
+    \column{0.8\textwidth}
+      \onslide<2->{
+        Dataset: \alert{MNIST} for handwritten digit recognition. \(28\times28\) pixels, B\&W images of digits from 0 to 9.
+        \begin{itemize}
+          \item \structure{training set}: \(60'000\) images. 
+                Divided in 5421 batches containing a single rep per class.
+                Only \(54'210\) used for training (90\%).
+          \item \structure{test set}: \(10'000\) images, with labels.
+        \end{itemize}
+      }
+      \onslide<3->{
+        RBM:
+        \begin{itemize}
+          \item 784 visible units; 500 hidden
+          \item learning rate, weight decay and momentum are the same in every training to better compare algorithms.
+        \end{itemize}
+        All algorithms run for 50 epochs.
+      }
+    \column<2->{0.2\textwidth}
+      \includegraphics[width=0.8\textwidth]{img/mnist-example.pdf}
+  \end{columns}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
