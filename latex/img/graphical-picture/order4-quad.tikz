@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+  \node[circle,fill=blue,inner sep=2.5pt,draw] (a) at (180:0.6cm) {};
+  \node[circle,fill=blue,inner sep=2.5pt,draw] (b) at (0:0.6cm) {};
+  \node[circle,fill=blue,inner sep=2.5pt,draw] (c) at (60:0.6cm) {};
+  \node[circle,fill=blue,inner sep=2.5pt,draw] (d) at (120:0.6cm) {};
+
+  \draw[blue, thick] (a) -- (c);
+  \draw[blue, thick] (b) -- (c);
+  \draw[blue, thick] (a) -- (d);
+  \draw[blue, thick] (b) -- (d);
+\end{tikzpicture}

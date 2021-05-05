@@ -1,0 +1,5 @@
+\begin{tikzpicture}
+  \node[circle,fill=black,inner sep=2.5pt,draw] (a) at (180:0.6cm) {};
+  \node[circle,fill=black,inner sep=2.5pt,draw] (b) at (0:0.6cm) {};
+  \draw[thick] (a) -- (b);
+\end{tikzpicture}

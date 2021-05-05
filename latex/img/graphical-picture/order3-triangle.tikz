@@ -1,0 +1,8 @@
+\begin{tikzpicture}
+  \node[circle,fill=red,inner sep=2.5pt,draw] (a) at (90:0.6cm) {};
+  \node[circle,fill=red,inner sep=2.5pt,draw] (b) at (210:0.6cm) {};
+  \node[circle,fill=red,inner sep=2.5pt,draw] (c) at (330:0.6cm) {};
+  \draw[red, thick] (a) -- (b);
+  \draw[red, thick] (b) -- (c);
+  \draw[red, thick] (c) -- (a);
+\end{tikzpicture}
