@@ -6,10 +6,15 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
-      - name: Copying all .tex and .sty files in latex/
+      - name: Copying all .tex and .sty files in latex/ (avoiding symlinks)
         run: |
+          find latex/* -lname 'latex/*' -delete
           cp latex/*/*.tex latex/
           cp latex/*/*.sty latex/
+      - name: Create handout slides
+        run: |
+          cd latex/
+          ./make-handout
       - name: Compile LaTeX documents
         uses: xu-cheng/latex-action@v2
         with:
@@ -17,6 +22,7 @@ jobs:
           root_file: |
             notebook/notebook.tex
             slides/slides.tex
+            slides-handout.tex
       - name: Move compiled files to outputs folder
         run: |
           mkdir outputs/
