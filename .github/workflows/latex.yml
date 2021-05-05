@@ -8,9 +8,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Copying all .tex and .sty files in latex/ (avoiding symlinks)
         run: |
-          find latex/* -lname 'latex/*' -delete
-          cp latex/*/*.tex latex/
-          cp latex/*/*.sty latex/
+          rsync --no-links latex/*/*.tex latex/
+          rsync --no-links latex/*/*.sty latex/
       - name: Create handout slides
         run: |
           cd latex/
