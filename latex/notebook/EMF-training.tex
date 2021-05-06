@@ -458,7 +458,7 @@ Alternatively, this result (and also higher and lower orders) can be computed us
 developed in \cite{georges1991expand}, which makes the calculations much easier.
 \ExplainBox{Why don't we use order higher than 3}{
   The reason is that computing higher orders is so computationally expensive that it is
-  not worth it. The \(k\)-th order can be thought of as the sum over the \emph{fully connected
+  not worth it. The \(k\)-th order can be thought of as the sum over the \emph{strongly irreducible connected
   sub-graph} of the RBM, with \emph{\(k\) arcs} and where edges can be considered multiple
   times\footnote{
     This picture does not give coefficients (that still require a full calculation to be computed),
@@ -467,23 +467,30 @@ developed in \cite{georges1991expand}, which makes the calculations much easier.
   In this picture the orders we have computed are
   \begin{itemize}
     \item order 0 are all the single nodes;
+      \input{img/graphical-picture/order0.tikz}
     \item order 1 are all the pairs directly connected, with the corresponding edge;
-    \item order 2 are again all the pairs directly connected, but with the corresponding edge
-      considered 2 times;
+      \input{img/graphical-picture/order1.tikz}   
+    \item order 2 are again all the pairs directly connected, but with the corresponding 	
+      edge considered 2 times; \input{img/graphical-picture/order2.tikz}
     \item order 3 can have 2 different topologies \emph{a priori}:
       \begin{itemize}
         \item pairs directly connected with the corresponding edge considered 3 times;
-        \item triangles;
+          \input{img/graphical-picture/order3-direct.tikz}
+        \item triangles;\\
+          \input{img/graphical-picture/order3-triangle.tikz}
       \end{itemize}
       But triangles are not allowed by the RBM's topology, since there aren't edges between
       nodes in the same layer.
   \end{itemize}
   So to compute the first 3 orders we have to sum only on the edges, that it is still reasonable.
   The fourth order instead (and also orders above) has a \emph{quadrilateral} topology that does not
-  go away, so it requires a sum on all possible pairs of edges, which is too much.
+  go away, so it requires a sum on all possible pairs of edges, which is too much.\\
+  \input{img/graphical-picture/order4-direct.tikz}
+  \input{img/graphical-picture/order4-triangle.tikz}
+  \input{img/graphical-picture/order4-quad.tikz}
   
-  In \cite{georges1991expand} there are some drawings that can help in understanding the picture
-  we have described.
+  %In \cite{georges1991expand} there are some drawings that can help in understanding the picture
+  %we have described.
 }
 
 \subsubsection{Put all the pieces together}
@@ -550,6 +557,8 @@ and  applying to the equation above we get the \emph{consistency relations} for 
            \right)\right]}
 \end{align}
 Solving these equations gives us \(\vec{\hat{m}}\) to be used when evaluating the gradient.
+Attention must be paid since the fixed point of these equations it's not unique, but only
+one is the  global minimum.
 \MyIdeaBox{Solving these equations}{
   In the article \cite{gabrie18training}, the suggested method for solving these equations 
   is just to start from a random guess of \(\vec{m}\), and then iterate an appropriate
