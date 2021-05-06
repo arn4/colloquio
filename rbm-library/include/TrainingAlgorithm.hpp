@@ -1,7 +1,7 @@
 #ifndef __TrainingAlgorithm_hpp__
 #define __TrainingAlgorithm_hpp__
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <cstddef>
 #include <vector>
@@ -25,14 +25,14 @@ namespace rbm {
       void train_on_batch(std::size_t b);
 
     protected:
-      BinaryRBM<real_value>& _rbm;
+      BernoulliRBM<real_value>& _rbm;
       TrainingSet<features_size, batch_size>& _training_set;
     
     public:
       real_value learning_rate, weight_decay, momentum;
 
       TrainingAlgorithm(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         real_value lr = 0.,
         real_value wd = 0.,

@@ -1,4 +1,4 @@
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 using namespace rbm;
 
 #include <cstddef>
@@ -9,13 +9,13 @@ using namespace rbm;
 #include <iomanip>
 
 template<typename real_value>
-const real_value BinaryRBM<real_value>::default_mu = real_value(0.);
+const real_value BernoulliRBM<real_value>::default_mu = real_value(0.);
 
 template<typename real_value>
-const real_value BinaryRBM<real_value>::default_sigma = real_value(0.001);
+const real_value BernoulliRBM<real_value>::default_sigma = real_value(0.001);
 
 template<typename real_value>
-BinaryRBM<real_value>::BinaryRBM(std::size_t m, std::size_t n, std::mt19937& rng) :
+BernoulliRBM<real_value>::BernoulliRBM(std::size_t m, std::size_t n, std::mt19937& rng) :
   _m(m),
   _n(n),
   _b(m),
@@ -29,7 +29,7 @@ BinaryRBM<real_value>::BinaryRBM(std::size_t m, std::size_t n, std::mt19937& rng
 }
 
 template<typename real_value>
-BinaryRBM<real_value>::BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<std::vector<real_value>>& w, std::mt19937& rng) :
+BernoulliRBM<real_value>::BernoulliRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<std::vector<real_value>>& w, std::mt19937& rng) :
   _m(b.size()),
   _n(c.size()),
   _b(b.begin(), b.end()),
@@ -45,7 +45,7 @@ BinaryRBM<real_value>::BinaryRBM(const std::vector<real_value>& b, const std::ve
 }
 
 template<typename real_value>
-BinaryRBM<real_value>::BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<real_value>& w, std::mt19937& rng)  :
+BernoulliRBM<real_value>::BernoulliRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<real_value>& w, std::mt19937& rng)  :
   _m(b.size()),
   _n(c.size()),
   _b(b.begin(), b.end()),
@@ -55,7 +55,7 @@ BinaryRBM<real_value>::BinaryRBM(const std::vector<real_value>& b, const std::ve
 {}
 
 template<typename real_value>
-void BinaryRBM<real_value>::init_gaussian_b(real_value mu, real_value sigma) {
+void BernoulliRBM<real_value>::init_gaussian_b(real_value mu, real_value sigma) {
   _b.resize(_m);
   std::normal_distribution<real_value> distribution(mu, sigma);
   for (auto& b_i: _b) {
@@ -64,7 +64,7 @@ void BinaryRBM<real_value>::init_gaussian_b(real_value mu, real_value sigma) {
 }
 
 template<typename real_value>
-void BinaryRBM<real_value>::init_gaussian_c(real_value mu, real_value sigma) {
+void BernoulliRBM<real_value>::init_gaussian_c(real_value mu, real_value sigma) {
   _c.resize(_n);
   std::normal_distribution<real_value> distribution(mu, sigma);
   for (auto& c_j: _c) {
@@ -73,17 +73,17 @@ void BinaryRBM<real_value>::init_gaussian_c(real_value mu, real_value sigma) {
 }
 
 template<typename real_value>
-void BinaryRBM<real_value>::init_fixed_b(const std::vector<real_value>& b) {
+void BernoulliRBM<real_value>::init_fixed_b(const std::vector<real_value>& b) {
   _b = std::vector<real_value>(b.begin(), b.end());
 }
 
 template<typename real_value>
-void BinaryRBM<real_value>::init_constant_c(real_value c) {
+void BernoulliRBM<real_value>::init_constant_c(real_value c) {
   _c.assign(_n, c);
 }
 
 template<typename real_value>
-void BinaryRBM<real_value>::init_gaussian_w(real_value mu, real_value sigma) {
+void BernoulliRBM<real_value>::init_gaussian_w(real_value mu, real_value sigma) {
   _w.resize(_n*_m);
   std::normal_distribution<real_value> distribution(mu, sigma);
   for (auto& w_ij: _w) {
@@ -92,7 +92,7 @@ void BinaryRBM<real_value>::init_gaussian_w(real_value mu, real_value sigma) {
 }
 
 template<typename real_value>
-void BinaryRBM<real_value>::save_on_file(std::string filename) const {
+void BernoulliRBM<real_value>::save_on_file(std::string filename) const {
   std::ofstream fout(filename);
   fout << std::fixed << std::setprecision(10);
   for (const auto bi: _b) {
@@ -110,7 +110,7 @@ void BinaryRBM<real_value>::save_on_file(std::string filename) const {
 }
 
 template<typename real_value>
-void BinaryRBM<real_value>::load_from_file(std::string filename) {
+void BernoulliRBM<real_value>::load_from_file(std::string filename) {
   std::ifstream fin(filename);
   for (auto& bi: _b) {
     fin >> bi;
@@ -126,7 +126,7 @@ void BinaryRBM<real_value>::load_from_file(std::string filename) {
 
 // Explicit Instantiation
 namespace rbm {
-  template class BinaryRBM<float>;
-  template class BinaryRBM<double>;
-  template class BinaryRBM<long double>;
+  template class BernoulliRBM<float>;
+  template class BernoulliRBM<double>;
+  template class BernoulliRBM<long double>;
 }

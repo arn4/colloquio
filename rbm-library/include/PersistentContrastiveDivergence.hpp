@@ -15,7 +15,7 @@ namespace rbm {
   class PersistentContrastiveDivergence: public ContrastiveDivergence<real_value, features_size, batch_size> {
     public:
       PersistentContrastiveDivergence(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         unsigned k,
         std::mt19937& rng,

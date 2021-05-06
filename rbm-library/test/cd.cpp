@@ -2,7 +2,7 @@
 #include <fstream>
 #include <random>
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <ContrastiveDivergence.hpp>
 
@@ -46,7 +46,7 @@ int main() {
 
 
   mt19937 rng(SEED);
-  BinaryRBM<real_value> rbm(FEATURES_SIZE, FEATURES_SIZE, rng);
+  BernoulliRBM<real_value> rbm(FEATURES_SIZE, FEATURES_SIZE, rng);
   clog << "Done!" << endl << "Initializing CD-k... ";
   ContrastiveDivergence<real_value, FEATURES_SIZE, BATCH_SIZE> cd(rbm, ts, 5, rng, .001, .001, .0);
   clog << "Done!" << endl << "Running... " << endl;

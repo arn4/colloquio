@@ -17,7 +17,7 @@
 
 // Implementations of calculations:
 template<typename real_value>
-inline void first_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline void first_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   std::vector<real_value> arg_mv(rbm.m(), real_value(0.));
   std::vector<real_value> arg_mh(rbm.n(), real_value(0.));
   
@@ -39,12 +39,12 @@ inline void first_order_convergence_step(std::vector<real_value>& mv, std::vecto
 }
 
 template<typename real_value>
-inline real_value compute_first_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>&) {
+inline real_value compute_first_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>&) {
   return -mv[i]*mh[j];
 }
 
 template<typename real_value>
-inline real_value first_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline real_value first_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   real_value gf = 0.;
   for (std::size_t i = 0; i < rbm.m(); i++) {
     gf += safe_xlogx(mv[i]) + safe_xlogx(real_value(1.)-mv[i]) - rbm.b(i) * mv[i];
@@ -61,7 +61,7 @@ inline real_value first_order_gibbs_energy(std::vector<real_value>& mv, std::vec
 }
 
 template<typename real_value>
-inline void second_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline void second_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   std::vector<real_value> arg_mh(rbm.n(), real_value(0.));
   std::vector<real_value> arg_mv(rbm.m(), real_value(0.));
   
@@ -103,7 +103,7 @@ inline void second_order_convergence_step(std::vector<real_value>& mv, std::vect
 }
 
 template<typename real_value>
-inline real_value compute_second_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline real_value compute_second_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   return 
   -mv[i]*mh[j] * (
     real_value(1.) +
@@ -118,7 +118,7 @@ inline real_value compute_second_order_weight_update(std::size_t i, std::size_t 
 }
 
 template<typename real_value>
-inline real_value second_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline real_value second_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   real_value gf = first_order_gibbs_energy(mv, mh, rbm);
   for (std::size_t i = 0; i < rbm.m(); i++) {
     for (std::size_t j = 0; j < rbm.n(); j++) {
@@ -129,7 +129,7 @@ inline real_value second_order_gibbs_energy(std::vector<real_value>& mv, std::ve
 }
 
 template<typename real_value>
-inline void third_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline void third_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   std::vector<real_value> arg_mv(rbm.m(), real_value(0.));
   std::vector<real_value> arg_mh(rbm.n(), real_value(0.));
   
@@ -195,7 +195,7 @@ inline void third_order_convergence_step(std::vector<real_value>& mv, std::vecto
 }
 
 template<typename real_value>
-inline real_value compute_third_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline real_value compute_third_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   return 
   -mv[i]*mh[j] * (
     real_value(1.) +
@@ -219,7 +219,7 @@ inline real_value compute_third_order_weight_update(std::size_t i, std::size_t j
 }
 
 template<typename real_value>
-inline real_value third_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm) {
+inline real_value third_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BernoulliRBM<real_value>& rbm) {
   real_value gf = first_order_gibbs_energy(mv, mh, rbm);
   for (std::size_t i = 0; i < rbm.m(); i++) {
     for (std::size_t j = 0; j < rbm.n(); j++) {
@@ -252,7 +252,7 @@ inline void random_m(std::vector<real_value>& m, std::mt19937& rng) {
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 MeanField<real_value, features_size, batch_size>::MeanField(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   std::mt19937& rng,
   unsigned l,
@@ -368,7 +368,7 @@ inline void MeanField<real_value, features_size, batch_size>::convergence_step(s
 // Persistent MeanField
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 PersistentMeanField<real_value, features_size, batch_size>::PersistentMeanField(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   std::mt19937& rng,
   unsigned l,
@@ -387,7 +387,7 @@ inline void PersistentMeanField<real_value, features_size, batch_size>::init_m()
 // ThoulessAndersonPalmer at Order2
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 TAP2<real_value, features_size, batch_size>::TAP2(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   std::mt19937& rng,
   unsigned l,
@@ -418,7 +418,7 @@ inline void TAP2<real_value, features_size, batch_size>::convergence_step(std::s
 // Persistent ThoulessAndersonPalmer at Order2
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 PersistentTAP2<real_value, features_size, batch_size>::PersistentTAP2(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   std::mt19937& rng,
   unsigned l,
@@ -436,7 +436,7 @@ inline void PersistentTAP2<real_value, features_size, batch_size>::init_m() {}
 // ThoulessAndersonPalmer at Order3
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 TAP3<real_value, features_size, batch_size>::TAP3(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   std::mt19937& rng,
   unsigned l,
@@ -466,7 +466,7 @@ inline void TAP3<real_value, features_size, batch_size>::convergence_step(std::s
 // Persistent ThoulessAndersonPalmer at Order3
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 PersistentTAP3<real_value, features_size, batch_size>::PersistentTAP3(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   std::mt19937& rng,
   unsigned l,

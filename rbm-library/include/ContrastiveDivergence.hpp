@@ -1,7 +1,7 @@
 #ifndef __ContrastiveDivergence_hpp__
 #define __ContrastiveDivergence_hpp__
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <TrainingAlgorithm.hpp>
 #include <MarkovChain.hpp>
@@ -24,7 +24,7 @@ namespace rbm {
       unsigned _k;
     public:
       ContrastiveDivergence(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         unsigned k,
         std::mt19937& rng,

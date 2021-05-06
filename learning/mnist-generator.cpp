@@ -4,7 +4,7 @@
 #include <thread>
 #include <cstdlib>
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
 #include <MarkovChain.hpp>
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
   // Load RBM
   clog << "Loading the RBM... ";
-  vector<BinaryRBM<real_value>> rbms(trained.size(), BinaryRBM<real_value>(PIXELS, HIDDEN_SIZE, rng));
+  vector<BernoulliRBM<real_value>> rbms(trained.size(), BernoulliRBM<real_value>(PIXELS, HIDDEN_SIZE, rng));
   
   for (unsigned r = 0; r < trained.size(); r++) {
     rbms[r].load_from_file(to_string(seed)+"/"+trained[r]+".rbm.txt");

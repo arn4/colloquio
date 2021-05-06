@@ -3,7 +3,7 @@
 #include <random>
 #include <thread>
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
 #include <MarkovChain.hpp>
@@ -37,7 +37,7 @@ int main() {
 
   // Generate a random RBM
   clog << "Generation of the goal RBM... ";
-  BinaryRBM<real_value> goal_rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
+  BernoulliRBM<real_value> goal_rbm(FEATURES_SIZE, HIDDEN_SIZE, rng);
   goal_rbm.init_gaussian_b(0., 0.1);
   goal_rbm.init_gaussian_c(0., 0.1);
   goal_rbm.init_gaussian_w(0., 0.1);
@@ -105,8 +105,8 @@ int main() {
 
   // Training 
   clog << "Training... " << endl;
-  BinaryRBM<real_value> rbm1(FEATURES_SIZE, HIDDEN_SIZE, rng);
-  BinaryRBM<real_value> rbm2(rbm1.b(), rbm1.c(), rbm1.w(), rng);
+  BernoulliRBM<real_value> rbm1(FEATURES_SIZE, HIDDEN_SIZE, rng);
+  BernoulliRBM<real_value> rbm2(rbm1.b(), rbm1.c(), rbm1.w(), rng);
   LearningAlgorithm1 la1(rbm1, ts, K, rng, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
   LearningAlgorithm2 la2(rbm2, ts, rng, 10, K, LEARNING_RATE, WEIGHT_DECAY, MOMENTUM);
   clog << "Initial PLH1: " << la1.log_pseudolikelihood() << endl;

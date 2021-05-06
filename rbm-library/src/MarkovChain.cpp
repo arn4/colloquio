@@ -8,7 +8,7 @@ using namespace rbm;
 #include <iostream>
 
 template<typename real_value>
-MarkovChain<real_value>::MarkovChain(BinaryRBM<real_value>& rbm, std::mt19937& rng) :
+MarkovChain<real_value>::MarkovChain(BernoulliRBM<real_value>& rbm, std::mt19937& rng) :
   _rbm(rbm),
   _v(_rbm.m()),
   _h(_rbm.n()),

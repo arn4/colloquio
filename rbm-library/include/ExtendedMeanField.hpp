@@ -1,7 +1,7 @@
 #ifndef __ExtendedMeanField_hpp__
 #define __ExtendedMeanField_hpp__
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <TrainingAlgorithm.hpp>
 #include <MarkovChain.hpp>
@@ -10,37 +10,6 @@
 #include <vector>
 
 namespace rbm {
-  // Calculations:
-  // template<typename real_value>
-  // void first_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // real_value compute_first_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // inline real_value first_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // void second_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // real_value compute_second_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // real_value second_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // void third_order_convergence_step(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-    
-  // template<typename real_value>
-  // real_value compute_third_order_weight_update(std::size_t i, std::size_t j, std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // real_value third_order_gibbs_energy(std::vector<real_value>& mv, std::vector<real_value>& mh, BinaryRBM<real_value>& rbm);
-
-  // template<typename real_value>
-  // void random_m(std::vector<real_value>& m, std::mt19937& rng);
-
   template<
     typename real_value,
     std::size_t features_size,
@@ -63,7 +32,7 @@ namespace rbm {
       virtual real_value gibbs_energy(std::size_t r);
     public:
       MeanField(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         std::mt19937& rng,
         unsigned l,
@@ -91,7 +60,7 @@ namespace rbm {
       void init_m();
     public:
       PersistentMeanField(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         std::mt19937& rng,
         unsigned l,
@@ -114,7 +83,7 @@ namespace rbm {
       real_value gibbs_energy(std::size_t r);
     public:
       TAP2(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         std::mt19937& rng,
         unsigned l,
@@ -142,7 +111,7 @@ namespace rbm {
       void init_m();
     public:
       PersistentTAP2(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         std::mt19937& rng,
         unsigned l,
@@ -165,7 +134,7 @@ namespace rbm {
       real_value gibbs_energy(std::size_t r);
     public:
       TAP3(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         std::mt19937& rng,
         unsigned l,
@@ -188,7 +157,7 @@ namespace rbm {
       void init_m();
     public:
       PersistentTAP3(
-        BinaryRBM<real_value>& rbm,
+        BernoulliRBM<real_value>& rbm,
         TrainingSet<features_size, batch_size>& training_set,
         std::mt19937& rng,
         unsigned l,

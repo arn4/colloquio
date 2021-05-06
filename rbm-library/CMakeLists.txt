@@ -1,6 +1,6 @@
 ## Compile the library
 add_library(rbm
-  src/BinaryRBM.cpp
+  src/BernoulliRBM.cpp
   src/TrainingSet.cpp
   src/MarkovChain.cpp
   src/TrainingAlgorithm.cpp

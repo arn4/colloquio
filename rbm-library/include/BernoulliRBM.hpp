@@ -1,5 +1,5 @@
-#ifndef __BinaryRBM_hpp__
-#define __BinaryRBM_hpp__
+#ifndef __BernoulliRBM_hpp__
+#define __BernoulliRBM_hpp__
 
 #include <cstddef>
 #include <vector>
@@ -11,7 +11,7 @@
 namespace rbm {
   
   template <typename real_value>
-  class BinaryRBM {
+  class BernoulliRBM {
     private:
       std::size_t _m, _n;
       std::vector<real_value> _b, _c, _w;
@@ -22,9 +22,9 @@ namespace rbm {
       std::mt19937& _rng;
       
       // Constructors
-      BinaryRBM(std::size_t m, std::size_t n, std::mt19937& rng);
-      BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<real_value>& w, std::mt19937& rng);
-      BinaryRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<std::vector<real_value>>& w, std::mt19937& rng);
+      BernoulliRBM(std::size_t m, std::size_t n, std::mt19937& rng);
+      BernoulliRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<real_value>& w, std::mt19937& rng);
+      BernoulliRBM(const std::vector<real_value>& b, const std::vector<real_value>& c, const std::vector<std::vector<real_value>>& w, std::mt19937& rng);
 
       //Initializers: default values come from Hinton
       void init_gaussian_b(real_value mu = default_mu, real_value sigma = default_sigma);
@@ -70,5 +70,5 @@ namespace rbm {
 
 }
 
-#include <BinaryRBM.tpp>
+#include <BernoulliRBM.tpp>
 #endif

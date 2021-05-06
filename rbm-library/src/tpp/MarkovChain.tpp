@@ -1,4 +1,4 @@
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 using namespace rbm;
 
 #include <cstddef>
@@ -8,7 +8,7 @@ using namespace rbm;
 
 template<typename real_value>
 template<class Iterator>
-inline MarkovChain<real_value>::MarkovChain(BinaryRBM<real_value>& rbm, Iterator begin, Iterator end, std::mt19937& rng) {
+inline MarkovChain<real_value>::MarkovChain(BernoulliRBM<real_value>& rbm, Iterator begin, Iterator end, std::mt19937& rng) {
   MarkovChain(rbm, rng);
   set_v(begin, end);
 }

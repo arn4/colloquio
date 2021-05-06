@@ -1,4 +1,4 @@
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 
 using namespace rbm;
 
@@ -11,64 +11,64 @@ using namespace rbm;
 // Inline functions
 
 template <typename real_value>
-inline const std::size_t& BinaryRBM<real_value>::n() const {
+inline const std::size_t& BernoulliRBM<real_value>::n() const {
   return _n;
 }
 
 template <typename real_value>
-inline const std::size_t& BinaryRBM<real_value>::m() const {
+inline const std::size_t& BernoulliRBM<real_value>::m() const {
   return _m;
 }
 
 template <typename real_value>
-inline const std::vector<real_value>& BinaryRBM<real_value>::b() const {
+inline const std::vector<real_value>& BernoulliRBM<real_value>::b() const {
   return _b;
 }
 
 template <typename real_value>
-inline const std::vector<real_value>& BinaryRBM<real_value>::c() const {
+inline const std::vector<real_value>& BernoulliRBM<real_value>::c() const {
   return _c;
 }
 
 template <typename real_value>
-inline const std::vector<real_value>& BinaryRBM<real_value>::w() const {
+inline const std::vector<real_value>& BernoulliRBM<real_value>::w() const {
   return _w;
 }
 
 template <typename real_value>
-inline const real_value& BinaryRBM<real_value>::b(std::size_t i) const {
+inline const real_value& BernoulliRBM<real_value>::b(std::size_t i) const {
   return _b[i];
 }
 
 template <typename real_value>
-inline const real_value& BinaryRBM<real_value>::c(std::size_t j) const {
+inline const real_value& BernoulliRBM<real_value>::c(std::size_t j) const {
   return _c[j];
 }
 
 template <typename real_value>
-inline const real_value& BinaryRBM<real_value>::w(std::size_t i, std::size_t j) const {
+inline const real_value& BernoulliRBM<real_value>::w(std::size_t i, std::size_t j) const {
   return _w[_n*i+j];
 }
 
 template <typename real_value>
-inline void BinaryRBM<real_value>::update_b(std::size_t i, real_value upd) {
+inline void BernoulliRBM<real_value>::update_b(std::size_t i, real_value upd) {
   _b[i] += upd;
 }
 
 template <typename real_value>
-inline void BinaryRBM<real_value>::update_c(std::size_t j, real_value upd) {
+inline void BernoulliRBM<real_value>::update_c(std::size_t j, real_value upd) {
   _c[j] += upd;
 }
 
 template <typename real_value>
-inline void BinaryRBM<real_value>::update_w(std::size_t i, std::size_t j, real_value upd) {
+inline void BernoulliRBM<real_value>::update_w(std::size_t i, std::size_t j, real_value upd) {
   _w[_n*i+j] += upd;
 }
 
 // Template functions
 template<typename real_value>
 template<class Iterator>
-inline real_value BinaryRBM<real_value>::prob_v(std::size_t i, Iterator h_begin) const {
+inline real_value BernoulliRBM<real_value>::prob_v(std::size_t i, Iterator h_begin) const {
   real_value sum_var = real_value(0.);
   for (std::size_t j = 0; j < _n; j++) {
     sum_var += w(i,j) * binary2real<real_value>(*h_begin);
@@ -79,7 +79,7 @@ inline real_value BinaryRBM<real_value>::prob_v(std::size_t i, Iterator h_begin)
 
 template<typename real_value>
 template<class Iterator>
-inline real_value BinaryRBM<real_value>::prob_h(std::size_t j, Iterator v_begin) const {
+inline real_value BernoulliRBM<real_value>::prob_h(std::size_t j, Iterator v_begin) const {
   real_value sum_var = real_value(0.);
   for (std::size_t i = 0; i < _m; i++) {
     sum_var += w(i,j) * binary2real<real_value>(*v_begin);
@@ -90,7 +90,7 @@ inline real_value BinaryRBM<real_value>::prob_h(std::size_t j, Iterator v_begin)
 
 template<typename real_value>
 template<class Iterator>
-inline std::vector<real_value> BinaryRBM<real_value>::vec_prob_v(Iterator h_begin) const {
+inline std::vector<real_value> BernoulliRBM<real_value>::vec_prob_v(Iterator h_begin) const {
   std::vector<real_value> result(_m, real_value(0.));
   for (std::size_t j = 0; j < _n; j++) {
     real_value hj = binary2real<real_value>(*h_begin);
@@ -107,7 +107,7 @@ inline std::vector<real_value> BinaryRBM<real_value>::vec_prob_v(Iterator h_begi
 
 template<typename real_value>
 template<class Iterator>
-inline std::vector<real_value> BinaryRBM<real_value>::vec_prob_h(Iterator v_begin) const {
+inline std::vector<real_value> BernoulliRBM<real_value>::vec_prob_h(Iterator v_begin) const {
   std::vector<real_value> result(_n, real_value(0.));
   for (std::size_t i = 0; i < _m; i++) {
     real_value vi = binary2real<real_value>(*v_begin);
@@ -124,7 +124,7 @@ inline std::vector<real_value> BinaryRBM<real_value>::vec_prob_h(Iterator v_begi
 
 template<typename real_value>
 template<class Iterator>
-inline real_value BinaryRBM<real_value>::free_energy_v(Iterator v_begin) const {
+inline real_value BernoulliRBM<real_value>::free_energy_v(Iterator v_begin) const {
   std::vector<real_value> x(_n,  real_value(0.));
   for (std::size_t j = 0; j < _n; j++) {
     x[j] += c(j);

@@ -8,7 +8,7 @@
 
 template<typename real_value, std::size_t features_size, std::size_t batch_size>
 ContrastiveDivergence<real_value, features_size, batch_size>::ContrastiveDivergence(
-  BinaryRBM<real_value>& rbm,
+  BernoulliRBM<real_value>& rbm,
   TrainingSet<features_size, batch_size>& training_set,
   unsigned k,
   std::mt19937& rng,

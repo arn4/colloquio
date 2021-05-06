@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <future>
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 #include <TrainingSet.hpp>
 #include <PersistentContrastiveDivergence.hpp>
 #include <MarkovChain.hpp>
@@ -97,9 +97,9 @@ int main(int argc, char *argv[]) {
   // Training 
   clog << "Training... " << endl;
 
-  vector<vector<BinaryRBM<real_value>>> rbm(alg_names.size());
+  vector<vector<BernoulliRBM<real_value>>> rbm(alg_names.size());
   for (unsigned s = 0; s < alg_names.size(); s++) {
-    rbm[s] = vector<BinaryRBM<real_value>>(algs[s].size(), BinaryRBM<real_value>(PIXELS, HIDDEN_SIZE, rng));
+    rbm[s] = vector<BernoulliRBM<real_value>>(algs[s].size(), BernoulliRBM<real_value>(PIXELS, HIDDEN_SIZE, rng));
   }
  
   vector<CD> alg_cd;

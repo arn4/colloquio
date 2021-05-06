@@ -1,7 +1,7 @@
 #include <iostream>
 #include <random>
 
-#include <BinaryRBM.hpp>
+#include <BernoulliRBM.hpp>
 
 
 using namespace std;
@@ -16,7 +16,7 @@ int main() {
   vector<real_value> c = {-2., -1.};
   vector<vector<real_value>>  w = {{2.,-6.}, {8.,-2.}};
 
-  BinaryRBM<real_value> rbm(b, c, w, rng);
+  BernoulliRBM<real_value> rbm(b, c, w, rng);
 
   vector<bool> ii = {true, true};
   vector<bool> io = {true, false};
