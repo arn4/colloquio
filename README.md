@@ -11,7 +11,7 @@ All the discussed algorithms have been implemented and tested in C++.
 
 ## Documents
 These are the last avaible versions of:
-  - [**Slides**](https://uz.sns.it/~arna/static_/ext_files/colloquio/slides-handout.pdf) slides used during the presentation ([version with transitions](https://uz.sns.it/~arna/static_/ext_files/colloquio/slides.pdf))
+  - [**Slides**](https://uz.sns.it/~arna/static_/ext_files/colloquio/slides-handout.pdf) slides used during the presentation ([version with timing](https://uz.sns.it/~arna/static_/ext_files/colloquio/slides.pdf))
   - [**NoteBook**](https://uz.sns.it/~arna/static_/ext_files/colloquio/notebook.pdf) personal notes and transcription from the papers that I need for prepare the talk.
 
 ### References
