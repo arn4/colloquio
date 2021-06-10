@@ -2,7 +2,7 @@
 ![Build LaTeX documents](https://github.com/arn4/colloquio/workflows/LaTeX%20documents/badge.svg)
 ![Compile C++](https://github.com/arn4/colloquio/workflows/C++/badge.svg)
 
-This is the repository of my 4th-year-talk (a.k.a. *colloquio*) at Scuola Normale Superiore.
+This is the repository of my 4th-year-seminar (a.k.a. *colloquio*) at Scuola Normale Superiore.
 
 The purpose of this seminar is to illustrate the operation of Restricted Boltzmann Machines and some classical algorithms to train them.
 In addition, an alternative algorithm proposed by Gabriè [[1]](#1) is analyzed; it is based on the mean field theory of the Ising model.
